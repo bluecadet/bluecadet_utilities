@@ -2,4 +2,4 @@ type: module
 name: Bluecadet Utilities
 description: 'Adds utilities to aide in development.'
 package: Bluecadet
-core: 8.x
+core: 8.x-0.1

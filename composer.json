@@ -1,0 +1,7 @@
+{
+    "name": "bluecadet/bluecadet_utilities",
+    "description": "Adds utilities to aide in development.",
+    "require": {
+        "php": "^5.3.3 || ^7.0",
+    }
+}
