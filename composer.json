@@ -1,6 +1,6 @@
 {
     "name": "bluecadet/bluecadet_utilities",
-    "description": "Adds utilities to aide in development.git status",
+    "description": "Adds utilities to aide in development",
     "type": "custom-drupal-module",
     "authors": [
       {
