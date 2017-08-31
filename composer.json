@@ -1,6 +1,13 @@
 {
     "name": "bluecadet/bluecadet_utilities",
-    "description": "Adds utilities to aide in development.",
+    "description": "Adds utilities to aide in development.git status",
+    "type": "custom-drupal-module",
+    "authors": [
+      {
+        "name": "Pete Inge",
+        "role": "Maintainer"
+      }
+    ],
     "require": {
         "php": "^5.3.3 || ^7.0",
     }
