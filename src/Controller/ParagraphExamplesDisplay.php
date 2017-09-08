@@ -26,14 +26,17 @@ class ParagraphExamplesDisplay extends ControllerBase {
     foreach ($bundles as $bundle_id => $bundle) {
       $file = NULL;
       if (!empty($settings[$bundle_id]['images'])) {
-        $file = \Drupal\file\Entity\File::load($settings[$bundle_id]['images'][0]);
+        $img_render = [];
 
-        $img_render = [
-          '#theme' => 'image_style',
-          '#style_name' => 'bluecadet_utilities_paragraph_example_full',
-          '#uri' => $file->getFileUri(),
-        ];
+        foreach ($settings[$bundle_id]['images'] as $img_fid) {
+          $file = \Drupal\file\Entity\File::load($img_fid);
 
+          $img_render[] = [
+            '#theme' => 'image_style',
+            '#style_name' => 'bluecadet_utilities_paragraph_example_full',
+            '#uri' => $file->getFileUri(),
+          ];
+        }
       }
 
       $build['table']['#rows'][] = ['data' => [
@@ -50,7 +53,6 @@ class ParagraphExamplesDisplay extends ControllerBase {
       ]];
     }
 
-ksm($build['table']);
     return $build;
   }
 }

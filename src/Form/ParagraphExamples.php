@@ -36,14 +36,14 @@ class ParagraphExamples extends FormBase {
     $bundles = \Drupal::entityManager()->getBundleInfo('paragraph');
     $triggering_element = $form_state->getTriggeringElement();
     $values = $form_state->getValues();
-dsm($settings);
 
     $orig_imgs = [];
     $new_files = [];
     foreach ($bundles as $bundle_id => $bundle) {
-      $orig_imgs[$bundle_id] = isset($settings[$bundle_id]['images'][0])? $settings[$bundle_id]['images'][0] : NULL;
-      $new_files[$bundle_id] = isset($values['pe'][$bundle_id]['images'][0])? $values['pe'][$bundle_id]['images'][0] : NULL;
+      $orig_imgs[$bundle_id] = isset($settings[$bundle_id]['images'])? $settings[$bundle_id]['images'] : NULL;
+      $new_files[$bundle_id] = isset($values['pe'][$bundle_id]['images'])? $values['pe'][$bundle_id]['images'] : NULL;
     }
+
     $form_state->set('original_imgs', $orig_imgs);
 
     $form['pe']['#tree'] = TRUE;
@@ -67,10 +67,11 @@ dsm($settings);
         '#type' => 'managed_file',
         '#default_value' => isset($settings[$bundle_id]['images'])? $settings[$bundle_id]['images'] : '',
         '#upload_location' => 'public://paragraph-examples/',
-        '#multiple' => FALSE,
+        '#multiple' => TRUE,
         '#upload_validators' => array(
           'file_validate_extensions' => array('png gif jpg jpeg'),
         ),
+        'preview' => ['#markup' => '', '#prefix' => '<div class="img-thumbs">', '#suffix' => '</div>'],
       ];
 
       $file_upload_help = [
@@ -81,29 +82,41 @@ dsm($settings);
       ];
       $form['pe'][$bundle_id]['images']['#description'] = \Drupal::service('renderer')->renderPlain($file_upload_help);
 
-      // Thumbnail
-      $f = NULL;
-      if (isset($new_files[$bundle_id])) {
-        $f = \Drupal\file\Entity\File::load($new_files[$bundle_id]);
-      }
-      elseif(isset($orig_imgs[$bundle_id])) {
-        $f = \Drupal\file\Entity\File::load($orig_imgs[$bundle_id]);
-      }
+      // Thumbnails
+      if (isset($new_files[$bundle_id]) && !empty($new_files[$bundle_id])) {
+        if (isset($new_files[$bundle_id]['fids'])) {
+          $fids_to_use = explode(' ', $new_files[$bundle_id]['fids']);
+        }
+        else {
+          $fids_to_use = $new_files[$bundle_id];
+        }
 
-      if (!empty($f)) {
-        $render = [
-          '#theme' => 'image_style',
-          '#style_name' => 'thumbnail',
-          '#uri' => $f->getFileUri(),
-        ];
-        $form['pe'][$bundle_id]['images']['preview'] = [
-          '#markup' => render($render),
-        ];
-      }
+        foreach($fids_to_use as $img_id) {
+          $f = \Drupal\file\Entity\File::load($img_id);
 
-      // Remove preview on "Remove" btn trigger.
-      if (!empty($triggering_element) && $triggering_element['#array_parents'][1] == $bundle_id && $triggering_element['#array_parents'][2] == 'remove_button') {
-        $form['pe'][$bundle_id]['images']['preview'] = [];
+          if (!empty($f)) {
+            $render = [
+              '#theme' => 'image_style',
+              '#style_name' => 'thumbnail',
+              '#uri' => $f->getFileUri(),
+            ];
+            $form['pe'][$bundle_id]['images']['preview']['#markup'] .= render($render);
+          }
+        }
+
+      } elseif (isset($orig_imgs[$bundle_id]) && !empty($orig_imgs[$bundle_id])) {
+        foreach($orig_imgs[$bundle_id] as $img_id) {
+          $f = \Drupal\file\Entity\File::load($img_id);
+
+          if (!empty($f)) {
+            $render = [
+              '#theme' => 'image_style',
+              '#style_name' => 'thumbnail',
+              '#uri' => $f->getFileUri(),
+            ];
+            $form['pe'][$bundle_id]['images']['preview']['#markup'] .= render($render);
+          }
+        }
       }
     }
 
@@ -137,27 +150,28 @@ dsm($settings);
     $orig_images = $form_state->get('original_imgs');
     $file_usage = \Drupal::service('file.usage');
 
+    $new_images = [];
+    $old_images = [];
+
     foreach ($bundles as $bundle_id => $bundle) {
-      $fid = isset($values['pe'][$bundle_id]['images'][0])? $values['pe'][$bundle_id]['images'][0] : NULL;
-      $orig_fid = $orig_images[$bundle_id];
+      $new_images = array_merge($new_images, $values['pe'][$bundle_id]['images']);
+      $old_images = array_merge($old_images, $orig_images[$bundle_id]);
+    }
 
-      // There is some sort of a change.
-      if ($fid != $orig_fid) {
-        // If there is a file, update it.
-        if ($fid !== NULL) {
-          $f = \Drupal\file\Entity\File::load($fid);
-          $f->setPermanent();
-          $f->save();
-          $file_usage->add($f, 'bluecadet_utilities', 'config', 1, 1);
-        }
+    $images_to_add = array_diff($new_images, $old_images);
+    $images_to_delete = array_diff($old_images, $new_images);
 
-        // If there was a file, update it.
-        if ($orig_fid != NULL) {
-          if ($orig_fid !== NULL) {
-            $f2 = file_load($orig_fid);
-            $file_usage->delete($f2, 'bluecadet_utilities', 'config', 1, 1);
-          }
-        }
+    foreach ($images_to_add as $fid_to_add) {
+      if ($f = \Drupal\file\Entity\File::load($fid_to_add)) {
+        $f->setPermanent();
+        $f->save();
+        $file_usage->add($f, 'bluecadet_utilities', 'config', 1, 1);
+      }
+    }
+
+    foreach ($images_to_delete as $fid_to_delete) {
+      if ($f2 = file_load($fid_to_delete)) {
+        $file_usage->delete($f2, 'bluecadet_utilities', 'config', 1, 1);
       }
     }
 
