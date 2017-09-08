@@ -17,4 +17,6 @@ function bluecadet_utilities_uninstall() {
   // Remove custom Image Style.
   ImageStyle::load('bluecadet_utilities_paragraph_example_full')->delete();
 
+  // Delete state.
+  \Drupal::state()->delete('bluecadet_utilities.para_examples');
 }
