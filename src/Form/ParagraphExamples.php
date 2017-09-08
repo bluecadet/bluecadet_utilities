@@ -47,6 +47,8 @@ class ParagraphExamples extends FormBase {
     $form_state->set('original_imgs', $orig_imgs);
 
     $form['pe']['#tree'] = TRUE;
+    $form['pe']['#attached']['library'][] = 'bluecadet_utilities/paragraph_examples.settings';
+
     // Disable caching on this form.
     $form_state->setCached(FALSE);
 

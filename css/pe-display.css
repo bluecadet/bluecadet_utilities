@@ -1,0 +1,15 @@
+
+.name-cell {
+  vertical-align: top;
+}
+
+.image-cell {
+  width: 30%;
+}
+
+.image-cell img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 10px;
+}

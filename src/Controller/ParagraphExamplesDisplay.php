@@ -21,6 +21,7 @@ class ParagraphExamplesDisplay extends ControllerBase {
       '#header' => array($this->t('Paragraph Name'), $this->t('Image')),
       '#rows' => [],
       '#empty' => $this->t('There are no bundles defined at this time.'),
+      '#attached' => ['library' => ['bluecadet_utilities/paragraph_examples.display']],
     ];
 
     foreach ($bundles as $bundle_id => $bundle) {
@@ -39,18 +40,25 @@ class ParagraphExamplesDisplay extends ControllerBase {
         }
       }
 
-      $build['table']['#rows'][] = ['data' => [
-        [
-          'data' => [
-            '#markup' => '<h2>' . $bundle['label'] . '</h2><p>' . $settings[$bundle_id]['description'] . '</p>',
-          ]
+      $build['table']['#rows'][] = [
+        'attributes' => [
+          'class' => '',
         ],
-        [
-          'data' => [
-            '#markup' => ($file)? render($img_render) : '--NO IMAGE--',
-          ]
-        ],
-      ]];
+        'data' => [
+          [
+            'data' => [
+              '#markup' => '<h2>' . $bundle['label'] . '</h2><p>' . $settings[$bundle_id]['description'] . '</p>',
+            ],
+            'class' => 'name-cell',
+          ],
+          [
+            'data' => [
+              '#markup' => ($file)? render($img_render) : '--NO IMAGE--',
+            ],
+            'class' => 'image-cell',
+          ],
+        ]
+      ];
     }
 
     return $build;
