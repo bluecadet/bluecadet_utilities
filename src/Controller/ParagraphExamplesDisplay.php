@@ -14,9 +14,7 @@ class ParagraphExamplesDisplay extends ControllerBase {
 
     $settings = \Drupal::state()->get('bluecadet_utilities.para_examples', array());
     $bundles = \Drupal::entityManager()->getBundleInfo('paragraph');
-    // $f = \Drupal\file\Entity\File::load($new_files[$bundle_id]);
-ksm($settings, $bundles);
-dsm($bundles);
+
     $build['table'] = [
       '#type' => 'table',
       '#caption' => $this->t('Paragraph Bundle Examples'),

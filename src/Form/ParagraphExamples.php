@@ -136,14 +136,14 @@ class ParagraphExamples extends FormBase  {
           $f = \Drupal\file\Entity\File::load($values['images'][$bundle_id][0]);
           $f->setPermanent();
           $f->save();
-          $file_usage->add($f, 'bluecadet_utilities', 'config', 1);
+          $file_usage->add($f, 'bluecadet_utilities', 'config', 1, 1);
         }
 
         // If there was a file, update it.
         if ($orig_fid != NULL) {
           if ($orig_fid !== NULL) {
             $f2 = file_load($orig_fid);
-            $file_usage->delete($f2, 'bluecadet_utilities', 'config', 1);
+            $file_usage->delete($f2, 'bluecadet_utilities', 'config', 1, 1);
           }
         }
       }
