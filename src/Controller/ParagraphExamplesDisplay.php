@@ -25,8 +25,8 @@ class ParagraphExamplesDisplay extends ControllerBase {
 
     foreach ($bundles as $bundle_id => $bundle) {
       $file = NULL;
-      if (!empty($settings[$bundle_id])) {
-        $file = \Drupal\file\Entity\File::load($settings[$bundle_id][0]);
+      if (!empty($settings[$bundle_id]['images'])) {
+        $file = \Drupal\file\Entity\File::load($settings[$bundle_id]['images'][0]);
 
         $img_render = [
           '#theme' => 'image_style',
@@ -39,7 +39,7 @@ class ParagraphExamplesDisplay extends ControllerBase {
       $build['table']['#rows'][] = ['data' => [
         [
           'data' => [
-            '#markup' => $bundle['label'],
+            '#markup' => '<h2>' . $bundle['label'] . '</h2><p>' . $settings[$bundle_id]['description'] . '</p>',
           ]
         ],
         [

@@ -20,7 +20,7 @@ use Drupal\Core\Datetime\DrupalDateTime;
 /**
  * Configure Paragraph examples to upload images per para bundle.
  */
-class ParagraphExamples extends FormBase  {
+class ParagraphExamples extends FormBase {
   /**
    * {@inheritdoc}
    */
@@ -36,24 +36,36 @@ class ParagraphExamples extends FormBase  {
     $bundles = \Drupal::entityManager()->getBundleInfo('paragraph');
     $triggering_element = $form_state->getTriggeringElement();
     $values = $form_state->getValues();
+dsm($settings);
 
     $orig_imgs = [];
     $new_files = [];
     foreach ($bundles as $bundle_id => $bundle) {
-      $orig_imgs[$bundle_id] = isset($settings[$bundle_id][0])? $settings[$bundle_id][0] : NULL;
-      $new_files[$bundle_id] = isset($values['images'][$bundle_id][0])? $values['images'][$bundle_id][0] : NULL;
+      $orig_imgs[$bundle_id] = isset($settings[$bundle_id]['images'][0])? $settings[$bundle_id]['images'][0] : NULL;
+      $new_files[$bundle_id] = isset($values['pe'][$bundle_id]['images'][0])? $values['pe'][$bundle_id]['images'][0] : NULL;
     }
     $form_state->set('original_imgs', $orig_imgs);
 
-    $form['images']['#tree'] = TRUE;
+    $form['pe']['#tree'] = TRUE;
     // Disable caching on this form.
     $form_state->setCached(FALSE);
 
     foreach ($bundles as $bundle_id => $bundle) {
-      $form['images'][$bundle_id] = [
-        '#title' => 'Reference Image for ' . $bundle['label'],
+      $form['pe'][$bundle_id] = [
+        '#type' => 'fieldset',
+        '#title' => "Bundle: " . $bundle['label'],
+        'images' => [],
+        'description' => [
+          '#type' => 'textarea',
+          '#title' => 'Descriprion',
+          '#default_value' => isset($settings[$bundle_id]['description'])? $settings[$bundle_id]['description'] : '',
+        ]
+      ];
+
+      $form['pe'][$bundle_id]['images'] = [
+        '#title' => 'Reference Image',
         '#type' => 'managed_file',
-        '#default_value' => isset($settings[$bundle_id])? $settings[$bundle_id] : '',
+        '#default_value' => isset($settings[$bundle_id]['images'])? $settings[$bundle_id]['images'] : '',
         '#upload_location' => 'public://paragraph-examples/',
         '#multiple' => FALSE,
         '#upload_validators' => array(
@@ -67,7 +79,7 @@ class ParagraphExamples extends FormBase  {
         '#upload_validators' => ['file_validate_extensions' => ['png gif jpg jpeg']],
         // '#cardinality' => 1,
       ];
-      $form['images'][$bundle_id]['#description'] = \Drupal::service('renderer')->renderPlain($file_upload_help);
+      $form['pe'][$bundle_id]['images']['#description'] = \Drupal::service('renderer')->renderPlain($file_upload_help);
 
       // Thumbnail
       $f = NULL;
@@ -84,14 +96,14 @@ class ParagraphExamples extends FormBase  {
           '#style_name' => 'thumbnail',
           '#uri' => $f->getFileUri(),
         ];
-        $form['images'][$bundle_id]['preview'] = [
+        $form['pe'][$bundle_id]['images']['preview'] = [
           '#markup' => render($render),
         ];
       }
 
       // Remove preview on "Remove" btn trigger.
       if (!empty($triggering_element) && $triggering_element['#array_parents'][1] == $bundle_id && $triggering_element['#array_parents'][2] == 'remove_button') {
-        $form['images'][$bundle_id]['preview'] = [];
+        $form['pe'][$bundle_id]['images']['preview'] = [];
       }
     }
 
@@ -119,21 +131,21 @@ class ParagraphExamples extends FormBase  {
     $values = $form_state->getValues();
     $bundles = \Drupal::entityManager()->getBundleInfo('paragraph');
 
-    $settings = $values['images'];
+    $settings = $values['pe'];
     \Drupal::state()->set('bluecadet_utilities.para_examples', $settings);
 
     $orig_images = $form_state->get('original_imgs');
     $file_usage = \Drupal::service('file.usage');
 
     foreach ($bundles as $bundle_id => $bundle) {
-      $fid = isset($values['images'][$bundle_id][0])? $values['images'][$bundle_id][0] : NULL;
+      $fid = isset($values['pe'][$bundle_id]['images'][0])? $values['pe'][$bundle_id]['images'][0] : NULL;
       $orig_fid = $orig_images[$bundle_id];
 
       // There is some sort of a change.
       if ($fid != $orig_fid) {
         // If there is a file, update it.
         if ($fid !== NULL) {
-          $f = \Drupal\file\Entity\File::load($values['images'][$bundle_id][0]);
+          $f = \Drupal\file\Entity\File::load($fid);
           $f->setPermanent();
           $f->save();
           $file_usage->add($f, 'bluecadet_utilities', 'config', 1, 1);
