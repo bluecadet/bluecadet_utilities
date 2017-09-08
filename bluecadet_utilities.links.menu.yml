@@ -1,0 +1,6 @@
+bluecadet_utilities.paragraph_examples_settings:
+  title: 'Paragraph Example Settings'
+  parent: system.admin_config_content
+  description: 'Configure settings for Paragraph examples.'
+  route_name: bluecadet_utilities.paragraph_examples_settings
+  weight: 100
