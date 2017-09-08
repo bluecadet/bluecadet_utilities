@@ -10,8 +10,17 @@ bluecadet_utilities.view_all_display_modes:
     parameters:
       node:
         type: entity:node
+
+bluecadet_utilities.paragraph_examples_display:
+  path: '/admin/config/content/paragraph-examples/display'
+  defaults:
+    _controller: 'Drupal\bluecadet_utilities\Controller\ParagraphExamplesDisplay::viewParagraphExamples'
+    _title: 'Paragraph Examples Display'
+  requirements:
+    _permission: 'access administration pages'
+
 bluecadet_utilities.paragraph_examples_settings:
-  path: '/admin/config/content/paragraph-examples'
+  path: '/admin/config/content/paragraph-examples/settings'
   defaults:
     _form: '\Drupal\bluecadet_utilities\Form\ParagraphExamples'
     _title: 'Paragraph Examples Settings'

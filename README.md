@@ -1,3 +1,6 @@
+## Includes
+- Node View All Display Modes.
+- Paragraph Examples.
 
 ## Not using Composer
 If you are not using composer, you can delete all unneeded files.
