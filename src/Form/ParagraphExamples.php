@@ -59,7 +59,7 @@ class ParagraphExamples extends FormBase {
         'images' => [],
         'description' => [
           '#type' => 'textarea',
-          '#title' => 'Descriprion',
+          '#title' => 'Description',
           '#default_value' => isset($settings[$bundle_id]['description'])? $settings[$bundle_id]['description'] : '',
         ]
       ];
