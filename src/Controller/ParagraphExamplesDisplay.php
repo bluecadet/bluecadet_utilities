@@ -25,40 +25,65 @@ class ParagraphExamplesDisplay extends ControllerBase {
     ];
 
     foreach ($bundles as $bundle_id => $bundle) {
-      $file = NULL;
-      if (!empty($settings[$bundle_id]['images'])) {
-        $img_render = [];
+      if (isset($settings[$bundle_id])) {
+        $file = NULL;
+        if (!empty($settings[$bundle_id]['images'])) {
+          $img_render = [];
 
-        foreach ($settings[$bundle_id]['images'] as $img_fid) {
-          $file = \Drupal\file\Entity\File::load($img_fid);
+          foreach ($settings[$bundle_id]['images'] as $img_fid) {
+            $file = \Drupal\file\Entity\File::load($img_fid);
 
-          $img_render[] = [
-            '#theme' => 'image_style',
-            '#style_name' => 'bluecadet_utilities_paragraph_example_full',
-            '#uri' => $file->getFileUri(),
-          ];
+            if ($file) {
+              $img_render[] = [
+                '#theme' => 'image_style',
+                '#style_name' => 'bluecadet_utilities_paragraph_example_full',
+                '#uri' => $file->getFileUri(),
+              ];
+            }
+          }
         }
-      }
 
-      $build['table']['#rows'][] = [
-        'attributes' => [
-          'class' => '',
-        ],
-        'data' => [
-          [
-            'data' => [
-              '#markup' => '<h2>' . $bundle['label'] . '</h2><p>' . $settings[$bundle_id]['description'] . '</p>',
-            ],
-            'class' => 'name-cell',
+        $build['table']['#rows'][] = [
+          'attributes' => [
+            'class' => '',
           ],
-          [
-            'data' => [
-              '#markup' => ($file)? render($img_render) : '--NO IMAGE--',
+          'data' => [
+            [
+              'data' => [
+                '#markup' => '<h2>' . $bundle['label'] . '</h2><p>' . $settings[$bundle_id]['description'] . '</p>',
+              ],
+              'class' => 'name-cell',
             ],
-            'class' => 'image-cell',
+            [
+              'data' => [
+                '#markup' => ($file)? render($img_render) : '--NO IMAGE--',
+              ],
+              'class' => 'image-cell',
+            ],
+          ]
+        ];
+      }
+      else {
+        $build['table']['#rows'][] = [
+          'attributes' => [
+            'class' => '',
           ],
-        ]
-      ];
+          'data' => [
+            [
+              'data' => [
+                '#markup' => '<p>No settings for: ' . $bundle['label'] . '</p>',
+              ],
+              'class' => 'name-cell',
+            ],
+            [
+              'data' => [
+                '#markup' => '',
+              ],
+              'class' => '',
+            ],
+          ]
+        ];
+      }
     }
 
     return $build;
