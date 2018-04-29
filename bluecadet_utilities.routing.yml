@@ -5,7 +5,7 @@ bluecadet_utilities.view_all_display_modes:
     _title: 'View all viewmodes for a node'
   requirements:
     node: \d+
-    _permission: 'access administration pages'
+    _permission: 'access node view display mode pages'
   options:
     parameters:
       node:
@@ -17,7 +17,7 @@ bluecadet_utilities.paragraph_examples_display:
     _controller: 'Drupal\bluecadet_utilities\Controller\ParagraphExamplesDisplay::viewParagraphExamples'
     _title: 'Paragraph Examples Display'
   requirements:
-    _permission: 'access administration pages'
+    _permission: 'access paragraphs examples'
 
 bluecadet_utilities.paragraph_examples_settings:
   path: '/admin/config/content/paragraph-examples/settings'
@@ -25,4 +25,4 @@ bluecadet_utilities.paragraph_examples_settings:
     _form: '\Drupal\bluecadet_utilities\Form\ParagraphExamples'
     _title: 'Paragraph Examples Settings'
   requirements:
-    _permission: 'access administration pages'
+    _permission: 'access paragraphs examples'
