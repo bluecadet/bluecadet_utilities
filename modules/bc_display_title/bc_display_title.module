@@ -1,2 +1,52 @@
 <?php
 
+use Drupal\Core\Render\BubbleableMetadata;
+
+/**
+ * Implements hook_token_info().
+ */
+function bc_display_title_token_info() {
+
+  $node['title-with-override'] = array(
+    'name' => t("Display Title"),
+    'description' => t("Display Title or Node Title"),
+  );
+
+  return array(
+    'types' => [],
+    'tokens' => array(
+      'node' => $node,
+    ),
+  );
+}
+
+/**
+ * Implements hook_tokens().
+ */
+function bc_display_title_tokens($type, $tokens, array $data, array $options, BubbleableMetadata $bubbleable_metadata) {
+  $replacements = array();
+
+  if ($type == 'node' && !empty($data['node'])) {
+    /** @var \Drupal\node\NodeInterface $node */
+    $node = $data['node'];
+
+    foreach ($tokens as $name => $original) {
+      switch ($name) {
+        case 'title-with-override':
+          $replacements[$original] = $node->getTitle();
+          if ($node->hasField('field_display_title') && !empty($node->field_display_title->value)) {
+            $val = $node->field_display_title->value;
+
+            $val = str_replace('&nbsp;', ' ', $val);
+            $summary = strip_tags($val);
+
+            $replacements[$original] = $summary;
+          }
+
+          break;
+      }
+    }
+  }
+
+  return $replacements;
+}
