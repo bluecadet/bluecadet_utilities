@@ -1,22 +1,99 @@
 <?php
 
-use Drupal\image\Entity\ImageStyle;
+use Drupal\Core\Form\FormStateInterface;
 
-function bluecadet_utilities_uninstall() {
-  // Remove image usage.
-  $settings = \Drupal::state()->get('bluecadet_utilities.para_examples', array());
-  $file_usage = \Drupal::service('file.usage');
+/**
+ * Implements hook_theme().
+ */
+function bluecadet_utilities_theme($existing, $type, $theme, $path) {
+  return [
+    'svg_image' => [
+      'variables' => ['path' => NULL, 'attributes' => []],
+    ],
+  ];
+}
 
-  foreach($settings as $bundle_id => $images) {
-    foreach ($images as $fid) {
-      $f = file_load($fid);
-      $file_usage->delete($f, 'bluecadet_utilities', 'config', 1, 1);
-    }
+/**
+ * Implements template_preprocess_hook().
+ */
+function template_preprocess_svg_image(&$vars) {
+  $scheme = \Drupal::service('file_system')->uriScheme($vars['path']);
+
+  if (!$scheme) {
+    $file_str = file_get_contents(drupal_realpath($vars['path']));
+  }
+  else {
+    $file_str = file_get_contents($vars['path']);
   }
 
-  // Remove custom Image Style.
-  ImageStyle::load('bluecadet_utilities_paragraph_example_full')->delete();
+  $pattern = "/<\?xml(.*)\?>/s";
+  $vars['svg'] = preg_replace($pattern, '', $file_str, 1, $count);
+}
 
-  // Delete state.
-  \Drupal::state()->delete('bluecadet_utilities.para_examples');
+
+/**
+ * Implements hook_file_validate().
+ */
+function bluecadet_utilities_file_validate(FileInterface $file) {
+  $config = \Drupal::config('bluecadet_utilities.settings');
+
+  if ($config->get('use_transliteration')) {
+    $basename = drupal_basename($file->destination);
+    $basename = bcu_transliterate_filenames_transliteration($basename);
+    $dirname = drupal_dirname($file->destination);
+    $file->destination = file_create_filename($basename, $dirname);
+  }
+}
+
+/**
+ * Implements callback for hook_file_validate().
+ */
+function bcu_transliterate_filenames_transliteration($filename) {
+  $filename = \Drupal::transliteration()->transliterate($filename);
+  // Replace whitespace.
+  $filename = str_replace(' ', '_', $filename);
+  // Remove remaining unsafe characters.
+  $filename = preg_replace('![^0-9A-Za-z_.-]!', '', $filename);
+  // Remove multiple consecutive non-alphabetical characters.
+  $filename = preg_replace('/(_)_+|(\.)\.+|(-)-+/', '\\1\\2\\3', $filename);
+  // Force lowercase to prevent issues on case-insensitive file systems.
+  $filename = strtolower($filename);
+
+  // For empty.
+  $name = explode('.', $filename);
+  $name = reset($name);
+  $extension = explode(".", $filename);
+  $extension = end($extension);
+
+  // Is empty.
+  if (!$name) {
+    $filename = md5(rand(0, getrandmax())) . '.' . $extension;
+  }
+
+  return $filename;
+}
+
+/**
+ * Implements hook_editor_info_alter().
+ */
+function bluecadet_utilities_editor_info_alter(array &$editors) {
+  $config = \Drupal::config('bluecadet_utilities.settings');
+
+  if ($config->get('use_textfield_wysiwyg')) {
+    $editors['ckeditor']['supported_element_types'][] = 'textfield';
+  }
+}
+
+/**
+ * Implements hook_field_widget_form_alter().
+ */
+function bluecadet_utilities_field_widget_form_alter(&$element, FormStateInterface $form_state, $context) {
+  $config = \Drupal::config('bluecadet_utilities.settings');
+
+  if ($config->get('use_textfield_wysiwyg')) {
+    if (isset($element['#type']) && $element['#type'] == 'text_format' && $element['#base_type'] == 'textfield') {
+      $element['#attached']['library'][] = 'bluecadet_utilities/text-editor';
+      $element['#attributes']['class'][] = 'text-format-editor';
+    }
+  }
 }

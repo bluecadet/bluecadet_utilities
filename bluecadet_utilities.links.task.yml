@@ -1,15 +1,15 @@
-bluecadet_utilities.view_all_display_modes:
-  title: 'Display Modes'
-  route_name: bluecadet_utilities.view_all_display_modes
-  base_route: entity.node.canonical
-  weight: 100
+# bluecadet_utilities.view_all_display_modes:
+#   title: 'Display Modes'
+#   route_name: bluecadet_utilities.view_all_display_modes
+#   base_route: entity.node.canonical
+#   weight: 100
 
-bluecadet_utilities.paragraph_example_display:
-  title: 'Paragraph Examples'
-  route_name: bluecadet_utilities.paragraph_examples_display
-  base_route: bluecadet_utilities.paragraph_examples_display
+# bluecadet_utilities.paragraph_example_display:
+#   title: 'Paragraph Examples'
+#   route_name: bluecadet_utilities.paragraph_examples_display
+#   base_route: bluecadet_utilities.paragraph_examples_display
 
-bluecadet_utilities.paragraph_example_settings:
-  title: 'Settings'
-  route_name: bluecadet_utilities.paragraph_examples_settings
-  base_route: bluecadet_utilities.paragraph_examples_display
+# bluecadet_utilities.paragraph_example_settings:
+#   title: 'Settings'
+#   route_name: bluecadet_utilities.paragraph_examples_settings
+#   base_route: bluecadet_utilities.paragraph_examples_display

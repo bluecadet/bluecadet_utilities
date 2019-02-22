@@ -1,28 +1,37 @@
-bluecadet_utilities.view_all_display_modes:
-  path: '/node/{node}/display-modes'
-  defaults:
-    _controller: 'Drupal\bluecadet_utilities\Controller\ViewDisplayModes::viewAllDisplayModes'
-    _title: 'View all viewmodes for a node'
-  requirements:
-    node: \d+
-    _permission: 'access node view display mode pages'
-  options:
-    parameters:
-      node:
-        type: entity:node
+# bluecadet_utilities.view_all_display_modes:
+#   path: '/node/{node}/display-modes'
+#   defaults:
+#     _controller: 'Drupal\bluecadet_utilities\Controller\ViewDisplayModes::viewAllDisplayModes'
+#     _title: 'View all viewmodes for a node'
+#   requirements:
+#     node: \d+
+#     _permission: 'access node view display mode pages'
+#   options:
+#     parameters:
+#       node:
+#         type: entity:node
 
-bluecadet_utilities.paragraph_examples_display:
-  path: '/admin/config/content/paragraph-examples/display'
-  defaults:
-    _controller: 'Drupal\bluecadet_utilities\Controller\ParagraphExamplesDisplay::viewParagraphExamples'
-    _title: 'Paragraph Examples Display'
-  requirements:
-    _permission: 'access paragraphs examples'
+# bluecadet_utilities.paragraph_examples_display:
+#   path: '/admin/config/content/paragraph-examples/display'
+#   defaults:
+#     _controller: 'Drupal\bluecadet_utilities\Controller\ParagraphExamplesDisplay::viewParagraphExamples'
+#     _title: 'Paragraph Examples Display'
+#   requirements:
+#     _permission: 'access paragraphs examples'
 
-bluecadet_utilities.paragraph_examples_settings:
-  path: '/admin/config/content/paragraph-examples/settings'
+# bluecadet_utilities.paragraph_examples_settings:
+#   path: '/admin/config/content/paragraph-examples/settings'
+#   defaults:
+#     _form: '\Drupal\bluecadet_utilities\Form\ParagraphExamples'
+#     _title: 'Paragraph Examples Settings'
+#   requirements:
+#     _permission: 'access paragraphs examples'
+
+
+bluecadet_utilities.settings:
+  path: '/admin/config/system/bluecadet-utilities'
   defaults:
-    _form: '\Drupal\bluecadet_utilities\Form\ParagraphExamples'
-    _title: 'Paragraph Examples Settings'
+    _form: '\Drupal\bluecadet_utilities\Form\BCUSettings'
+    _title: 'Bluecadet Utilities Settings'
   requirements:
-    _permission: 'access paragraphs examples'
+    _permission: 'administer site configuration'

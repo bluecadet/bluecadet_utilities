@@ -1,0 +1,22 @@
+<?php
+
+use Drupal\image\Entity\ImageStyle;
+
+function bluecadet_utilities_uninstall() {
+  // // Remove image usage.
+  // $settings = \Drupal::state()->get('bluecadet_utilities.para_examples', array());
+  // $file_usage = \Drupal::service('file.usage');
+
+  // foreach($settings as $bundle_id => $images) {
+  //   foreach ($images as $fid) {
+  //     $f = file_load($fid);
+  //     $file_usage->delete($f, 'bluecadet_utilities', 'config', 1, 1);
+  //   }
+  // }
+
+  // // Remove custom Image Style.
+  // ImageStyle::load('bluecadet_utilities_paragraph_example_full')->delete();
+
+  // // Delete state.
+  // \Drupal::state()->delete('bluecadet_utilities.para_examples');
+}

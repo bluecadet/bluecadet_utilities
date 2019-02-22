@@ -1,0 +1,8 @@
+
+bc_sandbox.sandbox:
+  path: '/admin/config/bc/sandbox'
+  defaults:
+    _controller: '\Drupal\bc_sandbox\Controller\SandBox::build'
+    _title: 'Sandbox Page'
+  requirements:
+    _permission: 'access administration pages'

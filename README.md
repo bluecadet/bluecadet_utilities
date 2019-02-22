@@ -1,6 +1,19 @@
 ## Includes
+<!--
 - Node View All Display Modes.
 - Paragraph Examples.
+-->
+- Theme for formatting svg files
+- Transliteration for file uploads
+- Enable WYSIWYG on textfield fields
+
+### Submodules
+
+- bc_display_title: Provide functionality around the use of the display title field we normally use
+- bc_sandbox: provide an easy page to play with
+
+
+<hr>
 
 ## Not using Composer
 If you are not using composer, you can delete all unneeded files.

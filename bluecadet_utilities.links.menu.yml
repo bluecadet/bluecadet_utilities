@@ -1,7 +1,12 @@
-bluecadet_utilities.paragraph_examples:
-  title: 'Paragraph Example'
-  parent: system.admin_config_content
-  description: 'Paragraph examples.'
-  route_name: bluecadet_utilities.paragraph_examples_display
-  weight: 100
+# bluecadet_utilities.paragraph_examples:
+#   title: 'Paragraph Example'
+#   parent: system.admin_config_content
+#   description: 'Paragraph examples.'
+#   route_name: bluecadet_utilities.paragraph_examples_display
+#   weight: 100
 
+bluecadet_utilities.settings:
+  title: 'Bluecadet Utilities Settings'
+  route_name: bluecadet_utilities.settings
+  parent: system.admin_config_system
+  description: 'Bluecadet Utilities Settings'
