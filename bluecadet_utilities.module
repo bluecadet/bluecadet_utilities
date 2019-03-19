@@ -1,6 +1,7 @@
 <?php
 
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\file\FileInterface;
 
 /**
  * Implements hook_theme().
