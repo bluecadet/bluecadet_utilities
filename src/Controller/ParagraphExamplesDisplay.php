@@ -62,28 +62,29 @@ class ParagraphExamplesDisplay extends ControllerBase {
             ],
           ]
         ];
+
+        return $build;
       }
-      else {
-        $build['table']['#rows'][] = [
-          'attributes' => [
+      $build['table']['#rows'][] = [
+        'attributes' => [
+          'class' => '',
+        ],
+        'data' => [
+          [
+            'data' => [
+              '#markup' => '<p>No settings for: ' . $bundle['label'] . '</p>',
+            ],
+            'class' => 'name-cell',
+          ],
+          [
+            'data' => [
+              '#markup' => '',
+            ],
             'class' => '',
           ],
-          'data' => [
-            [
-              'data' => [
-                '#markup' => '<p>No settings for: ' . $bundle['label'] . '</p>',
-              ],
-              'class' => 'name-cell',
-            ],
-            [
-              'data' => [
-                '#markup' => '',
-              ],
-              'class' => '',
-            ],
-          ]
-        ];
-      }
+        ]
+      ];
+
     }
 
     return $build;

@@ -34,16 +34,16 @@ class DisplayTitleFormatter extends FormatterBase {
           // Strip p tags.
           '#markup' => preg_replace("/<\\/?p(.|\\s)*?>/", "", $item->value),
         ];
+        return $elements;
       }
-      else {
-        $elements[$delta] = [
-          '#type' => 'processed_text',
-          // Strip p tags.
-          '#text' => preg_replace("/<\\/?p(.|\\s)*?>/", "", $item->value),
-          '#format' => $item->format,
-          '#langcode' => $item->getLangcode(),
-        ];
-      }
+
+      $elements[$delta] = [
+        '#type' => 'processed_text',
+        // Strip p tags.
+        '#text' => preg_replace("/<\\/?p(.|\\s)*?>/", "", $item->value),
+        '#format' => $item->format,
+        '#langcode' => $item->getLangcode(),
+      ];
     }
     return $elements;
   }
