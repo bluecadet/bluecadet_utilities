@@ -6,6 +6,7 @@
 - Theme for formatting svg files
 - Transliteration for file uploads
 - Enable WYSIWYG on textfield fields
+- Fractal Component template loader (copy of https://github.com/wearewondrous/fractal_compound_handles to handle windows dev environments)
 
 ### Submodules
 
