@@ -18,3 +18,4 @@ text-editor:
     - core/jquery
     - core/jquery.once
     - core/drupal
+    - ckeditor/drupal.ckeditor
