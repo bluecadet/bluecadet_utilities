@@ -2,5 +2,5 @@ type: module
 name: Bluecadet Utilities
 description: 'Adds utilities to aide in development of custom sites.'
 package: Bluecadet
-version: '8.x-2.0.3'
+version: '8.x-2.0.4'
 core: 8.x
