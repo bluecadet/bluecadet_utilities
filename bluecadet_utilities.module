@@ -18,19 +18,20 @@ function bluecadet_utilities_theme($existing, $type, $theme, $path) {
  * Implements template_preprocess_hook().
  */
 function template_preprocess_svg_image(&$vars) {
-  $scheme = \Drupal::service('file_system')->uriScheme($vars['path']);
+  if (is_file($vars['path']) || is_file(drupal_realpath($vars['path']))) {
+    $scheme = \Drupal::service('file_system')->uriScheme($vars['path']);
 
-  if (!$scheme) {
-    $file_str = file_get_contents(drupal_realpath($vars['path']));
-  }
-  else {
-    $file_str = file_get_contents($vars['path']);
-  }
+    if (!$scheme) {
+      $file_str = file_get_contents(drupal_realpath($vars['path']));
+    }
+    else {
+      $file_str = file_get_contents($vars['path']);
+    }
 
-  $pattern = "/<\?xml(.*)\?>/s";
-  $vars['svg'] = preg_replace($pattern, '', $file_str, 1, $count);
+    $pattern = "/<\?xml(.*)\?>/s";
+    $vars['svg'] = preg_replace($pattern, '', $file_str, 1, $count);
+  }
 }
-
 
 /**
  * Implements hook_file_validate().
