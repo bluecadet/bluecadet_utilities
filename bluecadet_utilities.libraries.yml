@@ -19,3 +19,15 @@ text-editor:
     - core/jquery.once
     - core/drupal
     - ckeditor/drupal.ckeditor
+
+simple-formatter:
+  version: 1.x
+  js:
+    assets/dist/js/simple-formatter.js: {}
+  css:
+    theme:
+      assets/dist/css/simple-formatter.css: {}
+  dependencies:
+    - core/jquery
+    - core/jquery.once
+    - core/drupal

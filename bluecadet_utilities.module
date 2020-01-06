@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @file
+ * Module File.
+ */
+
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\file\FileInterface;
 
@@ -10,6 +15,9 @@ function bluecadet_utilities_theme($existing, $type, $theme, $path) {
   return [
     'svg_image' => [
       'variables' => ['path' => NULL, 'attributes' => []],
+    ],
+    'input__simple_format_textfield' => [
+      'base hook' => 'input',
     ],
   ];
 }
@@ -31,6 +39,18 @@ function template_preprocess_svg_image(&$vars) {
     $pattern = "/<\?xml(.*)\?>/s";
     $vars['svg'] = preg_replace($pattern, '', $file_str, 1, $count);
   }
+}
+
+/**
+ * Implements template_preprocess_hook().
+ */
+function template_preprocess_input__simple_format_textfield(&$vars) {
+  $vars['buttons'] = $vars['element']['#buttons_render'];
+
+  $vars['editable_attributes'] = [
+    'contentEditable' => TRUE,
+    'class' => ['content-editable'],
+  ];
 }
 
 /**

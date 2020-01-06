@@ -1,0 +1,55 @@
+.form-type-simple-format-textfield .simple-formatter-field-container {
+  width: 50%;
+  min-width: 25em; }
+  .form-type-simple-format-textfield .simple-formatter-field-container input {
+    width: 100%;
+    display: none; }
+  .form-type-simple-format-textfield .simple-formatter-field-container.raw-mode input {
+    display: inline-block; }
+  .form-type-simple-format-textfield .simple-formatter-field-container.raw-mode .simple-editor-button:not(.simple-editor-button--toggle-source) {
+    display: none; }
+  .form-type-simple-format-textfield .simple-formatter-field-container.raw-mode .content-editable {
+    display: none; }
+
+.form-type-simple-format-textfield .simple-formatter-button-container {
+  width: 100%;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: end;
+  -webkit-justify-content: flex-end;
+      -ms-flex-pack: end;
+          justify-content: flex-end;
+  -webkit-box-align: stretch;
+  -webkit-align-items: stretch;
+      -ms-flex-align: stretch;
+          align-items: stretch; }
+  .form-type-simple-format-textfield .simple-formatter-button-container .simple-editor-button {
+    display: block;
+    /* stylelint-disable-next-line unit-blacklist */
+    width: 30px;
+    /* stylelint-disable-next-line unit-blacklist */
+    height: 30px; }
+  .form-type-simple-format-textfield .simple-formatter-button-container .simple-editor-button sub {
+    font-size: 0.8rem;
+    bottom: 0;
+    font-weight: 900; }
+
+.form-type-simple-format-textfield .content-editable {
+  display: inline-block;
+  width: 100%;
+  padding: 0.3em 0.4em 0.3em 0.5em;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  /* stylelint-disable-next-line unit-blacklist */
+  border: 1px solid #b8b8b8;
+  background-color: #fcfcfa; }
+  .form-type-simple-format-textfield .content-editable:focus {
+    border-color: #68a3cf;
+    /* stylelint-disable-next-line unit-blacklist */
+    outline: 2px solid #c1e0ff;
+    outline-offset: 0;
+    color: #000000; }
+
+/*# sourceMappingURL=simple-formatter.css.map */

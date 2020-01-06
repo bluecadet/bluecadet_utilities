@@ -1,0 +1,15 @@
+
+  <div class="simple-formatter-field-container">
+    <div class="simple-formatter-container">
+      {% set attrs = create_attribute(editable_attributes) %}
+      <div class="simple-formatter-button-container">{{ buttons }}</div>
+      <div{{ attrs }}></div>
+    </div>
+    <input{{ attributes }} />
+  </div>
+
+  {{ children }}
+
+
+
+
