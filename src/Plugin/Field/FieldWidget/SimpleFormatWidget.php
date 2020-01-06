@@ -4,7 +4,6 @@ namespace Drupal\bluecadet_utilities\Plugin\Field\FieldWidget;
 
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\text\Plugin\Field\FieldWidget\TextfieldWidget;
 use Drupal\Core\Field\Plugin\Field\FieldWidget\StringTextfieldWidget;
 
 /**
@@ -128,8 +127,6 @@ class SimpleFormatWidget extends StringTextfieldWidget {
 
     $main_widget['format']['#type'] = 'hidden';
     $main_widget['format']['#value'] = $this->getSetting('format');
-
-    ksm($main_widget);
 
     return $main_widget;
   }
