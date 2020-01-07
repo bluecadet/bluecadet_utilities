@@ -5,6 +5,12 @@
     "authors": [
       {
         "name": "Pete Inge",
+        "email": "pete.inge@gmail.com",
+        "role": "Maintainer"
+      },
+      {
+        "name": "Shaun",
+        "email": "shaun.baer@gmail.com",
         "role": "Maintainer"
       }
     ],
