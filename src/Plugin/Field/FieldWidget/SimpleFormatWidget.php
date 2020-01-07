@@ -25,7 +25,7 @@ class SimpleFormatWidget extends StringTextfieldWidget {
   public static function defaultSettings() {
     return [
       'bold' => TRUE,
-      'italics' => TRUE,
+      'italic' => TRUE,
       'underline' => TRUE,
       'remove_formatting' => TRUE,
       'toggle' => TRUE,
@@ -44,10 +44,10 @@ class SimpleFormatWidget extends StringTextfieldWidget {
       '#title' => t('Bold button'),
       '#default_value' => $this->getSetting('bold'),
     ];
-    $element['italics'] = [
+    $element['italic'] = [
       '#type' => 'checkbox',
-      '#title' => t('Italics button'),
-      '#default_value' => $this->getSetting('italics'),
+      '#title' => t('Italic button'),
+      '#default_value' => $this->getSetting('italic'),
     ];
     $element['underline'] = [
       '#type' => 'checkbox',
@@ -92,8 +92,8 @@ class SimpleFormatWidget extends StringTextfieldWidget {
     if ($this->getSetting('bold')) {
       $summary[] = t('Bold button');
     }
-    if ($this->getSetting('italics')) {
-      $summary[] = t('Italics button');
+    if ($this->getSetting('italic')) {
+      $summary[] = t('Italic button');
     }
     if ($this->getSetting('underline')) {
       $summary[] = t('Underline button');
@@ -119,7 +119,7 @@ class SimpleFormatWidget extends StringTextfieldWidget {
 
     $main_widget = parent::formElement($items, $delta, $element, $form, $form_state);
     $main_widget['value']['#buttons']['bold'] = $this->getSetting('bold');
-    $main_widget['value']['#buttons']['italics'] = $this->getSetting('italics');
+    $main_widget['value']['#buttons']['italic'] = $this->getSetting('italic');
     $main_widget['value']['#buttons']['underline'] = $this->getSetting('underline');
     $main_widget['value']['#buttons']['remove_formatting'] = $this->getSetting('remove_formatting');
     $main_widget['value']['#buttons']['toggle'] = $this->getSetting('toggle');
