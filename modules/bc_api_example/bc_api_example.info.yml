@@ -1,0 +1,6 @@
+name: "Bluecadet API Example [Sub-module: BC Utilities]"
+type: module
+description: Example of how to setup an API Controller and Platform Plugin
+core: 8.x
+package: Bluecadet
+version: '8.x-2.0.5'

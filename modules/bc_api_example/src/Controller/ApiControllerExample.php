@@ -1,13 +1,14 @@
 <?php
 
-namespace Drupal\bc_api_base\Controller;
+namespace Drupal\bc_api_example\Controller;
 
 use Drupal\node\Entity\Node;
+use Drupal\bc_api_base\Controller\ApiControllerBase;
 
 /**
  * Example API Controller Class.
  */
-class ApiControllerExample extends ApiControllerBase implements ApiControllerInterface {
+class ApiControllerExample extends ApiControllerBase {
 
   /**
    * {@inheritdoc}
@@ -81,7 +82,7 @@ class ApiControllerExample extends ApiControllerBase implements ApiControllerInt
       $this->cacheTags = array_merge($this->cacheTags, $node->getCacheTags());
       $item = [
         'nid' => (int) $node->id(),
-        'field_sync_id' => $this->transformer->textFieldVal($node, 'field_sync_id'),
+        // 'field_sync_id' => $this->transformer->textFieldVal($node, 'field_sync_id'),
       ];
 
       $data[] = $item;
