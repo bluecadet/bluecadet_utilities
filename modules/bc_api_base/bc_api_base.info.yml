@@ -1,0 +1,6 @@
+name: "Bluecadet API Base [Sub-module: BC Utilities]"
+type: module
+description: Setup basic starter for a BC Api site.
+core: 8.x
+package: Bluecadet
+version: '8.x-2.0.5'
