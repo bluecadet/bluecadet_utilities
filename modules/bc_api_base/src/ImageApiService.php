@@ -50,8 +50,8 @@ class ImageApiService extends AssetApiServiceBase {
   /**
    * Get ALL data for an image.
    */
-  public function getImageData($file, $platform_flags, $image_styles = []) {
-    $this->imageFactory->get($file->getFileUri());
+  public function getImageData($file, $image_styles = []) {
+    // $this->imageFactory->get($file->getFileUri());
     $image_file = $this->imageFactory->get($file->getFileUri());
 
     if (is_null($image_file)) {
@@ -66,7 +66,7 @@ class ImageApiService extends AssetApiServiceBase {
       $data = [
         'uri' => $file->getFileUri(),
         'url' => $file->url(),
-        'relative_path' => $this->getRelativePath($file->url(), $platform_flags),
+        'relative_path' => $this->getRelativePath($file->url()),
         'orig_size' => [
           'width' => $image_file->getWidth(),
           'height' => $image_file->getHeight(),

@@ -198,8 +198,12 @@ class ApiControllerBase extends ControllerBase implements ApiControllerInterface
     $parameters = $this->currentRoute->getParameters()->all();
 
     if (isset($parameters['nid'])) {
+      $this->privateParams['nid'] = $parameters['nid']->id();
       $this->resource = $parameters['nid'];
     }
+
+    // Add in debugging.
+    $this->privateParams['debug'] = filter_var($this->request->get('debug'), FILTER_VALIDATE_BOOLEAN);
   }
 
   /**
@@ -209,11 +213,19 @@ class ApiControllerBase extends ControllerBase implements ApiControllerInterface
     $cid = get_class($this);
 
     if (!empty($this->params)) {
-      $cid .= ":" . implode(":", $this->params);
+      foreach ($this->params as $key => $param) {
+        $cid .= ":" . $key . "=" . $param;
+      }
     }
 
     $cid .= ":page-" . $this->page;
     $cid .= ":limit-" . $this->limit;
+
+    if (!empty($this->privateParams)) {
+      foreach ($this->privateParams as $key => $param) {
+        $cid .= ":" . $key . "=" . $param;
+      }
+    }
 
     return $cid;
   }
@@ -270,6 +282,11 @@ class ApiControllerBase extends ControllerBase implements ApiControllerInterface
       $this->return_data['next'] = $this->next;
 
       $this->cache->set($cid, $this->data, (time() + $cache_time), $this->cacheTags);
+    }
+
+    if ($this->privateParams['debug']) {
+      ksm($this->return_data);
+      return [];
     }
 
     return new JsonResponse($this->return_data);
