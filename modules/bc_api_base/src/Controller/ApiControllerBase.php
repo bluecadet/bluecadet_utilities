@@ -4,11 +4,13 @@ namespace Drupal\bc_api_base\Controller;
 
 use Drupal\bc_api_base\AssetApiService;
 use Drupal\bc_api_base\ValueTransformationService;
+use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Routing\CurrentRouteMatch;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Drupal\Core\Cache\CacheBackendInterface;
 
 /**
  * API Controll Base.
@@ -124,13 +126,28 @@ class ApiControllerBase extends ControllerBase implements ApiControllerInterface
   protected $next = "";
 
   /**
+   * Specific resource request.
+   *
+   * @var \Drupal\Core\Entity\EntityInterface
+   */
+  protected $resource = NULL;
+
+  /**
+   * Current Route.
+   *
+   * @var \Drupal\Core\Routing\CurrentRouteMatch
+   */
+  protected $currentRoute = NULL;
+
+  /**
    * Class constructor.
    */
-  public function __construct(AssetApiService $assetService, ValueTransformationService $transformer, CacheBackendInterface $cache) {
+  public function __construct(AssetApiService $assetService, ValueTransformationService $transformer, CacheBackendInterface $cache, CurrentRouteMatch $current_route) {
     $this->assetService = $assetService;
     $this->initCacheTags();
     $this->transformer = $transformer;
     $this->cache = $cache;
+    $this->currentRoute = $current_route;
   }
 
   /**
@@ -141,7 +158,8 @@ class ApiControllerBase extends ControllerBase implements ApiControllerInterface
     return new static(
       $container->get('bc_api_base.asset'),
       $container->get('bc_api_base.valueTransformer'),
-      $container->get('cache.bc_api_base')
+      $container->get('cache.bc_api_base'),
+      $container->get('current_route_match')
     );
   }
 
@@ -176,6 +194,12 @@ class ApiControllerBase extends ControllerBase implements ApiControllerInterface
    */
   public function setParams() {
 
+    // Set values if we are asking for a specific resource.
+    $parameters = $this->currentRoute->getParameters()->all();
+
+    if (isset($parameters['nid'])) {
+      $this->resource = $parameters['nid'];
+    }
   }
 
   /**
