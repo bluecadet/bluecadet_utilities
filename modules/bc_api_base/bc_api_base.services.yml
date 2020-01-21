@@ -6,6 +6,12 @@ services:
     factory: cache_factory:get
     arguments: [bc_api_base]
 
+  bc_api_base.subscriber:
+    class: Drupal\bc_api_base\EventSubscriber\ApiSubscriber
+    arguments: ['@url_generator', '@state', '@logger.factory']
+    tags:
+      - { name: 'event_subscriber' }
+
   plugin.manager.platform:
     class: Drupal\bc_api_base\Plugin\PlatformManager
     parent: default_plugin_manager
