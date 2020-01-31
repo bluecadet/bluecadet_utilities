@@ -32,7 +32,7 @@
         if ($(this).hasClass('simple-editor-button--clear-format')) {
           document.execCommand('removeFormat', false, null);
         }
-        if ($(this).hasClass('simple-editor-button--toggle-source')) {
+        if ($(this).hasClass('simple-editor-button--remove_formatting')) {
           $(this).parents('.simple-formatter-field-container').toggleClass('raw-mode');
         }
 

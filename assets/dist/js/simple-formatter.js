@@ -26,7 +26,7 @@
           document.execCommand('underline', false, null);
         }
 
-        if ($(this).hasClass('simple-editor-button--clear-format')) {
+        if ($(this).hasClass('simple-editor-button--remove_formatting')) {
           document.execCommand('removeFormat', false, null);
         }
 
