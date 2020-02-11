@@ -12,7 +12,10 @@
 
         $attached_input.on("keyup change", function () {
           $(this).parents('.simple-formatter-field-container').find(".content-editable")[0].innerHTML = $(this).val();
-        }).trigger("change");
+        }).trigger("change").on('invalid', function () {
+          // Flip to real form item so browser validation works ok.
+          $(this).parents('.simple-formatter-field-container').addClass('raw-mode');
+        });
 
         $(el).addClass('ec-bound');
       });

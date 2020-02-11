@@ -51,6 +51,10 @@ function template_preprocess_input__simple_format_textfield(&$vars) {
     'contentEditable' => TRUE,
     'class' => ['content-editable'],
   ];
+
+  if (isset($vars['attributes']['required']) && $vars['attributes']['required'] = "required") {
+    $vars['attributes']['data-required'] = "required";
+  }
 }
 
 /**

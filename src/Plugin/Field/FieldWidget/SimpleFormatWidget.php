@@ -13,7 +13,8 @@ use Drupal\Core\Field\Plugin\Field\FieldWidget\StringTextfieldWidget;
  *   id = "text_simple_formatter",
  *   label = @Translation("Text field Simple Formatter"),
  *   field_types = {
- *     "text"
+ *     "text",
+ *     "string"
  *   },
  * )
  */
@@ -41,33 +42,33 @@ class SimpleFormatWidget extends StringTextfieldWidget {
 
     $element['bold'] = [
       '#type' => 'checkbox',
-      '#title' => t('Bold button'),
+      '#title' => $this->t('Bold button'),
       '#default_value' => $this->getSetting('bold'),
     ];
     $element['italic'] = [
       '#type' => 'checkbox',
-      '#title' => t('Italic button'),
+      '#title' => $this->t('Italic button'),
       '#default_value' => $this->getSetting('italic'),
     ];
     $element['underline'] = [
       '#type' => 'checkbox',
-      '#title' => t('Underline button'),
+      '#title' => $this->t('Underline button'),
       '#default_value' => $this->getSetting('underline'),
     ];
     $element['remove_formatting'] = [
       '#type' => 'checkbox',
-      '#title' => t('Remove Formatting button'),
+      '#title' => $this->t('Remove Formatting button'),
       '#default_value' => $this->getSetting('remove_formatting'),
     ];
     $element['toggle'] = [
       '#type' => 'checkbox',
-      '#title' => t('Toggle Source Code button'),
+      '#title' => $this->t('Toggle Source Code button'),
       '#default_value' => $this->getSetting('toggle'),
     ];
 
     // Text Format options.
     $formats = filter_formats();
-    $format_options = [];
+    $format_options = ['' => '-- Select --'];
 
     foreach ($formats as $f_id => $f) {
       $format_options[$f_id] = $f->label();
@@ -75,7 +76,7 @@ class SimpleFormatWidget extends StringTextfieldWidget {
 
     $element['format'] = [
       '#type' => 'select',
-      '#title' => t('Text Format to use for this field.'),
+      '#title' => $this->t('Text Format to use for this field.'),
       '#default_value' => $this->getSetting('format'),
       '#options' => $format_options,
     ];
@@ -90,23 +91,22 @@ class SimpleFormatWidget extends StringTextfieldWidget {
     $summary = parent::settingsSummary();
 
     if ($this->getSetting('bold')) {
-      $summary[] = t('Bold button');
+      $summary[] = $this->t('Bold button');
     }
     if ($this->getSetting('italic')) {
-      $summary[] = t('Italic button');
+      $summary[] = $this->t('Italic button');
     }
     if ($this->getSetting('underline')) {
-      $summary[] = t('Underline button');
+      $summary[] = $this->t('Underline button');
     }
     if ($this->getSetting('remove_formatting')) {
-      $summary[] = t('Remove Formatting button');
+      $summary[] = $this->t('Remove Formatting button');
     }
     if ($this->getSetting('toggle')) {
-      $summary[] = t('Toggle Source Code button');
+      $summary[] = $this->t('Toggle Source Code button');
     }
     if ($this->getSetting('format')) {
-      $sum = 'Format: ' . $this->getSetting('format');
-      $summary[] = t($sum);
+      $summary[] = $this->t('Format: %sum', ['%sum' => $this->getSetting('format')]);
     }
 
     return $summary;
