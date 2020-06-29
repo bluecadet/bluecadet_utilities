@@ -29,7 +29,7 @@ class DisplayTitleFormatter extends FormatterBase {
     // The ProcessedText element already handles cache context & tag bubbling.
     // @see \Drupal\filter\Element\ProcessedText::preRenderText()
     foreach ($items as $delta => $item) {
-      if ($item->format == 'plain_text_formatter') {
+      if ($item->format == 'plain_text_formatter' || $item->format == 'plain_text') {
         $elements[$delta] = [
           // Strip p tags.
           '#markup' => preg_replace("/<\\/?p(.|\\s)*?>/", "", $item->value),
