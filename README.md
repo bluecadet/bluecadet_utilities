@@ -1,3 +1,17 @@
+## Versions
+
+### 1.x Branch
+
+Completely old and outdated... do not use.
+
+### 2.x Branch
+
+< Drupal 8.9 compatable
+
+### 3.x Branch
+
+Drupal 8.9 and Drupal 9 Compatible.
+
 ## Includes
 <!--
 - Node View All Display Modes.
@@ -7,6 +21,7 @@
 - Transliteration for file uploads
 - Enable WYSIWYG on textfield fields
 - Fractal Component template loader (copy of https://github.com/wearewondrous/fractal_compound_handles to handle windows dev environments)
+
 
 ### Submodules
 
