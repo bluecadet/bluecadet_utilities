@@ -28,7 +28,8 @@ function bluecadet_utilities_theme($existing, $type, $theme, $path) {
 function template_preprocess_svg_image(&$vars) {
   $file_system = \Drupal::service("file_system");
   if (is_file($vars['path']) || is_file($file_system->realpath($vars['path']))) {
-    $scheme = $file_system->uriScheme($vars['path']);
+    $stream_wrapper_manager = \Drupal::service('stream_wrapper_manager');
+    $scheme = $stream_wrapper_manager->getScheme($vars['path']);
 
     if (!$scheme) {
       $file_str = file_get_contents($file_system->realpath($vars['path']));
