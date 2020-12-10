@@ -5,13 +5,40 @@ namespace Drupal\bluecadet_utilities\Form;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\ConfigFormBase;
+use Drupal\Core\Messenger\MessengerInterface;
 
 /**
- *
+ * Bluecadet Utility Settings Form.
  */
 class BCUSettings extends ConfigFormBase {
 
   const SETTINGS = 'bluecadet_utilities.settings';
+
+  /**
+   * The Messenger service.
+   *
+   * @var \Drupal\Core\Messenger\MessengerInterface
+   */
+  protected $messenger;
+
+
+  /**
+   * Class constructor.
+   */
+  public function __construct(MessengerInterface $messenger) {
+    $this->messenger = $messenger;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    // Instantiates this form class.
+    return new static(
+      // Load the service required to construct this class.
+      $container->get('messenger')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -74,6 +101,6 @@ class BCUSettings extends ConfigFormBase {
 
     parent::submitForm($form, $form_state);
 
-    drupal_set_message('You have saved your settings.');
+    $this->messenger->addMessage('You have saved your settings.');
   }
 }
