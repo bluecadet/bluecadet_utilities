@@ -1,15 +1,3 @@
-paragraph_examples.settings:
-  version: 1.x
-  css:
-    theme:
-      css/pe-settings.css: {}
-
-paragraph_examples.display:
-  version: 1.x
-  css:
-    theme:
-      css/pe-display.css: {}
-
 text-editor:
   version: 1.x
   js:
