@@ -12,6 +12,9 @@ Completely old and outdated... do not use.
 
 Drupal 8.9 and Drupal 9 Compatible.
 
+- Removed all code related to Paragraphs preview
+- Removed all code related to preview Display modes of nodes. THis should now all be included in Core Previews.
+
 ## Includes
 <!--
 - Node View All Display Modes.
