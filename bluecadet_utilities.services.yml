@@ -4,3 +4,7 @@ services:
     arguments: ['@app.root', '@theme.manager']
     tags:
       - { name: twig.loader, priority: 50 }
+
+  bluecadet_utilities.sanitize_name:
+    class: Drupal\bluecadet_utilities\SanitizeName
+    arguments: ['@transliteration']

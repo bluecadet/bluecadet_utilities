@@ -26,11 +26,12 @@ function bluecadet_utilities_theme($existing, $type, $theme, $path) {
  * Implements template_preprocess_hook().
  */
 function template_preprocess_svg_image(&$vars) {
-  if (is_file($vars['path']) || is_file(drupal_realpath($vars['path']))) {
-    $scheme = \Drupal::service('file_system')->uriScheme($vars['path']);
+  $file_system = \Drupal::service("file_system");
+  if (is_file($vars['path']) || is_file($file_system->realpath($vars['path']))) {
+    $scheme = $file_system->uriScheme($vars['path']);
 
     if (!$scheme) {
-      $file_str = file_get_contents(drupal_realpath($vars['path']));
+      $file_str = file_get_contents($file_system->realpath($vars['path']));
     }
     else {
       $file_str = file_get_contents($vars['path']);
@@ -64,10 +65,11 @@ function bluecadet_utilities_file_validate(FileInterface $file) {
   $config = \Drupal::config('bluecadet_utilities.settings');
 
   if ($config->get('use_transliteration')) {
-    $basename = drupal_basename($file->destination);
+    $file_system = \Drupal::service("file_system");
+    $basename = $file_system->basename($file->destination);
     $basename = bcu_transliterate_filenames_transliteration($basename);
-    $dirname = drupal_dirname($file->destination);
-    $file->destination = file_create_filename($basename, $dirname);
+    $dirname = $file_system->dirname($file->destination);
+    $file->destination = $file_system->createFilename($basename, $dirname);
   }
 }
 
@@ -75,15 +77,7 @@ function bluecadet_utilities_file_validate(FileInterface $file) {
  * Implements callback for hook_file_validate().
  */
 function bcu_transliterate_filenames_transliteration($filename) {
-  $filename = \Drupal::transliteration()->transliterate($filename);
-  // Replace whitespace.
-  $filename = str_replace(' ', '_', $filename);
-  // Remove remaining unsafe characters.
-  $filename = preg_replace('![^0-9A-Za-z_.-]!', '', $filename);
-  // Remove multiple consecutive non-alphabetical characters.
-  $filename = preg_replace('/(_)_+|(\.)\.+|(-)-+/', '\\1\\2\\3', $filename);
-  // Force lowercase to prevent issues on case-insensitive file systems.
-  $filename = strtolower($filename);
+  $filename = \Drupal::service('bluecadet_utilities.sanitize_name')->sanitizeFilename($filename);
 
   // For empty.
   $name = explode('.', $filename);

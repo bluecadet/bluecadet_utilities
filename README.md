@@ -18,7 +18,7 @@ Drupal 8.9 and Drupal 9 Compatible.
 - Paragraph Examples.
 -->
 - Theme for formatting svg files
-- Transliteration for file uploads
+- Transliteration for file uploads ([Transliteration Module as Source](https://www.drupal.org/project/transliteration))
 - Enable WYSIWYG on textfield fields
 - Fractal Component template loader (copy of https://github.com/wearewondrous/fractal_compound_handles to handle windows dev environments)
 

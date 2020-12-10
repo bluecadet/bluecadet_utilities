@@ -1,6 +1,6 @@
 name: "Bluecadet Sandbox [Sub-module: BC Utilities]"
 type: module
 description: Setup a sandbox page to play in.
-core: 8.x
 package: Bluecadet
-version: '8.x-2.1.2'
+version: '8.x-3.0.0'
+core_version_requirement: ^8.9 || ^9
