@@ -1,16 +1,3 @@
-# bluecadet_utilities.view_all_display_modes:
-#   path: '/node/{node}/display-modes'
-#   defaults:
-#     _controller: 'Drupal\bluecadet_utilities\Controller\ViewDisplayModes::viewAllDisplayModes'
-#     _title: 'View all viewmodes for a node'
-#   requirements:
-#     node: \d+
-#     _permission: 'access node view display mode pages'
-#   options:
-#     parameters:
-#       node:
-#         type: entity:node
-
 bluecadet_utilities.settings:
   path: '/admin/config/system/bluecadet-utilities'
   defaults:
