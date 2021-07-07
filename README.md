@@ -58,3 +58,8 @@ line as well as the location for the module.
   },
   ...
 ```
+## Changelog
+
+### 8.x-3.0.1
+
+- Added in styles for Claro Admin theme.
