@@ -1,42 +1,51 @@
-.form-type-simple-format-textfield .simple-formatter-field-container {
+.form-type-simple-format-textfield .simple-formatter-field-container,
+.field--widget-text-simple-formatter .simple-formatter-field-container {
   width: 50%;
   min-width: 25em; }
-  .form-type-simple-format-textfield .simple-formatter-field-container input {
+  .form-type-simple-format-textfield .simple-formatter-field-container input,
+  .field--widget-text-simple-formatter .simple-formatter-field-container input {
     width: 100%;
     display: none; }
-  .form-type-simple-format-textfield .simple-formatter-field-container.raw-mode input {
+  .form-type-simple-format-textfield .simple-formatter-field-container.raw-mode input,
+  .field--widget-text-simple-formatter .simple-formatter-field-container.raw-mode input {
     display: inline-block; }
-  .form-type-simple-format-textfield .simple-formatter-field-container.raw-mode .simple-editor-button:not(.simple-editor-button--toggle-source) {
+  .form-type-simple-format-textfield .simple-formatter-field-container.raw-mode .simple-editor-button:not(.simple-editor-button--toggle-source),
+  .field--widget-text-simple-formatter .simple-formatter-field-container.raw-mode .simple-editor-button:not(.simple-editor-button--toggle-source) {
     display: none; }
-  .form-type-simple-format-textfield .simple-formatter-field-container.raw-mode .content-editable {
+  .form-type-simple-format-textfield .simple-formatter-field-container.raw-mode .content-editable,
+  .field--widget-text-simple-formatter .simple-formatter-field-container.raw-mode .content-editable {
     display: none; }
 
-.form-type-simple-format-textfield .simple-formatter-button-container {
+.form-type-simple-format-textfield .simple-formatter-button-container,
+.field--widget-text-simple-formatter .simple-formatter-button-container {
   width: 100%;
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
   display: flex;
-  -webkit-box-pack: end;
-  -webkit-justify-content: flex-end;
-      -ms-flex-pack: end;
-          justify-content: flex-end;
+  -webkit-box-pack: start;
+  -webkit-justify-content: flex-start;
+      -ms-flex-pack: start;
+          justify-content: flex-start;
   -webkit-box-align: stretch;
   -webkit-align-items: stretch;
       -ms-flex-align: stretch;
           align-items: stretch; }
-  .form-type-simple-format-textfield .simple-formatter-button-container .simple-editor-button {
+  .form-type-simple-format-textfield .simple-formatter-button-container .simple-editor-button,
+  .field--widget-text-simple-formatter .simple-formatter-button-container .simple-editor-button {
     display: block;
     /* stylelint-disable-next-line unit-blacklist */
     width: 30px;
     /* stylelint-disable-next-line unit-blacklist */
     height: 30px; }
-  .form-type-simple-format-textfield .simple-formatter-button-container .simple-editor-button sub {
+  .form-type-simple-format-textfield .simple-formatter-button-container .simple-editor-button sub,
+  .field--widget-text-simple-formatter .simple-formatter-button-container .simple-editor-button sub {
     font-size: 0.8rem;
     bottom: 0;
     font-weight: 900; }
 
-.form-type-simple-format-textfield .content-editable {
+.form-type-simple-format-textfield .content-editable,
+.field--widget-text-simple-formatter .content-editable {
   display: inline-block;
   width: 100%;
   padding: 0.3em 0.4em 0.3em 0.5em;
@@ -45,11 +54,80 @@
   /* stylelint-disable-next-line unit-blacklist */
   border: 1px solid #b8b8b8;
   background-color: #fcfcfa; }
-  .form-type-simple-format-textfield .content-editable:focus {
+  .form-type-simple-format-textfield .content-editable:focus,
+  .field--widget-text-simple-formatter .content-editable:focus {
     border-color: #68a3cf;
     /* stylelint-disable-next-line unit-blacklist */
     outline: 2px solid #c1e0ff;
     outline-offset: 0;
     color: #000000; }
+
+#block-claro-content .simple-formatter-button-container .simple-editor-button {
+  display: inline-block;
+  margin: 1rem 0.75rem 1rem 0;
+  /* LTR */
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  color: #222330;
+  border: 1px solid transparent !important;
+  /* 2 */
+  border-radius: 2px;
+  background-color: #d4d4d8;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1rem;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  -webkit-font-smoothing: antialiased;
+  /* 3 */
+  min-width: 30px;
+  width: auto; }
+
+#block-claro-content .content-editable {
+  padding: calc(0.75rem - 1px) calc(1rem - 1px);
+  color: #222330;
+  border: 1px solid #8e929c;
+  border-radius: 0.125rem;
+  background: #fff;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none; }
+  #block-claro-content .content-editable:active {
+    border-color: #003cc5; }
+  #block-claro-content .content-editable:hover {
+    border-color: #222330;
+    -webkit-box-shadow: inset 0 0 0 1px #222330;
+            box-shadow: inset 0 0 0 1px #222330; }
+  #block-claro-content .content-editable:focus {
+    outline: none;
+    -webkit-box-shadow: 0 0 0 2px #fff, 0 0 0 5px #26a769;
+            box-shadow: 0 0 0 2px #fff, 0 0 0 5px #26a769; }
+  #block-claro-content .content-editable:hover:focus {
+    -webkit-box-shadow: 0 0 0 2px #fff, 0 0 0 5px #26a769, inset 0 0 0 1px #222330;
+            box-shadow: 0 0 0 2px #fff, 0 0 0 5px #26a769, inset 0 0 0 1px #222330; }
+  #block-claro-content .content-editable.error {
+    border-width: 2px;
+    border-color: #d72222; }
+  #block-claro-content .content-editable.error:hover {
+    -webkit-box-shadow: none;
+            box-shadow: none; }
+  #block-claro-content .content-editable.error:hover:focus {
+    -webkit-box-shadow: 0 0 0 2px #fff, 0 0 0 5px #26a769;
+            box-shadow: 0 0 0 2px #fff, 0 0 0 5px #26a769; }
+  #block-claro-content .content-editable[disabled] {
+    color: #82828c;
+    border-color: #bababf;
+    background-color: #f2f2f3;
+    -webkit-box-shadow: none;
+            box-shadow: none;
+    /* https://stackoverflow.com/q/262158#answer-23511280 */
+    -webkit-text-fill-color: #82828c; }
+
+#block-claro-content u {
+  text-decoration: underline; }
 
 /*# sourceMappingURL=simple-formatter.css.map */

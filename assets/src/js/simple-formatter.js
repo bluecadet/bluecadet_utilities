@@ -17,28 +17,31 @@
           $(this).parents('.simple-formatter-field-container').addClass('raw-mode');
         });
 
+        // Attach once.
+        $("button.simple-editor-button", context).on('click', function (e) {
+          e.preventDefault();
+
+          if ($(this).hasClass('simple-editor-button--bold')) {
+            document.execCommand('bold', false, null);
+          }
+          if ($(this).hasClass('simple-editor-button--italic')) {
+            document.execCommand('italic', false, null);
+          }
+          if ($(this).hasClass('simple-editor-button--underline')) {
+            document.execCommand('underline', false, null);
+          }
+
+          if ($(this).hasClass('simple-editor-button--remove_formatting')) {
+            document.execCommand('removeFormat', false, null);
+          }
+
+          if ($(this).hasClass('simple-editor-button--toggle-source')) {
+            $(this).parents('.simple-formatter-field-container').toggleClass('raw-mode');
+          }
+
+        });
+
         $(el).addClass('ec-bound');
-      });
-
-      $("button.simple-editor-button", context).on('click', function (e) {
-        e.preventDefault();
-
-        if ($(this).hasClass('simple-editor-button--bold')) {
-          document.execCommand('bold', false, null);
-        }
-        if ($(this).hasClass('simple-editor-button--italic')) {
-          document.execCommand('italic', false, null);
-        }
-        if ($(this).hasClass('simple-editor-button--underline')) {
-          document.execCommand('underline', false, null);
-        }
-        if ($(this).hasClass('simple-editor-button--clear-format')) {
-          document.execCommand('removeFormat', false, null);
-        }
-        if ($(this).hasClass('simple-editor-button--remove_formatting')) {
-          $(this).parents('.simple-formatter-field-container').toggleClass('raw-mode');
-        }
-
       });
     }
   }
