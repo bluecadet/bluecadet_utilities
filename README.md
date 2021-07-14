@@ -62,4 +62,7 @@ line as well as the location for the module.
 
 ### 8.x-3.0.1
 
+- Updated dependencies so we can use Composer v2
+### 8.x-3.0.1
+
 - Added in styles for Claro Admin theme.

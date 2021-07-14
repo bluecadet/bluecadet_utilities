@@ -2,5 +2,5 @@ type: module
 name: "Bluecadet Display Title [Sub-module: BC Utilities]"
 description: 'Adds functionality around display title fields on nodes.'
 package: Bluecadet
-version: '8.x-3.0.1'
+version: '8.x-3.0.2'
 core_version_requirement: ^8.9 || ^9
