@@ -59,6 +59,7 @@ line as well as the location for the module.
   ...
 ```
 ## Changelog
+- Update FractalCompoundHandlesLoader class to use new components API
 
 ### 8.x-3.0.1
 

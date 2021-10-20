@@ -115,34 +115,58 @@ class FractalCompoundHandlesLoader extends Twig_Loader_Filesystem {
     $activeTheme = $this->theme_manager->getActiveTheme();
     $infoYml = $activeTheme->getExtension()->info;
 
-    if (empty($infoYml['component-libraries'])) {
-      return $handle;
-    }
-
-    $libs = $infoYml['component-libraries'];
-    $namespace = $this->findCurrentNamespace($handle, array_keys($libs));
-
-    // check for correct parsing and namespace
-    if (empty($libs[$namespace]['paths'])) {
-      return $handle;
-    }
-
     // we only want handles without file extension
     if (substr($handle, -1 * strlen($handle)) === self::TWIG_EXTENSION) {
       return $handle;
     }
 
-    $filename = $componentName = substr($handle, strlen($namespace) + 1);
-    $subpaths = explode("/", $componentName);
-
-    if (count($subpaths) > 1) {
-      $filename = array_pop($subpaths);
+    if (empty($infoYml['component-libraries']) && empty($infoYml['components'])) {
+      return $handle;
     }
 
-    $path = [
-      $activeTheme->getPath(),
-      reset($libs[$namespace]['paths']),
-    ];
+    if (!empty($infoYml['component-libraries'])) {
+      $libs = $infoYml['component-libraries'];
+      $namespace = $this->findCurrentNamespace($handle, array_keys($libs));
+
+      // check for correct parsing and namespace
+      if (empty($libs[$namespace]['paths'])) {
+        return $handle;
+      }
+
+      $filename = $componentName = substr($handle, strlen($namespace) + 1);
+      $subpaths = explode("/", $componentName);
+
+      if (count($subpaths) > 1) {
+        $filename = array_pop($subpaths);
+      }
+
+      $path = [
+        $activeTheme->getPath(),
+        reset($libs[$namespace]['paths']),
+      ];
+    }
+
+    if (!empty($infoYml['components'])) {
+      $libs = $infoYml['components'];
+      $namespace = $this->findCurrentNamespace($handle, array_keys($libs['namespaces']));
+
+      // check for correct parsing and namespace
+      if (empty($libs['namespaces'][$namespace])) {
+        return $handle;
+      }
+
+      $filename = $componentName = substr($handle, strlen($namespace) + 1);
+      $subpaths = explode("/", $componentName);
+
+      if (count($subpaths) > 1) {
+        $filename = array_pop($subpaths);
+      }
+
+      $path = [
+        $activeTheme->getPath(),
+        reset($libs['namespaces'][$namespace]),
+      ];
+    }
 
     if (strpos($filename, self::VARIANT_DELIMITER) === FALSE) {
       $path[] = $componentName;
@@ -158,4 +182,5 @@ class FractalCompoundHandlesLoader extends Twig_Loader_Filesystem {
 
     return implode("/", $path);
   }
+
 }
