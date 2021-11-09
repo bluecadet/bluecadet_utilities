@@ -59,11 +59,16 @@ line as well as the location for the module.
   ...
 ```
 ## Changelog
-- Update FractalCompoundHandlesLoader class to use new components API
 
-### 8.x-3.0.1
+### 8.x-3.0.3
+
+- Update FractalCompoundHandlesLoader class to use new components API
+- Fix multiple uses of the simple formatter
+
+### 8.x-3.0.2
 
 - Updated dependencies so we can use Composer v2
+
 ### 8.x-3.0.1
 
 - Added in styles for Claro Admin theme.

@@ -13,7 +13,7 @@
           $(this).parents('.simple-formatter-field-container').addClass('raw-mode');
         }); // Attach once.
 
-        $("button.simple-editor-button", context).on('click', function (e) {
+        $(el).parent().find("button.simple-editor-button").on('click', function (e) {
           e.preventDefault();
 
           if ($(this).hasClass('simple-editor-button--bold')) {
