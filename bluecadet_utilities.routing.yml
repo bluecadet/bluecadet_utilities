@@ -5,3 +5,19 @@ bluecadet_utilities.settings:
     _title: 'Bluecadet Utilities Settings'
   requirements:
     _permission: 'administer site configuration'
+
+bluecadet_utilities.image_style_generator:
+  path: '/admin/config/media/bc-image-style-gen'
+  defaults:
+    _form: '\Drupal\bluecadet_utilities\Form\ImageStyleGenerator'
+    _title: 'Image Style Generator'
+  requirements:
+    _permission: 'administer site configuration'
+
+bluecadet_utilities.image_style_generator_settings:
+  path: '/admin/config/media/bc-image-style-gen/settings'
+  defaults:
+    _form: '\Drupal\bluecadet_utilities\Form\ImageStyleGenSettings'
+    _title: 'Image Style Generator Settings'
+  requirements:
+    _permission: 'administer site configuration'

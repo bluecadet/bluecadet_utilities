@@ -1,0 +1,24 @@
+form.bcu-img-style-generator .aspect-container {
+  display: grid;
+  grid-template-columns: 10rem 10rem;
+  grid-gap: 1rem; }
+
+form.bcu-image-style-generator-settings #sizes-fieldset-wrapper details {
+  background: #f3f4f9; }
+
+form.bcu-image-style-generator-settings #sizes-fieldset-wrapper .size-group .fieldset__wrapper {
+  display: grid;
+  grid-template-columns: 10rem 18rem;
+  grid-gap: 1rem;
+  margin: 1.25rem; }
+  @media (max-width: 600px) {
+    form.bcu-image-style-generator-settings #sizes-fieldset-wrapper .size-group .fieldset__wrapper {
+      grid-template-columns: 1fr; } }
+  form.bcu-image-style-generator-settings #sizes-fieldset-wrapper .size-group .fieldset__wrapper .form-item {
+    margin: 0;
+    max-width: 100%; }
+    @media screen and (max-width: 600px) {
+      form.bcu-image-style-generator-settings #sizes-fieldset-wrapper .size-group .fieldset__wrapper .form-item input {
+        width: auto; } }
+
+/*# sourceMappingURL=img-gen.css.map */

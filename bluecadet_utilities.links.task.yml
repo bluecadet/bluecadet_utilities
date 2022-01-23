@@ -1,0 +1,9 @@
+bluecadet_utilities.image_style_generator:
+  title: 'Generator'
+  route_name: bluecadet_utilities.image_style_generator
+  base_route: bluecadet_utilities.image_style_generator
+
+bluecadet_utilities.image_style_generator_settings:
+  title: 'Settings'
+  route_name: bluecadet_utilities.image_style_generator_settings
+  base_route: bluecadet_utilities.image_style_generator

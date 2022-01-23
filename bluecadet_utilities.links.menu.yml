@@ -3,3 +3,15 @@ bluecadet_utilities.settings:
   route_name: bluecadet_utilities.settings
   parent: system.admin_config_system
   description: 'Bluecadet Utilities Settings'
+
+bluecadet_utilities.image_style_generator_settings:
+  title: 'Image Style Generator Settings'
+  route_name: bluecadet_utilities.image_style_generator_settings
+  parent: bluecadet_utilities.image_style_generator
+  description: 'Image Style Generator Settings'
+
+bluecadet_utilities.image_style_generator:
+  title: 'Image Style Generator'
+  route_name: bluecadet_utilities.image_style_generator
+  parent: system.admin_config_media
+  description: 'Image Style Generator'

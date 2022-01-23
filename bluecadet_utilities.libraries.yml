@@ -19,3 +19,11 @@ simple-formatter:
     - core/jquery
     - core/jquery.once
     - core/drupal
+
+img-gen:
+  version: 1.x
+  css:
+    theme:
+      assets/dist/css/img-gen.css: {}
+  dependencies:
+    - core/drupal

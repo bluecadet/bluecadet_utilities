@@ -8,6 +8,8 @@
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\file\FileInterface;
 
+const BCU_IMG_GEN_STATE = 'bluecadet_utilities.image_style_gen';
+
 /**
  * Implements hook_theme().
  */
@@ -102,6 +104,15 @@ function bluecadet_utilities_editor_info_alter(array &$editors) {
 
   if ($config->get('use_textfield_wysiwyg')) {
     $editors['ckeditor']['supported_element_types'][] = 'textfield';
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function bluecadet_utilities_form_alter(&$form, FormStateInterface $form_state) {
+  if (in_array($form['#form_id'], ["bcu_img_style_generator", "bcu_image_style_generator_settings"])) {
+    $form['#attached']['library'][] = 'bluecadet_utilities/img-gen';
   }
 }
 
