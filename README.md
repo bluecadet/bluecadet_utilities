@@ -24,6 +24,7 @@ Drupal 8.9 and Drupal 9 Compatible.
 - Transliteration for file uploads ([Transliteration Module as Source](https://www.drupal.org/project/transliteration))
 - Enable WYSIWYG on textfield fields
 - Fractal Component template loader (copy of https://github.com/wearewondrous/fractal_compound_handles to handle windows dev environments)
+- Image Style generator, based on aspect ratios.
 
 
 ### Submodules
@@ -59,7 +60,7 @@ line as well as the location for the module.
   ...
 ```
 ## Changelog
-
+- Added in IMage Style generator
 ### 8.x-3.0.3
 
 - Update FractalCompoundHandlesLoader class to use new components API
