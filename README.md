@@ -60,7 +60,8 @@ line as well as the location for the module.
   ...
 ```
 ## Changelog
-- Added in IMage Style generator
+- Added in Image Style generator.
+- Added Simple Format Formatter so we can have min html in a text field.
 ### 8.x-3.0.3
 
 - Update FractalCompoundHandlesLoader class to use new components API
