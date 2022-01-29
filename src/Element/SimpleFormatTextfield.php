@@ -91,7 +91,7 @@ class SimpleFormatTextfield extends Textfield {
         'bold' => [
           '#type' => 'html_tag',
           '#tag' => 'button',
-          '#value' => '<b>b</b>',
+          '#value' => '<b>B</b>',
           '#attributes' => [
             'class' => ['simple-editor-button', 'simple-editor-button--bold'],
           ],
@@ -105,7 +105,7 @@ class SimpleFormatTextfield extends Textfield {
         'italic' => [
           '#type' => 'html_tag',
           '#tag' => 'button',
-          '#value' => '<i>i</i>',
+          '#value' => '<i>I</i>',
           '#attributes' => [
             'class' => ['simple-editor-button', 'simple-editor-button--italic'],
           ],
@@ -119,7 +119,7 @@ class SimpleFormatTextfield extends Textfield {
         'underline' => [
           '#type' => 'html_tag',
           '#tag' => 'button',
-          '#value' => '<u>u</u>',
+          '#value' => '<u>U</u>',
           '#attributes' => [
             'class' => ['simple-editor-button', 'simple-editor-button--underline'],
           ],

@@ -1,5 +1,10 @@
 .form-type-simple-format-textfield,
 .field--widget-text-simple-formatter {
+  --sf-tray-bg-color: #ffffff;
+  --sf-btn-bg-color: #000000;
+  --sf-btn-bg-color--hover: #000000;
+  --sf-btn-color: #ffffff;
+
   .simple-formatter-field-container {
     width: 50%;
     min-width: 25em;
@@ -26,9 +31,10 @@
 
   .simple-formatter-button-container {
     width: 100%;
-    display: flex;
-    justify-content: flex-start;
-    align-items: stretch;
+    display: grid;
+    grid-template-columns: repeat(5, 42px);
+    background-color: var(--sf-tray-bg-color);
+    padding-bottom: 0.1em;
 
     .simple-editor-button {
       display: block;
@@ -36,6 +42,10 @@
       width: 30px;
       /* stylelint-disable-next-line unit-blacklist */
       height: 30px;
+
+      &.simple-editor-button--toggle-source {
+        grid-column-start: -2;
+      }
     }
 
     .simple-editor-button sub {
@@ -66,18 +76,26 @@
 
 #block-claro-content {
   .simple-formatter-button-container {
+    --sf-tray-bg-color: #f3f4f9;
+    --sf-btn-bg-color: transparent;
+    --sf-btn-bg-color--hover: #e6ecf8;
+    --sf-btn-border-color: transparent;
+    --sf-btn-border-color--hover: transparent;
+    --sf-btn-color: #545560;
+    --sf-btn-color--hover: #0036b1;
+
     .simple-editor-button {
-      display: inline-block;
-      margin: 1rem 0.75rem 1rem 0; /* LTR */
+      // display: inline-block;
+      margin: 0.2rem 0; /* LTR */
       cursor: pointer;
       text-align: center;
       text-decoration: none;
-      color: #222330;
-      border: 1px solid transparent !important;  /* 2 */
+      color: var(--sf-btn-color);
+      border: 1px solid var(--sf-btn-border-color);  /* 2 */
       border-radius: 2px;
-      background-color: #d4d4d8;
+      background-color: var(--sf-btn-bg-color);
       font-size: 1rem;
-      font-weight: 700;
+      font-weight: 500;
       line-height: 1rem;
       -webkit-appearance: none;
       -moz-appearance: none;
@@ -85,8 +103,19 @@
       -webkit-font-smoothing: antialiased;  /* 3 */
       min-width: 30px;
       width: auto;
+
+      &.simple-editor-button--bold {
+        font-weight: 700;
+      }
+
+      &:hover {
+        background-color: var(--sf-btn-bg-color--hover);
+        border: 1px solid var(--sf-btn-border-color--hover);
+        color: var(--sf-btn-color--hover);
+      }
     }
   }
+
   .content-editable {
     padding: calc(0.75rem - 1px) calc(1rem - 1px);
     color: #222330;
@@ -110,7 +139,7 @@
 
     &:focus {
       outline: none;
-    box-shadow: 0 0 0 2px #fff, 0 0 0 5px #26a769;
+      box-shadow: 0 0 0 2px #fff, 0 0 0 5px #26a769;
     }
 
     &:hover:focus {

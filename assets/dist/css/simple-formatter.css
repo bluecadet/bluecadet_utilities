@@ -1,89 +1,101 @@
-.form-type-simple-format-textfield .simple-formatter-field-container,
-.field--widget-text-simple-formatter .simple-formatter-field-container {
-  width: 50%;
-  min-width: 25em; }
-  .form-type-simple-format-textfield .simple-formatter-field-container input,
-  .field--widget-text-simple-formatter .simple-formatter-field-container input {
+.form-type-simple-format-textfield,
+.field--widget-text-simple-formatter {
+  --sf-tray-bg-color: #ffffff;
+  --sf-btn-bg-color: #000000;
+  --sf-btn-bg-color--hover: #000000;
+  --sf-btn-color: #ffffff; }
+  .form-type-simple-format-textfield .simple-formatter-field-container,
+  .field--widget-text-simple-formatter .simple-formatter-field-container {
+    width: 50%;
+    min-width: 25em; }
+    .form-type-simple-format-textfield .simple-formatter-field-container input,
+    .field--widget-text-simple-formatter .simple-formatter-field-container input {
+      width: 100%;
+      display: none; }
+    .form-type-simple-format-textfield .simple-formatter-field-container.raw-mode input,
+    .field--widget-text-simple-formatter .simple-formatter-field-container.raw-mode input {
+      display: inline-block; }
+    .form-type-simple-format-textfield .simple-formatter-field-container.raw-mode .simple-editor-button:not(.simple-editor-button--toggle-source),
+    .field--widget-text-simple-formatter .simple-formatter-field-container.raw-mode .simple-editor-button:not(.simple-editor-button--toggle-source) {
+      display: none; }
+    .form-type-simple-format-textfield .simple-formatter-field-container.raw-mode .content-editable,
+    .field--widget-text-simple-formatter .simple-formatter-field-container.raw-mode .content-editable {
+      display: none; }
+  .form-type-simple-format-textfield .simple-formatter-button-container,
+  .field--widget-text-simple-formatter .simple-formatter-button-container {
     width: 100%;
-    display: none; }
-  .form-type-simple-format-textfield .simple-formatter-field-container.raw-mode input,
-  .field--widget-text-simple-formatter .simple-formatter-field-container.raw-mode input {
-    display: inline-block; }
-  .form-type-simple-format-textfield .simple-formatter-field-container.raw-mode .simple-editor-button:not(.simple-editor-button--toggle-source),
-  .field--widget-text-simple-formatter .simple-formatter-field-container.raw-mode .simple-editor-button:not(.simple-editor-button--toggle-source) {
-    display: none; }
-  .form-type-simple-format-textfield .simple-formatter-field-container.raw-mode .content-editable,
-  .field--widget-text-simple-formatter .simple-formatter-field-container.raw-mode .content-editable {
-    display: none; }
-
-.form-type-simple-format-textfield .simple-formatter-button-container,
-.field--widget-text-simple-formatter .simple-formatter-button-container {
-  width: 100%;
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-pack: start;
-  -webkit-justify-content: flex-start;
-      -ms-flex-pack: start;
-          justify-content: flex-start;
-  -webkit-box-align: stretch;
-  -webkit-align-items: stretch;
-      -ms-flex-align: stretch;
-          align-items: stretch; }
-  .form-type-simple-format-textfield .simple-formatter-button-container .simple-editor-button,
-  .field--widget-text-simple-formatter .simple-formatter-button-container .simple-editor-button {
-    display: block;
+    display: grid;
+    grid-template-columns: repeat(5, 42px);
+    background-color: var(--sf-tray-bg-color);
+    padding-bottom: 0.1em; }
+    .form-type-simple-format-textfield .simple-formatter-button-container .simple-editor-button,
+    .field--widget-text-simple-formatter .simple-formatter-button-container .simple-editor-button {
+      display: block;
+      /* stylelint-disable-next-line unit-blacklist */
+      width: 30px;
+      /* stylelint-disable-next-line unit-blacklist */
+      height: 30px; }
+      .form-type-simple-format-textfield .simple-formatter-button-container .simple-editor-button.simple-editor-button--toggle-source,
+      .field--widget-text-simple-formatter .simple-formatter-button-container .simple-editor-button.simple-editor-button--toggle-source {
+        grid-column-start: -2; }
+    .form-type-simple-format-textfield .simple-formatter-button-container .simple-editor-button sub,
+    .field--widget-text-simple-formatter .simple-formatter-button-container .simple-editor-button sub {
+      font-size: 0.8rem;
+      bottom: 0;
+      font-weight: 900; }
+  .form-type-simple-format-textfield .content-editable,
+  .field--widget-text-simple-formatter .content-editable {
+    display: inline-block;
+    width: 100%;
+    padding: 0.3em 0.4em 0.3em 0.5em;
+    -webkit-box-sizing: border-box;
+            box-sizing: border-box;
     /* stylelint-disable-next-line unit-blacklist */
-    width: 30px;
-    /* stylelint-disable-next-line unit-blacklist */
-    height: 30px; }
-  .form-type-simple-format-textfield .simple-formatter-button-container .simple-editor-button sub,
-  .field--widget-text-simple-formatter .simple-formatter-button-container .simple-editor-button sub {
-    font-size: 0.8rem;
-    bottom: 0;
-    font-weight: 900; }
+    border: 1px solid #b8b8b8;
+    background-color: #fcfcfa; }
+    .form-type-simple-format-textfield .content-editable:focus,
+    .field--widget-text-simple-formatter .content-editable:focus {
+      border-color: #68a3cf;
+      /* stylelint-disable-next-line unit-blacklist */
+      outline: 2px solid #c1e0ff;
+      outline-offset: 0;
+      color: #000000; }
 
-.form-type-simple-format-textfield .content-editable,
-.field--widget-text-simple-formatter .content-editable {
-  display: inline-block;
-  width: 100%;
-  padding: 0.3em 0.4em 0.3em 0.5em;
-  -webkit-box-sizing: border-box;
-          box-sizing: border-box;
-  /* stylelint-disable-next-line unit-blacklist */
-  border: 1px solid #b8b8b8;
-  background-color: #fcfcfa; }
-  .form-type-simple-format-textfield .content-editable:focus,
-  .field--widget-text-simple-formatter .content-editable:focus {
-    border-color: #68a3cf;
-    /* stylelint-disable-next-line unit-blacklist */
-    outline: 2px solid #c1e0ff;
-    outline-offset: 0;
-    color: #000000; }
-
-#block-claro-content .simple-formatter-button-container .simple-editor-button {
-  display: inline-block;
-  margin: 1rem 0.75rem 1rem 0;
-  /* LTR */
-  cursor: pointer;
-  text-align: center;
-  text-decoration: none;
-  color: #222330;
-  border: 1px solid transparent !important;
-  /* 2 */
-  border-radius: 2px;
-  background-color: #d4d4d8;
-  font-size: 1rem;
-  font-weight: 700;
-  line-height: 1rem;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  -webkit-font-smoothing: antialiased;
-  /* 3 */
-  min-width: 30px;
-  width: auto; }
+#block-claro-content .simple-formatter-button-container {
+  --sf-tray-bg-color: #f3f4f9;
+  --sf-btn-bg-color: transparent;
+  --sf-btn-bg-color--hover: #e6ecf8;
+  --sf-btn-border-color: transparent;
+  --sf-btn-border-color--hover: transparent;
+  --sf-btn-color: #545560;
+  --sf-btn-color--hover: #0036b1; }
+  #block-claro-content .simple-formatter-button-container .simple-editor-button {
+    margin: 0.2rem 0;
+    /* LTR */
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    color: var(--sf-btn-color);
+    border: 1px solid var(--sf-btn-border-color);
+    /* 2 */
+    border-radius: 2px;
+    background-color: var(--sf-btn-bg-color);
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1rem;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    -webkit-font-smoothing: antialiased;
+    /* 3 */
+    min-width: 30px;
+    width: auto; }
+    #block-claro-content .simple-formatter-button-container .simple-editor-button.simple-editor-button--bold {
+      font-weight: 700; }
+    #block-claro-content .simple-formatter-button-container .simple-editor-button:hover {
+      background-color: var(--sf-btn-bg-color--hover);
+      border: 1px solid var(--sf-btn-border-color--hover);
+      color: var(--sf-btn-color--hover); }
 
 #block-claro-content .content-editable {
   padding: calc(0.75rem - 1px) calc(1rem - 1px);

@@ -30,7 +30,6 @@ class SimpleFormatWidget extends StringTextfieldWidget {
       'underline' => TRUE,
       'remove_formatting' => TRUE,
       'toggle' => TRUE,
-      'format' => NULL,
     ] + parent::defaultSettings();
   }
 
@@ -74,13 +73,6 @@ class SimpleFormatWidget extends StringTextfieldWidget {
       $format_options[$f_id] = $f->label();
     }
 
-    $element['format'] = [
-      '#type' => 'select',
-      '#title' => $this->t('Text Format to use for this field.'),
-      '#default_value' => $this->getSetting('format'),
-      '#options' => $format_options,
-    ];
-
     return $element;
   }
 
@@ -105,9 +97,6 @@ class SimpleFormatWidget extends StringTextfieldWidget {
     if ($this->getSetting('toggle')) {
       $summary[] = $this->t('Toggle Source Code button');
     }
-    if ($this->getSetting('format')) {
-      $summary[] = $this->t('Format: %sum', ['%sum' => $this->getSetting('format')]);
-    }
 
     return $summary;
   }
@@ -125,8 +114,8 @@ class SimpleFormatWidget extends StringTextfieldWidget {
     $main_widget['value']['#buttons']['toggle'] = $this->getSetting('toggle');
     $main_widget['value']['#type'] = 'simple_format_textfield';
 
-    $main_widget['format']['#type'] = 'hidden';
-    $main_widget['format']['#value'] = $this->getSetting('format');
+    // $main_widget['format']['#type'] = 'hidden';
+    // $main_widget['format']['#value'] = $this->getSetting('format');
 
     return $main_widget;
   }
