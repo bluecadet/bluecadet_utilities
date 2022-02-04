@@ -74,7 +74,8 @@
   }
 }
 
-#block-claro-content {
+#block-claro-content,
+.block-system-main-block {
   .simple-formatter-button-container {
     --sf-tray-bg-color: #f3f4f9;
     --sf-btn-bg-color: transparent;

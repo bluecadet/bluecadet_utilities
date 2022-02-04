@@ -61,7 +61,8 @@
       outline-offset: 0;
       color: #000000; }
 
-#block-claro-content .simple-formatter-button-container {
+#block-claro-content .simple-formatter-button-container,
+.block-system-main-block .simple-formatter-button-container {
   --sf-tray-bg-color: #f3f4f9;
   --sf-btn-bg-color: transparent;
   --sf-btn-bg-color--hover: #e6ecf8;
@@ -69,7 +70,8 @@
   --sf-btn-border-color--hover: transparent;
   --sf-btn-color: #545560;
   --sf-btn-color--hover: #0036b1; }
-  #block-claro-content .simple-formatter-button-container .simple-editor-button {
+  #block-claro-content .simple-formatter-button-container .simple-editor-button,
+  .block-system-main-block .simple-formatter-button-container .simple-editor-button {
     margin: 0.2rem 0;
     /* LTR */
     cursor: pointer;
@@ -90,14 +92,17 @@
     /* 3 */
     min-width: 30px;
     width: auto; }
-    #block-claro-content .simple-formatter-button-container .simple-editor-button.simple-editor-button--bold {
+    #block-claro-content .simple-formatter-button-container .simple-editor-button.simple-editor-button--bold,
+    .block-system-main-block .simple-formatter-button-container .simple-editor-button.simple-editor-button--bold {
       font-weight: 700; }
-    #block-claro-content .simple-formatter-button-container .simple-editor-button:hover {
+    #block-claro-content .simple-formatter-button-container .simple-editor-button:hover,
+    .block-system-main-block .simple-formatter-button-container .simple-editor-button:hover {
       background-color: var(--sf-btn-bg-color--hover);
       border: 1px solid var(--sf-btn-border-color--hover);
       color: var(--sf-btn-color--hover); }
 
-#block-claro-content .content-editable {
+#block-claro-content .content-editable,
+.block-system-main-block .content-editable {
   padding: calc(0.75rem - 1px) calc(1rem - 1px);
   color: #222330;
   border: 1px solid #8e929c;
@@ -108,29 +113,37 @@
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none; }
-  #block-claro-content .content-editable:active {
+  #block-claro-content .content-editable:active,
+  .block-system-main-block .content-editable:active {
     border-color: #003cc5; }
-  #block-claro-content .content-editable:hover {
+  #block-claro-content .content-editable:hover,
+  .block-system-main-block .content-editable:hover {
     border-color: #222330;
     -webkit-box-shadow: inset 0 0 0 1px #222330;
             box-shadow: inset 0 0 0 1px #222330; }
-  #block-claro-content .content-editable:focus {
+  #block-claro-content .content-editable:focus,
+  .block-system-main-block .content-editable:focus {
     outline: none;
     -webkit-box-shadow: 0 0 0 2px #fff, 0 0 0 5px #26a769;
             box-shadow: 0 0 0 2px #fff, 0 0 0 5px #26a769; }
-  #block-claro-content .content-editable:hover:focus {
+  #block-claro-content .content-editable:hover:focus,
+  .block-system-main-block .content-editable:hover:focus {
     -webkit-box-shadow: 0 0 0 2px #fff, 0 0 0 5px #26a769, inset 0 0 0 1px #222330;
             box-shadow: 0 0 0 2px #fff, 0 0 0 5px #26a769, inset 0 0 0 1px #222330; }
-  #block-claro-content .content-editable.error {
+  #block-claro-content .content-editable.error,
+  .block-system-main-block .content-editable.error {
     border-width: 2px;
     border-color: #d72222; }
-  #block-claro-content .content-editable.error:hover {
+  #block-claro-content .content-editable.error:hover,
+  .block-system-main-block .content-editable.error:hover {
     -webkit-box-shadow: none;
             box-shadow: none; }
-  #block-claro-content .content-editable.error:hover:focus {
+  #block-claro-content .content-editable.error:hover:focus,
+  .block-system-main-block .content-editable.error:hover:focus {
     -webkit-box-shadow: 0 0 0 2px #fff, 0 0 0 5px #26a769;
             box-shadow: 0 0 0 2px #fff, 0 0 0 5px #26a769; }
-  #block-claro-content .content-editable[disabled] {
+  #block-claro-content .content-editable[disabled],
+  .block-system-main-block .content-editable[disabled] {
     color: #82828c;
     border-color: #bababf;
     background-color: #f2f2f3;
@@ -139,7 +152,8 @@
     /* https://stackoverflow.com/q/262158#answer-23511280 */
     -webkit-text-fill-color: #82828c; }
 
-#block-claro-content u {
+#block-claro-content u,
+.block-system-main-block u {
   text-decoration: underline; }
 
 /*# sourceMappingURL=simple-formatter.css.map */
