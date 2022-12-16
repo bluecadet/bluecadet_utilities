@@ -22,7 +22,7 @@ class FractalCompoundHandlesLoader extends Twig_Loader_Filesystem {
    *   A path or an array of paths to check for templates.
    * @param \Drupal\Core\Theme\ThemeManagerInterface $themeManager
    */
-  public function __construct($paths = array(), ThemeManagerInterface $themeManager) {
+  public function __construct($paths = array(), ThemeManagerInterface $themeManager = NULL) {
     $this->theme_manager = $themeManager;
     parent::__construct($paths);
   }
