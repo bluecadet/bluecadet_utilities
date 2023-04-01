@@ -1,0 +1,28 @@
+name: Auto Assign to CMSI Project
+
+on:
+  issues:
+    types: [opened, edited]
+  pull_request:
+    types: [opened]
+  # issue_comment:
+  #   types: [created]
+env:
+  target: "Triage"
+  project_id: 4
+
+jobs:
+  issue_opened_or_reopened:
+    name: issue_opened_or_reopened
+    runs-on: ubuntu-latest
+    if: github.event_name == 'issues' && (github.event.action == 'opened' || github.event.action == 'reopened')
+    steps:
+      - name: Move issue to ${{ env.target }}
+        uses: leonsteinhaeuser/project-beta-automations@v2.0.1
+        with:
+          gh_token: ${{ secrets.ORG_ACTION_ACCESS_TOKEN }}
+          # user: sample-user
+          organization: bluecadet
+          project_id: ${{ env.project_id }}
+          resource_node_id: ${{ github.event.issue.node_id }}
+          status_value: ${{ env.target }} # Target status
