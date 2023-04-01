@@ -7,6 +7,8 @@
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\file\FileInterface;
+use Drupal\update\UpdateManagerInterface;
+use Melbahja\Semver\Semver;
 
 const BCU_IMG_GEN_STATE = 'bluecadet_utilities.image_style_gen';
 
@@ -128,4 +130,98 @@ function bluecadet_utilities_field_widget_form_alter(&$element, FormStateInterfa
       $element['#attributes']['class'][] = 'text-format-editor';
     }
   }
+}
+
+/**
+ * Implements hook_update_status_alter().
+ */
+function bluecadet_utilities_update_status_alter(&$projects) {
+  // Init vars.
+  $also = [];
+  $releases = [];
+  $lates_version = "";
+  $recomended = "";
+  $module_name = 'bluecadet_utilities';
+  $package_name = 'bluecadet/' . $module_name;
+  $packagist_base = "https://packagist.org/packages/bluecadet/bluecadet_utilities";
+  $url = "https://repo.packagist.org/p2/bluecadet/bluecadet_utilities.json";
+
+  //  Initiate curl and get info from Packagist.
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+  curl_setopt($ch, CURLOPT_URL, $url);
+  $result=curl_exec($ch);
+  curl_close($ch);
+
+  $data = json_decode($result, true);
+
+  $exisiting_version = Semver::parse($projects[$module_name]['existing_version']);
+  $packages = $data['packages'][$package_name];
+  // Sort pakcages from packagist lowest to highest.
+  uasort($packages, 'bluecadet_utilities__order_packages');
+
+  $projects[$module_name]['status'] = UpdateManagerInterface::CURRENT;
+
+  foreach ($packages as $package_data) {
+    $release_version = Semver::parse($package_data['version']);
+    if ($exisiting_version->compare($release_version, "<")) {
+
+      // Create release data.
+      $release_data = [
+        'name' => $projects[$module_name]['name'],
+        'version' => $package_data['version'],
+        'tag' => $package_data['version'],
+        'status' => "published",
+        'release_link' => $packagist_base . "#" . $package_data['version'],
+        'download_link' => $packagist_base . "#" . $package_data['version'],
+        'date' => strtotime($package_data['time']),
+        'files' => "",
+        'terms' => [],
+        'security' => "",
+      ];
+
+      $releases[$package_data['version']] = $release_data;
+
+      // Is is also?
+      if ($exisiting_version->getMajor() < $release_version->getMajor()) {
+        $projects[$module_name]['status'] = UpdateManagerInterface::NOT_CURRENT;
+        $also[$release_version->getMajor() . "." . $release_version->getMinor()] = $package_data['version'];
+      }
+      elseif($exisiting_version->getMajor() == $release_version->getMajor() && $exisiting_version->getMinor() < $release_version->getMinor()) {
+        $also[$release_version->getMajor() . "." . $release_version->getMinor()] = $package_data['version'];
+      }
+
+      // Is it latest?
+      // Is it recommended?
+      if ($exisiting_version->getMajor() == $release_version->getMajor()) {
+        $projects[$module_name]['latest_version'] = $package_data['version'];
+        $projects[$module_name]['recommended'] = $package_data['version'];
+
+        if ($exisiting_version != $release_version) {
+          $projects[$module_name]['status'] = UpdateManagerInterface::NOT_CURRENT;
+        }
+      }
+    }
+  }
+
+  // Update attributes.
+  $projects[$module_name]['link'] = $packagist_base;
+  $projects[$module_name]['title'] = $projects[$module_name]['info']['name'];
+
+  if (!empty($releases)) {
+    $projects[$module_name]['releases'] = $releases;
+  }
+  if (!empty($also)) {
+    $projects[$module_name]['also'] = $also;
+  }
+}
+
+/**
+ * Sort Packages array from Packagist.
+ */
+function bluecadet_utilities__order_packages($a, $b) {
+  if (Semver::compare($a['version'], $b['version'])) {
+    return 0;
+  }
+  return Semver::compare($a['version'], $b['version'], '>') ? 1 : -1;
 }
