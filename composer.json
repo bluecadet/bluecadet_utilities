@@ -1,24 +1,25 @@
 {
-    "name": "bluecadet/bluecadet_utilities",
-    "description": "Adds utilities to aide in development",
-    "type": "custom-drupal-module",
-    "authors": [
-      {
-        "name": "Pete Inge",
-        "email": "pete.inge@gmail.com",
-        "role": "Maintainer"
-      },
-      {
-        "name": "Shaun",
-        "email": "shaun.baer@gmail.com",
-        "role": "Maintainer"
-      }
-    ],
-    "license": "GPL-2.0+",
-    "minimum-stability": "dev",
-    "require": {
-        "php": "^7.4||^8.0",
-        "composer/installers": "^1.9||^2.0",
-        "oomphinc/composer-installers-extender": "^2.0"
+  "name": "bluecadet/bluecadet_utilities",
+  "description": "Adds utilities to aide in development",
+  "type": "custom-drupal-module",
+  "authors": [
+    {
+      "name": "Pete Inge",
+      "email": "pete.inge@gmail.com",
+      "role": "Maintainer"
+    },
+    {
+      "name": "Shaun",
+      "email": "shaun.baer@gmail.com",
+      "role": "Maintainer"
     }
+  ],
+  "license": "GPL-2.0+",
+  "minimum-stability": "dev",
+  "require": {
+    "php": "^7.4||^8.0",
+    "composer/installers": "^1.9||^2.0",
+    "oomphinc/composer-installers-extender": "^2.0",
+    "melbahja/semver": "^1.0.0"
+  }
 }
