@@ -1,0 +1,17 @@
+# exclude .gitignore and similar from the generated tarball
+.git*                   export-ignore
+.vscode
+
+# exclude CI configurations (useless outside the repo)
+.eslintrc               export-ignore
+.nvmrc                  export-ignore
+assets/src/*            export-ignore
+bin                     export-ignore
+bin/*                   export-ignore
+bldrConfig.js           export-ignore
+DEV_README.md           export-ignore
+node_modules/*          export-ignore
+package-lock.json       export-ignore
+package.json            export-ignore
+phpunit.xml             export-ignore
+postcss.config.js       export-ignore
