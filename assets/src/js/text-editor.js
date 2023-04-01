@@ -1,5 +1,5 @@
 (function ($) {
-  Drupal.behaviors.nhmUtilityTextEditor = {
+  Drupal.behaviors.bcUtilityTextEditor = {
     attach: function (context, settings) {
       initEditor();
     }
