@@ -1,6 +1,10 @@
-type: module
 name: Bluecadet Utilities
+type: module
 description: 'Adds utilities to aide in development of custom sites.'
+core_version_requirement: ^9 || ^10
+
 package: Bluecadet
-version: '8.x-4.0.0'
-core_version_requirement: ^9
+
+dependencies: []
+
+configure: null
