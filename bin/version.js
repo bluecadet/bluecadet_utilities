@@ -8,7 +8,8 @@ const semver = require('semver');
 const { exec } = require("child_process");
 
 // Create new text.
-const project = "external_site_monitor";
+var pjson = require('../package.json');
+const project = pjson.name;
 const now = new Date();
 const version = argv._[0];
 
