@@ -142,7 +142,7 @@ jobs:
         run: echo "DRUPAL_ROOT=$HOME/drupal" >> $GITHUB_ENV
 
       # Change the module folder according to your needs, it's probably either
-      # modules/bluecadet/$DRUPAL_MODULE_NAME or modules/custom/$DRUPAL_MODULE_NAME.
+      # modules/contrib/$DRUPAL_MODULE_NAME or modules/custom/$DRUPAL_MODULE_NAME.
       - name: Set module folder
         run: |
           echo "MODULE_FOLDER=$DRUPAL_ROOT/modules/bluecadet/$DRUPAL_MODULE_NAME" \
@@ -171,6 +171,8 @@ jobs:
           composer config --no-plugins allow-plugins.oomphinc/composer-installers-extender true
           composer config repositories.0 path $GITHUB_WORKSPACE
           composer config extra.installer-paths
+          composer config --json extra.installer-types '["custom-drupal-module"]'
+          composer config --json --merge extra.installer-paths '{"modules/bluecadet/{$name}": ["type:custom-drupal-module"]}'
           composer require mglaman/drupal-check --dev
           composer require bluecadet/$DRUPAL_MODULE_NAME
 
