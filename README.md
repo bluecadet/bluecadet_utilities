@@ -61,10 +61,16 @@ line as well as the location for the module.
   ...
 ```
 ## Changelog
+
+### 4.0.2
+- Adding in utilities for github/building/composer etc.
+
+### 4.0.1
 - Added in Image Style generator.
 - Added Simple Format Formatter so we can have min html in a text field.
 - Updated simple Format formatter styles for buttons in Claro
 - Added formatter settings if you want to run the text through a system text formatter.
+
 ### 8.x-3.0.3
 
 - Update FractalCompoundHandlesLoader class to use new components API
