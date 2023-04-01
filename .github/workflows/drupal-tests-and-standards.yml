@@ -1,0 +1,255 @@
+name: Tests
+on:
+  push:
+  pull_request:
+    branches: [ 4.0 ]
+env:
+  SIMPLETEST_DB: "mysql://drupal:drupal@mariadb:3306/drupal"
+  SIMPLETEST_BASE_URL: "http://127.0.0.1:8080"
+  DRUPAL_MODULE_NAME: "bluecadet_utilities"
+jobs:
+  # testing:
+  #   name: Drupal ${{ matrix.drupal-core }} - PHP ${{ matrix.php-versions }}
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       drupal-core: ['9.4.x', '10.0.x']
+  #       php-versions: ['7.4', '8.0', '8.1', '8.2']
+  #       exclude:
+  #         -
+  #           drupal-core: '10.0.x'
+  #           php-versions: '7.4'
+  #         -
+  #           drupal-core: '10.0.x'
+  #           php-versions: '8.0'
+  #   steps:
+  #     - name: Checkout Drupal core
+  #       uses: actions/checkout@v3
+  #       with:
+  #         repository: drupal/drupal
+  #         ref: ${{ matrix.drupal-core }}
+
+  #     - name: Checkout module
+  #       uses: actions/checkout@v3
+  #       with:
+  #         path: modules/bluecadet_public_files
+
+  #     - name: Setup PHP, with composer and extensions
+  #       uses: shivammathur/setup-php@v2
+  #       with:
+  #         php-version: ${{ matrix.php-versions }}
+  #         coverage: none
+
+  #     - name: Get composer cache directory
+  #       id: composercache
+  #       # run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+  #       run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+  #     - name: Cache composer dependencies
+  #       uses: actions/cache@v3
+  #       with:
+  #         path: ${{ steps.composercache.outputs.dir }}
+  #         key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+  #         restore-keys: ${{ runner.os }}-composer-
+
+  #     - name: Install Drupal core dependencies
+  #       run: |
+  #         composer --no-interaction --no-progress --prefer-dist --optimize-autoloader install
+
+  #     # - name: Install module dependencies
+  #     #   run: |
+  #     #     composer --no-interaction --no-progress require \
+  #     #       drupal/commerce
+
+  #     - name: Install Coder module
+  #       run: |
+  #         composer --dev --no-interaction --no-progress require \
+  #           drupal/coder:^8
+
+  #     - name: Check coding standards
+  #       run: |
+  #         ./vendor/bin/phpcs --config-set ignore_warnings_on_exit 1
+  #         ./vendor/bin/phpcs --config-set ignore_errors_on_exit 1
+  #         ./vendor/bin/phpcs -s --standard=Drupal --extensions=php,module,inc,install,test,profile,theme,css,info,txt --ignore=node_modules,bower_components,vendor,dist --exclude=Drupal.InfoFiles.AutoAddedKeys --colors ./modules/bluecadet_public_files
+  #         ./vendor/bin/phpcs -s --standard=DrupalPractice --extensions=php,module,inc,install,test,profile,theme,css,info,txt --ignore=node_modules,bower_components,vendor,dist --exclude=Drupal.InfoFiles.AutoAddedKeys --colors ./modules/bluecadet_public_files
+
+
+
+
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        drupal-core: ['9.4.x', '9.5.x', '10.0.x']
+        php-version: ['8.0', '8.1', '8.2']
+        mariadb-version: ['10.4', '10.6']
+        exclude:
+          -
+            drupal-core: '9.4.x'
+            php-version: '8.2'
+            mariadb-version: '10.4'
+          -
+            drupal-core: '9.4.x'
+            php-version: '8.2'
+            mariadb-version: '10.6'
+          -
+            drupal-core: '9.5.x'
+            php-version: '8.2'
+            mariadb-version: '10.4'
+          -
+            drupal-core: '9.5.x'
+            php-version: '8.2'
+            mariadb-version: '10.6'
+          -
+            drupal-core: '10.0.x'
+            php-version: '8.0'
+            mariadb-version: '10.4'
+          -
+            drupal-core: '10.0.x'
+            php-version: '8.0'
+            mariadb-version: '10.6'
+
+    container:
+      # See https://github.com/tuutti/docker-images/tree/main/drupal/ci
+      # to see how this image is built.
+      image: ghcr.io/tuutti/drupal-php-docker:${{ matrix.php-version }}
+    services:
+      mariadb:
+        image: mariadb:${{ matrix.mariadb-version }}
+        env:
+          MYSQL_USER: drupal
+          MYSQL_PASSWORD: drupal
+          MYSQL_DATABASE: drupal
+          MYSQL_ROOT_PASSWORD: drupal
+        ports:
+          - 3306:3306
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+
+      # The next two steps exposes $DRUPAL_ROOT and $MODULE_FOLDER environment
+      # variables.
+      #
+      # They have to be set in separate steps because $DRUPAL_ROOT variable
+      # won't be accessible in currently active step.
+      # You can access them either with $DRUPAL_ROOT and $MODULE_FOLDER or
+      # ${{ env.DRUPAL_ROOT }} and ${{ env.MODULE_FOLDER }}.
+      - name: Define DRUPAL_ROOT env variable
+        run: echo "DRUPAL_ROOT=$HOME/drupal" >> $GITHUB_ENV
+
+      # Change the module folder according to your needs, it's probably either
+      # modules/bluecadet/$DRUPAL_MODULE_NAME or modules/custom/$DRUPAL_MODULE_NAME.
+      - name: Set module folder
+        run: |
+          echo "MODULE_FOLDER=$DRUPAL_ROOT/modules/bluecadet/$DRUPAL_MODULE_NAME" \
+            >> $GITHUB_ENV
+
+      # Clone Drupal core into $DRUPAL_ROOT folder.
+      # Core version can be set by changing $DRUPAL_CORE_VERSION.
+      - name: Clone drupal
+        run: |
+          git clone --depth 1 --branch "${{ matrix.drupal-core }}" \
+            http://git.drupal.org/project/drupal.git/ $DRUPAL_ROOT
+
+      # Override the platform.php config with currently active PHP version.
+      # As of writing this, the composer.json shipped with core sets
+      # platform.php version to 7.3.0, meaning we possibly get dependencies
+      # that won't work with php 8+.
+      - name: Override the platform.php version
+        working-directory: ${{ env.DRUPAL_ROOT }}
+        run: composer config platform.php ${{ matrix.php-version }}
+
+      # Set the module folder as a composer repository, so the latest code
+      # is symlinked from $GITHUB_WORKSPACE to modules/ folder.
+      - name: Install the module
+        working-directory: ${{ env.DRUPAL_ROOT }}
+        run: |
+          composer config --no-plugins allow-plugins.oomphinc/composer-installers-extender true
+          composer config repositories.0 path $GITHUB_WORKSPACE
+          composer config extra.installer-paths
+          composer require mglaman/drupal-check --dev
+          composer require bluecadet/$DRUPAL_MODULE_NAME
+
+      # PHP 8+ requires newer phpunit, use core's composer script
+      # to upgrade it.
+      - name: Upgrade phpunit
+        working-directory: ${{ env.DRUPAL_ROOT }}
+        run: composer run-script drupal-phpunit-upgrade
+
+      # We use drush's build-in webserver to run tests. Make sure
+      # Drush is installed.
+      - name: Install drush
+        working-directory: ${{ env.DRUPAL_ROOT }}
+        run: composer require "drush/drush ^11.0"
+
+      - name: Install PHPCS
+        working-directory: ${{ env.DRUPAL_ROOT }}
+        run: |
+          composer config --no-plugins allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
+          composer require --dev "drupal/coder"
+
+      # Install Drupal using minimal installation profile and enable the module.
+      - name: Install Drupal
+        working-directory: ${{ env.DRUPAL_ROOT }}
+        run: |
+          php -d sendmail_path=$(which true); vendor/bin/drush --yes -v \
+            site-install minimal --db-url="$SIMPLETEST_DB"
+          vendor/bin/drush en $DRUPAL_MODULE_NAME -y
+
+      - name: Run PHPCS
+        working-directory: ${{ env.DRUPAL_ROOT }}
+        continue-on-error: true
+        run: |
+          vendor/bin/phpcs -s --standard=Drupal --extensions=php,module,inc,install,test,profile,theme,css,info,txt --ignore=node_modules,bower_components,vendor,dist --exclude=Drupal.InfoFiles.AutoAddedKeys --colors $MODULE_FOLDER
+          vendor/bin/phpcs -s --standard=DrupalPractice --extensions=php,module,inc,install,test,profile,theme,css,info,txt --ignore=node_modules,bower_components,vendor,dist --exclude=Drupal.InfoFiles.AutoAddedKeys --colors $MODULE_FOLDER
+
+      - name: Run Drupal-Check
+        working-directory: ${{ env.DRUPAL_ROOT }}
+        continue-on-error: true
+        run: |
+          php vendor/bin/drupal-check $MODULE_FOLDER --drupal-root ${{ env.DRUPAL_ROOT }}
+
+      - name: Start Drush webserver and chromedriver
+        working-directory: ${{ env.DRUPAL_ROOT }}
+        run: |
+          vendor/bin/drush runserver $SIMPLETEST_BASE_URL > /dev/null 2>&1 &
+          chromedriver --port=4444 > /dev/null 2>&1 &
+          # Wait for drush server to start.
+          for i in {1..5}; do \
+            RESPONSE_CODE=$(curl -s -o /dev/null \
+            -w "%{http_code}" "$SIMPLETEST_BASE_URL" || true); \
+            if [ "$RESPONSE_CODE" -gt "301" ] || [ "$RESPONSE_CODE" -lt "200" ]; \
+            then sleep 2; fi; done
+
+      # Chromium browser is required to run functional javascript tests.
+      # You can remove or uncomment this step if you don't have any functional
+      # js tests.
+      - name: Start chromium-browser
+        working-directory: ${{ env.DRUPAL_ROOT }}
+        run: |
+          chromium-browser --headless --disable-gpu \
+            --no-sandbox \
+            --remote-debugging-port=9222 &
+
+      # Run tests using core's run-tests.sh script. See the example below
+      # to run tests using phpunit.
+      # - name: Run tests
+      #   working-directory: ${{ env.DRUPAL_ROOT }}
+      #   run: |
+      #     php ./core/scripts/run-tests.sh --dburl $SIMPLETEST_DB \
+      #       --php /usr/local/bin/php --color --verbose \
+      #       --sqlite /tmp/test.sqlite \
+      #       --url $SIMPLETEST_BASE_URL $DRUPAL_MODULE_NAME
+
+      # Uncomment this step to run tests using phpunit. Your module is expected
+      # to ship with 'phpunit.xml' file. See the repository for an example
+      # phpunit.xml file.
+      - name: Run tests
+        working-directory: ${{ env.DRUPAL_ROOT }}
+        continue-on-error: true
+        run: |
+          vendor/bin/phpunit --bootstrap $DRUPAL_ROOT/core/tests/bootstrap.php -c $MODULE_FOLDER/phpunit.xml $MODULE_FOLDER
