@@ -4,7 +4,7 @@
     attach: function (context, settings) {
 
       $(".form-item .content-editable:not(.ec-bound)", context).each(function (i, el) {
-        $attached_input = $(el).parents('.simple-formatter-field-container').find("input");
+        let $attached_input = $(el).parents('.simple-formatter-field-container').find("input");
 
         $(el).on("blur keyup paste input", function () {
           $(this).parents('.simple-formatter-field-container').find("input").val( this.innerHTML );
