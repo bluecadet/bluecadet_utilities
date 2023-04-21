@@ -136,93 +136,113 @@ function bluecadet_utilities_field_widget_form_alter(&$element, FormStateInterfa
  * Implements hook_update_status_alter().
  */
 function bluecadet_utilities_update_status_alter(&$projects) {
-  // Init vars.
-  $also = [];
-  $releases = [];
-  $lates_version = "";
-  $recomended = "";
-  $module_name = 'bluecadet_utilities';
-  $package_name = 'bluecadet/' . $module_name;
-  $packagist_base = "https://packagist.org/packages/bluecadet/bluecadet_utilities";
-  $url = "https://repo.packagist.org/p2/bluecadet/bluecadet_utilities.json";
+  $moduleHandler = \Drupal::service('module_handler');
+  $modules = [
+    'bluecadet_utilities',
+    'bluecadet_file_struct',
+  ];
 
-  //  Initiate curl and get info from Packagist.
-  $ch = curl_init();
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-  curl_setopt($ch, CURLOPT_URL, $url);
-  $result=curl_exec($ch);
-  curl_close($ch);
+  foreach($modules as $module_name) {
+    try {
+      if ($moduleHandler->moduleExists($module_name)) {
 
-  $data = json_decode($result, true);
+        // Init vars.
+        $also = [];
+        $releases = [];
+        $lates_version = "";
+        $recomended = "";
+        // $module_name = 'bluecadet_utilities';
+        $package_name = 'bluecadet/' . $module_name;
+        $packagist_base = "https://packagist.org/packages/bluecadet/" . $module_name;
+        $url = "https://repo.packagist.org/p2/bluecadet/$module_name.json";
 
-  try {
-    $exisiting_version = Semver::parse($projects[$module_name]['existing_version']);
-    $packages = $data['packages'][$package_name];
-    // Sort pakcages from packagist lowest to highest.
-    uasort($packages, 'bluecadet_utilities__order_packages');
+        //  Initiate curl and get info from Packagist.
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        $result=curl_exec($ch);
+        curl_close($ch);
 
-    $projects[$module_name]['status'] = UpdateManagerInterface::CURRENT;
+        $data = json_decode($result, true);
 
-    foreach ($packages as $package_data) {
-      try {
-        $release_version = Semver::parse($package_data['version']);
-        if ($exisiting_version->compare($release_version, "<")) {
+        try {
 
-          // Create release data.
-          $release_data = [
-            'name' => $projects[$module_name]['name'],
-            'version' => $package_data['version'],
-            'tag' => $package_data['version'],
-            'status' => "published",
-            'release_link' => $packagist_base . "#" . $package_data['version'],
-            'download_link' => $packagist_base . "#" . $package_data['version'],
-            'date' => strtotime($package_data['time']),
-            'files' => "",
-            'terms' => [],
-            'security' => "",
-          ];
+          $exisiting_version = Semver::parse($projects[$module_name]['existing_version']);
+          $packages = $data['packages'][$package_name];
+          // Sort pakcages from packagist lowest to highest.
+          uasort($packages, 'bluecadet_utilities__order_packages');
 
-          $releases[$package_data['version']] = $release_data;
+          $projects[$module_name]['status'] = UpdateManagerInterface::CURRENT;
 
-          // Is is also?
-          if ($exisiting_version->getMajor() < $release_version->getMajor()) {
-            $projects[$module_name]['status'] = UpdateManagerInterface::NOT_CURRENT;
-            $also[$release_version->getMajor() . "." . $release_version->getMinor()] = $package_data['version'];
-          }
-          elseif($exisiting_version->getMajor() == $release_version->getMajor() && $exisiting_version->getMinor() < $release_version->getMinor()) {
-            $also[$release_version->getMajor() . "." . $release_version->getMinor()] = $package_data['version'];
-          }
+          foreach ($packages as $package_data) {
+            try {
+              $release_version = Semver::parse($package_data['version']);
+              if ($exisiting_version->compare($release_version, "<")) {
 
-          // Is it latest?
-          // Is it recommended?
-          if ($exisiting_version->getMajor() == $release_version->getMajor()) {
-            $projects[$module_name]['latest_version'] = $package_data['version'];
-            $projects[$module_name]['recommended'] = $package_data['version'];
+                // Create release data.
+                $release_data = [
+                  'name' => $projects[$module_name]['name'],
+                  'version' => $package_data['version'],
+                  'tag' => $package_data['version'],
+                  'status' => "published",
+                  'release_link' => $packagist_base . "#" . $package_data['version'],
+                  'download_link' => $packagist_base . "#" . $package_data['version'],
+                  'date' => strtotime($package_data['time']),
+                  'files' => "",
+                  'terms' => [],
+                  'security' => "",
+                ];
 
-            if ($exisiting_version != $release_version) {
-              $projects[$module_name]['status'] = UpdateManagerInterface::NOT_CURRENT;
+                $releases[$package_data['version']] = $release_data;
+
+                // Is is also?
+                if ($exisiting_version->getMajor() < $release_version->getMajor()) {
+                  $projects[$module_name]['status'] = UpdateManagerInterface::NOT_CURRENT;
+                  $also[$release_version->getMajor() . "." . $release_version->getMinor()] = $package_data['version'];
+                }
+                elseif($exisiting_version->getMajor() == $release_version->getMajor() && $exisiting_version->getMinor() < $release_version->getMinor()) {
+                  $also[$release_version->getMajor() . "." . $release_version->getMinor()] = $package_data['version'];
+                }
+
+                // Is it latest?
+                // Is it recommended?
+                if ($exisiting_version->getMajor() == $release_version->getMajor()) {
+                  $projects[$module_name]['latest_version'] = $package_data['version'];
+                  $projects[$module_name]['recommended'] = $package_data['version'];
+
+                  if ($exisiting_version != $release_version) {
+                    $projects[$module_name]['status'] = UpdateManagerInterface::NOT_CURRENT;
+                  }
+                }
+              }
+            }
+            catch (Exception $e) {
+              \Drupal::messenger()->addWarning(t('Caught exception while checking release: %error', ['%error' => $e->getMessage()]));
+              \Drupal::logger('bluecadet_utilities')->warning('Caught exception while checking release: ' . $e->getMessage());
             }
           }
+
+          // Update attributes.
+          $projects[$module_name]['link'] = $packagist_base;
+          $projects[$module_name]['title'] = $projects[$module_name]['info']['name'];
+
+          if (!empty($releases)) {
+            $projects[$module_name]['releases'] = $releases;
+          }
+          if (!empty($also)) {
+            $projects[$module_name]['also'] = $also;
+          }
+        }
+        catch (\Exception $e) {
+          \Drupal::messenger()->addError(t('Caught exception while setting release data: %error', ['%error' => $e->getMessage()]));
+          \Drupal::logger('bluecadet_utilities')->error('Caught exception while setting release data: ' . $e->getMessage());
         }
       }
-      catch (Exception $e) {
-
-      }
     }
-
-    // Update attributes.
-    $projects[$module_name]['link'] = $packagist_base;
-    $projects[$module_name]['title'] = $projects[$module_name]['info']['name'];
-
-    if (!empty($releases)) {
-      $projects[$module_name]['releases'] = $releases;
+    catch (\Exception $e) {
+      \Drupal::messenger()->addError(t('Caught exception while checking release data: %error', ['%error' => $e->getMessage()]));
+      \Drupal::logger('bluecadet_utilities')->error('Caught exception while checking release data: ' . $e->getMessage());
     }
-    if (!empty($also)) {
-      $projects[$module_name]['also'] = $also;
-    }
-  }
-  catch (Exception $e) {
-
   }
 }
 
