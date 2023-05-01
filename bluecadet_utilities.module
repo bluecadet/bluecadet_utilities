@@ -69,7 +69,7 @@ function template_preprocess_input__simple_format_textfield(&$vars) {
 function bluecadet_utilities_file_validate(FileInterface $file) {
   $config = \Drupal::config('bluecadet_utilities.settings');
 
-  if ($config->get('use_transliteration')) {
+  if ($config->get('use_transliteration') && isset($file->destination)) {
     $file_system = \Drupal::service("file_system");
     $basename = $file_system->basename($file->destination);
     $basename = bcu_transliterate_filenames_transliteration($basename);
