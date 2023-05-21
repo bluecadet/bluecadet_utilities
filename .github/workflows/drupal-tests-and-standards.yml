@@ -209,6 +209,8 @@ jobs:
           php -d sendmail_path=$(which true); vendor/bin/drush --yes -v \
             site-install minimal --db-url="$SIMPLETEST_DB"
           vendor/bin/drush en $DRUPAL_MODULE_NAME -y
+          vendor/bin/drush en bc_display_title -y
+          vendor/bin/drush en bc_sandbox -y
 
       - name: Run PHPCS
         working-directory: ${{ env.DRUPAL_ROOT }}
@@ -263,3 +265,15 @@ jobs:
         continue-on-error: true
         run: |
           vendor/bin/phpunit --bootstrap $DRUPAL_ROOT/core/tests/bootstrap.php -c $MODULE_FOLDER/phpunit.xml $MODULE_FOLDER
+
+      - name: Run tests for submodule - bc_display_title
+        working-directory: ${{ env.DRUPAL_ROOT }}
+        continue-on-error: true
+        run: |
+          vendor/bin/phpunit --bootstrap $DRUPAL_ROOT/core/tests/bootstrap.php -c $MODULE_FOLDER/phpunit.xml $MODULE_FOLDER/modules/bc_display_title
+
+      - name: Run tests for submodule - bc_sandbox
+        working-directory: ${{ env.DRUPAL_ROOT }}
+        continue-on-error: true
+        run: |
+          vendor/bin/phpunit --bootstrap $DRUPAL_ROOT/core/tests/bootstrap.php -c $MODULE_FOLDER/phpunit.xml $MODULE_FOLDER/modules/bc_sandbox

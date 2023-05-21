@@ -21,7 +21,9 @@ class SandBox extends ControllerBase {
    */
   public function build(Request $request):array {
 
-    return [];
+    return [
+      '#markup' => "Hello world! (BCS)",
+    ];
   }
 
 }
