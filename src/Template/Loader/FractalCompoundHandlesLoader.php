@@ -2,10 +2,12 @@
 
 namespace Drupal\bluecadet_utilities\Template\Loader;
 
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Theme\ThemeManagerInterface;
-use Twig_Loader_Filesystem;
+use Twig\Loader\FilesystemLoader as TwigFilesystemLoader;
+use Twig\Source;
 
-class FractalCompoundHandlesLoader extends Twig_Loader_Filesystem {
+class FractalCompoundHandlesLoader extends TwigFilesystemLoader {
 
   const TWIG_EXTENSION = '.twig';
   const VARIANT_DELIMITER = '--';
@@ -22,7 +24,7 @@ class FractalCompoundHandlesLoader extends Twig_Loader_Filesystem {
    *   A path or an array of paths to check for templates.
    * @param \Drupal\Core\Theme\ThemeManagerInterface $themeManager
    */
-  public function __construct($paths = array(), ThemeManagerInterface $themeManager = NULL) {
+  public function __construct($paths, ModuleHandlerInterface $module_handler, ThemeManagerInterface $themeManager = NULL, array $twig_config = []) {
     $this->theme_manager = $themeManager;
     parent::__construct($paths);
   }
@@ -46,7 +48,7 @@ class FractalCompoundHandlesLoader extends Twig_Loader_Filesystem {
    *
    * @return bool|string
    */
-  public function getCacheKey($name) {
+  public function getCacheKey(string $name): string {
     return parent::getCacheKey($this->convertToTwigPath($name));
   }
 
@@ -71,7 +73,7 @@ class FractalCompoundHandlesLoader extends Twig_Loader_Filesystem {
    *
    * @return bool
    */
-  public function isFresh($name, $time) {
+  public function isFresh(string $name, int $time): bool {
     return parent::isFresh($this->convertToTwigPath($name), $time);
   }
 
@@ -83,7 +85,7 @@ class FractalCompoundHandlesLoader extends Twig_Loader_Filesystem {
    *
    * @return \Twig_Source
    */
-  public function getSourceContext($name) {
+  public function getSourceContext(string $name): Source {
     return parent::getSourceContext($this->convertToTwigPath($name));
   }
 
@@ -111,7 +113,7 @@ class FractalCompoundHandlesLoader extends Twig_Loader_Filesystem {
    *
    * @return string
    */
-  private function convertToTwigPath($handle) {
+  private function convertToTwigPath($handle):string {
     $activeTheme = $this->theme_manager->getActiveTheme();
     $infoYml = $activeTheme->getExtension()->info;
 

@@ -1,7 +1,7 @@
 services:
   bluecadet_utilities.loader.fractal_compound_handles:
     class: Drupal\bluecadet_utilities\Template\Loader\FractalCompoundHandlesLoader
-    arguments: ['@app.root', '@theme.manager']
+    arguments: ['.', '@module_handler', '@theme.manager']
     tags:
       - { name: twig.loader, priority: 50 }
 
