@@ -4,7 +4,7 @@ namespace Drupal\bc_display_title\Routing;
 
 use Drupal\Core\Routing\RouteSubscriberBase;
 use Symfony\Component\Routing\RouteCollection;
-use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\FieldableEntityInterface;
 
 /**
  * Listens to the dynamic route events.
@@ -21,7 +21,16 @@ class DisplayTitle extends RouteSubscriberBase {
     }
   }
 
-  public function getDisplayTitle(EntityInterface $node) {
+  /**
+   * Determines display title from the node title or field.
+   *
+   * @param Drupal\Core\Entity\FieldableEntityInterface $node
+   *   The Node to find the title of.
+   *
+   * @return string
+   *   Return the string for the title.
+   */
+  public function getDisplayTitle(FieldableEntityInterface $node) {
     if ($node->hasField('field_display_title')) {
       // Title.
       $title = $node->label();
@@ -36,4 +45,5 @@ class DisplayTitle extends RouteSubscriberBase {
 
     return $node->label();
   }
+
 }

@@ -3,7 +3,6 @@
 namespace Drupal\bluecadet_utilities\Form;
 
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Messenger\MessengerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -21,7 +20,6 @@ class BCUSettings extends ConfigFormBase {
    * @var \Drupal\Core\Messenger\MessengerInterface
    */
   protected $messenger;
-
 
   /**
    * Class constructor.
@@ -61,9 +59,11 @@ class BCUSettings extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
+    // phpcs:ignore
     // $settings = \Drupal::state()->get('bluecadet_utilities.settings', array());
     $config = $this->config(static::SETTINGS);
 
+    // phpcs:ignore
     // $form['#tree'] = TRUE;
 
     $form['use_transliteration'] = [
@@ -75,11 +75,13 @@ class BCUSettings extends ConfigFormBase {
     $form['use_textfield_wysiwyg'] = [
       '#type' => 'checkbox',
       '#title' => $this->t("Use WYSIWYG on textfields"),
-      '#default_value' => $config->get( 'use_textfield_wysiwyg'),
+      '#default_value' => $config->get('use_textfield_wysiwyg'),
     ];
 
     return parent::buildForm($form, $form_state);
   }
+
+  // phpcs:disable
 
   /**
    * {@inheritdoc}
@@ -88,20 +90,23 @@ class BCUSettings extends ConfigFormBase {
     parent::validateForm($form, $form_state);
   }
 
+  // phpcs:enable
+
   /**
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
 
-    // Retrieve the configuration
+    // Retrieve the configuration.
     $this->configFactory->getEditable(static::SETTINGS)
-      // Set the submitted configuration setting
-      ->set( 'use_transliteration', $form_state->getValue( 'use_transliteration'))
-      ->set( 'use_textfield_wysiwyg', $form_state->getValue( 'use_textfield_wysiwyg'))
+      // Set the submitted configuration setting.
+      ->set('use_transliteration', $form_state->getValue('use_transliteration'))
+      ->set('use_textfield_wysiwyg', $form_state->getValue('use_textfield_wysiwyg'))
       ->save();
 
     parent::submitForm($form, $form_state);
 
     $this->messenger->addMessage('You have saved your settings.');
   }
+
 }

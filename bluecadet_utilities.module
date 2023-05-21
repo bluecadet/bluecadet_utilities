@@ -72,7 +72,7 @@ function bluecadet_utilities_file_validate(FileInterface $file) {
   if ($config->get('use_transliteration') && isset($file->destination)) {
     $file_system = \Drupal::service("file_system");
     $basename = $file_system->basename($file->destination);
-    $basename = bcu_transliterate_filenames_transliteration($basename);
+    $basename = bluecadet_utilities_transliterate_filenames_transliteration($basename);
     $dirname = $file_system->dirname($file->destination);
     $file->destination = $file_system->createFilename($basename, $dirname);
   }
@@ -81,7 +81,7 @@ function bluecadet_utilities_file_validate(FileInterface $file) {
 /**
  * Implements callback for hook_file_validate().
  */
-function bcu_transliterate_filenames_transliteration($filename) {
+function bluecadet_utilities_transliterate_filenames_transliteration($filename) {
   $filename = \Drupal::service('bluecadet_utilities.sanitize_name')->sanitizeFilename($filename);
 
   // For empty.
@@ -113,7 +113,10 @@ function bluecadet_utilities_editor_info_alter(array &$editors) {
  * Implements hook_form_alter().
  */
 function bluecadet_utilities_form_alter(&$form, FormStateInterface $form_state) {
-  if (in_array($form['#form_id'], ["bcu_img_style_generator", "bcu_image_style_generator_settings"])) {
+  if (in_array($form['#form_id'], [
+    "bcu_img_style_generator",
+    "bcu_image_style_generator_settings",
+  ])) {
     $form['#attached']['library'][] = 'bluecadet_utilities/img-gen';
   }
 }
@@ -142,7 +145,7 @@ function bluecadet_utilities_update_status_alter(&$projects) {
     'bluecadet_file_struct',
   ];
 
-  foreach($modules as $module_name) {
+  foreach ($modules as $module_name) {
     try {
       if ($moduleHandler->moduleExists($module_name)) {
 
@@ -156,14 +159,14 @@ function bluecadet_utilities_update_status_alter(&$projects) {
         $packagist_base = "https://packagist.org/packages/bluecadet/" . $module_name;
         $url = "https://repo.packagist.org/p2/bluecadet/$module_name.json";
 
-        //  Initiate curl and get info from Packagist.
+        // Initiate curl and get info from Packagist.
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
         curl_setopt($ch, CURLOPT_URL, $url);
-        $result=curl_exec($ch);
+        $result = curl_exec($ch);
         curl_close($ch);
 
-        $data = json_decode($result, true);
+        $data = json_decode($result, TRUE);
 
         try {
 
@@ -200,7 +203,7 @@ function bluecadet_utilities_update_status_alter(&$projects) {
                   $projects[$module_name]['status'] = UpdateManagerInterface::NOT_CURRENT;
                   $also[$release_version->getMajor() . "." . $release_version->getMinor()] = $package_data['version'];
                 }
-                elseif($exisiting_version->getMajor() == $release_version->getMajor() && $exisiting_version->getMinor() < $release_version->getMinor()) {
+                elseif ($exisiting_version->getMajor() == $release_version->getMajor() && $exisiting_version->getMinor() < $release_version->getMinor()) {
                   $also[$release_version->getMajor() . "." . $release_version->getMinor()] = $package_data['version'];
                 }
 
@@ -217,6 +220,7 @@ function bluecadet_utilities_update_status_alter(&$projects) {
               }
             }
             catch (Exception $e) {
+              // phpcs:ignore
               // \Drupal::messenger()->addWarning(t('Caught exception while checking release: %error', ['%error' => $e->getMessage()]));
               \Drupal::logger('bluecadet_utilities')->warning('Caught exception while checking release: ' . $e->getMessage());
             }
@@ -234,12 +238,14 @@ function bluecadet_utilities_update_status_alter(&$projects) {
           }
         }
         catch (\Exception $e) {
+          // phpcs:ignore
           // \Drupal::messenger()->addError(t('Caught exception while setting release data: %error', ['%error' => $e->getMessage()]));
           \Drupal::logger('bluecadet_utilities')->error('Caught exception while setting release data: ' . $e->getMessage());
         }
       }
     }
     catch (\Exception $e) {
+      // phpcs:ignore
       // \Drupal::messenger()->addError(t('Caught exception while checking release data: %error', ['%error' => $e->getMessage()]));
       \Drupal::logger('bluecadet_utilities')->error('Caught exception while checking release data: ' . $e->getMessage());
     }

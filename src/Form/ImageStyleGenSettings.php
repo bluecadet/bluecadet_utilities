@@ -26,9 +26,6 @@ class ImageStyleGenSettings extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $settings = $this->drupalState()->get(BCU_IMG_GEN_STATE, []);
 
-    // $settings = [];
-    // $this->drupalState()->set(BCU_IMG_GEN_STATE, $settings);
-
     if (is_null($form_state->get('num_of_sizes'))) {
       $v = isset($settings['sizes']) ? count($settings['sizes']) + 1 : 1;
       $form_state->set('num_of_sizes', $v);
@@ -57,6 +54,7 @@ class ImageStyleGenSettings extends FormBase {
         '#type' => 'textfield',
         '#title' => 'Label',
         '#size' => "auto",
+        // phpcs:ignore SlevomatCodingStandard.ControlStructures.RequireNullCoalesceOperator.NullCoalesceOperatorNotUsed
         '#default_value' => isset($settings['sizes'][$i]['label']) ? $settings['sizes'][$i]['label'] : "",
       ];
 
@@ -68,6 +66,7 @@ class ImageStyleGenSettings extends FormBase {
         '#attributes' => [
           'class' => ["with-suffix"],
         ],
+        // phpcs:ignore SlevomatCodingStandard.ControlStructures.RequireNullCoalesceOperator.NullCoalesceOperatorNotUsed
         '#default_value' => isset($settings['sizes'][$i]['size']) ? $settings['sizes'][$i]['size'] : "",
       ];
     }
@@ -96,12 +95,16 @@ class ImageStyleGenSettings extends FormBase {
     return $form;
   }
 
+  // phpcs:disable
+
   /**
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
     parent::validateForm($form, $form_state);
   }
+
+  // phpcs:enable
 
   /**
    * {@inheritdoc}
