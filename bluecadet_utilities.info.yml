@@ -1,16 +1,10 @@
 name: Bluecadet Utilities
 type: module
 description: 'Adds utilities to aide in development of custom sites.'
-core_version_requirement: ^9 || ^10
+core_version_requirement: ^9
 
 package: Bluecadet
 
 dependencies: []
 
 configure: null
-
-
-# Information added by packaging script on 2023-04-21
-version: 4.0.2-alpha3
-project: bluecadet_utilities
-datestamp: 1682086184592

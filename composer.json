@@ -19,6 +19,7 @@
   "require": {
     "php": "^7.4||^8.0",
     "composer/installers": "^1.9||^2.0",
+    "drupal/core": "^9",
     "oomphinc/composer-installers-extender": "^2.0",
     "melbahja/semver": "^1.0.0"
   }
