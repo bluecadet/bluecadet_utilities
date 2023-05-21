@@ -15,7 +15,7 @@ class FractalCompoundHandlesLoader extends \Twig_Loader_Filesystem {
   /**
    * The Theme manager.
    *
-   * @var Drupal\Core\Theme\ThemeManagerInterface
+   * @var \Drupal\Core\Theme\ThemeManagerInterface
    */
   protected $themeManager;
 

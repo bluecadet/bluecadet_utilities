@@ -10,7 +10,7 @@ trait DrupalStateTrait {
   /**
    * Drupal State obj.
    *
-   * @var Drupal\Core\State\State
+   * @var \Drupal\Core\State\State
    */
   protected $drupalState = [];
 
