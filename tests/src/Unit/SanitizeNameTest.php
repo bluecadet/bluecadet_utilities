@@ -34,6 +34,7 @@ class SanitizeNameTest extends UnitTestCase {
    *   The expected name of sanitized file.
    *
    * @dataProvider providerSanitizeName
+   * @covers Drupal\bluecadet_utilities\SanitizeName::sanitizeFilename
    */
   public function testSanitizeName($filename, $expected) {
     $sanitize_filename = \Drupal::service('bluecadet_utilities.sanitize_name');
