@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @file
+ * Module File.
+ */
+
 use Drupal\Core\Render\BubbleableMetadata;
 
 /**
@@ -7,24 +12,24 @@ use Drupal\Core\Render\BubbleableMetadata;
  */
 function bc_display_title_token_info() {
 
-  $node['title-with-override'] = array(
+  $node['title-with-override'] = [
     'name' => t("Display Title"),
     'description' => t("Display Title or Node Title"),
-  );
+  ];
 
-  return array(
+  return [
     'types' => [],
-    'tokens' => array(
+    'tokens' => [
       'node' => $node,
-    ),
-  );
+    ],
+  ];
 }
 
 /**
  * Implements hook_tokens().
  */
 function bc_display_title_tokens($type, $tokens, array $data, array $options, BubbleableMetadata $bubbleable_metadata) {
-  $replacements = array();
+  $replacements = [];
 
   if ($type == 'node' && !empty($data['node'])) {
     /** @var \Drupal\node\NodeInterface $node */

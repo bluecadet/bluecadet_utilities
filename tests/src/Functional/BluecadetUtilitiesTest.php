@@ -2,11 +2,10 @@
 
 namespace Drupal\Tests\bluecadet_utilities\Functional;
 
-use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Tests\BrowserTestBase;
 
 /**
- *
+ * Test the Bluecadet Utilities module.
  *
  * @group bluecadet_utilities
  */

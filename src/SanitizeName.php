@@ -5,7 +5,7 @@ namespace Drupal\bluecadet_utilities;
 use Drupal\Component\Transliteration\TransliterationInterface;
 
 /**
- * Class SanitizeName.
+ * Class SanitizeName will sanatize a given filename.
  */
 class SanitizeName {
 

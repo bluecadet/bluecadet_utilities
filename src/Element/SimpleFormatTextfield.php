@@ -4,7 +4,6 @@ namespace Drupal\bluecadet_utilities\Element;
 
 use Drupal\Core\Render\Element\Textfield;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Render\Element;
 
 /**
  * Provides a one-line text field form element with simple WYSIWYG controls.
@@ -121,7 +120,10 @@ class SimpleFormatTextfield extends Textfield {
           '#tag' => 'button',
           '#value' => '<u>U</u>',
           '#attributes' => [
-            'class' => ['simple-editor-button', 'simple-editor-button--underline'],
+            'class' => [
+              'simple-editor-button',
+              'simple-editor-button--underline',
+            ],
           ],
         ],
       ];
@@ -135,7 +137,10 @@ class SimpleFormatTextfield extends Textfield {
           '#tag' => 'button',
           '#value' => '<i>T<sub>x</sub></i>',
           '#attributes' => [
-            'class' => ['simple-editor-button', 'simple-editor-button--remove_formatting'],
+            'class' => [
+              'simple-editor-button',
+              'simple-editor-button--remove_formatting',
+            ],
           ],
         ],
       ];
@@ -149,7 +154,10 @@ class SimpleFormatTextfield extends Textfield {
           '#tag' => 'button',
           '#value' => '<b><i><></i></b>',
           '#attributes' => [
-            'class' => ['simple-editor-button', 'simple-editor-button--toggle-source'],
+            'class' => [
+              'simple-editor-button',
+              'simple-editor-button--toggle-source',
+            ],
           ],
         ],
       ];

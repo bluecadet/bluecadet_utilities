@@ -7,15 +7,20 @@ use Drupal\Core\Theme\ThemeManagerInterface;
 use Twig\Loader\FilesystemLoader as TwigFilesystemLoader;
 use Twig\Source;
 
+/**
+ * Finds proper twig tamples.
+ */
 class FractalCompoundHandlesLoader extends TwigFilesystemLoader {
 
   const TWIG_EXTENSION = '.twig';
   const VARIANT_DELIMITER = '--';
 
   /**
-   * @var ThemeManagerInterface
+   * The Theme manager.
+   *
+   * @var Drupal\Core\Theme\ThemeManagerInterface
    */
-  protected $theme_manager;
+  protected $themeManager;
 
   /**
    * Constructs a new ComponentsLoader object.
@@ -23,19 +28,23 @@ class FractalCompoundHandlesLoader extends TwigFilesystemLoader {
    * @param string|array $paths
    *   A path or an array of paths to check for templates.
    * @param \Drupal\Core\Theme\ThemeManagerInterface $themeManager
+   *   The theme manager.
    */
   public function __construct($paths, ModuleHandlerInterface $module_handler, ThemeManagerInterface $themeManager = NULL, array $twig_config = []) {
-    $this->theme_manager = $themeManager;
+    $this->themeManager = $themeManager;
     parent::__construct($paths);
   }
 
   /**
    * Just return the default namespace with the name.
    *
-   * @param $name
+   * @param string $name
+   *   The name to parse.
    * @param string $default
+   *   The default namespace.
    *
    * @return array
+   *   The array.
    */
   protected function parseName($name, $default = self::MAIN_NAMESPACE) {
     return [$default, $name];
@@ -45,8 +54,10 @@ class FractalCompoundHandlesLoader extends TwigFilesystemLoader {
    * Change the # handle to the template name.
    *
    * @param string $name
+   *   The given name.
    *
    * @return bool|string
+   *   Returns false or the template name.
    */
   public function getCacheKey(string $name): string {
     return parent::getCacheKey($this->convertToTwigPath($name));
@@ -56,8 +67,10 @@ class FractalCompoundHandlesLoader extends TwigFilesystemLoader {
    * Run exists with the correct template path.
    *
    * @param string $name
+   *   The template path name.
    *
    * @return bool
+   *   Whether it exists or not.
    */
   public function exists($name) {
     return parent::exists($this->convertToTwigPath($name));
@@ -72,28 +85,35 @@ class FractalCompoundHandlesLoader extends TwigFilesystemLoader {
    *   The datetime int to check against.
    *
    * @return bool
+   *   Whether or not the given template is Fresh.
    */
   public function isFresh(string $name, int $time): bool {
     return parent::isFresh($this->convertToTwigPath($name), $time);
   }
 
   /**
-   *
    * Run getSourceContext with the correct template path.
    *
    * @param string $name
+   *   The given name.
    *
    * @return \Twig_Source
+   *   The Twig Source.
    */
   public function getSourceContext(string $name): Source {
     return parent::getSourceContext($this->convertToTwigPath($name));
   }
 
   /**
+   * Find the current namespace from the given handle.
+   *
    * @param string $handle
+   *   The provided handle.
    * @param array $namespaces
+   *   The provided array of namespaces to check.
    *
    * @return string
+   *   The namespace.
    */
   private function findCurrentNamespace($handle, $namespaces) {
     foreach ($namespaces as $namespace) {
@@ -106,18 +126,19 @@ class FractalCompoundHandlesLoader extends TwigFilesystemLoader {
   }
 
   /**
-   *
    * Convert a fractal Handle '#componentName' to a twig template path.
    *
-   * @param $handle
+   * @param string $handle
+   *   Fractal handle, like '#componentName'.
    *
    * @return string
+   *   Twig template path.
    */
   private function convertToTwigPath($handle):string {
-    $activeTheme = $this->theme_manager->getActiveTheme();
+    $activeTheme = $this->themeManager->getActiveTheme();
     $infoYml = $activeTheme->getExtension()->info;
 
-    // we only want handles without file extension
+    // We only want handles without file extension.
     if (substr($handle, -1 * strlen($handle)) === self::TWIG_EXTENSION) {
       return $handle;
     }
@@ -130,7 +151,7 @@ class FractalCompoundHandlesLoader extends TwigFilesystemLoader {
       $libs = $infoYml['component-libraries'];
       $namespace = $this->findCurrentNamespace($handle, array_keys($libs));
 
-      // check for correct parsing and namespace
+      // Check for correct parsing and namespace.
       if (empty($libs[$namespace]['paths'])) {
         return $handle;
       }
@@ -152,7 +173,7 @@ class FractalCompoundHandlesLoader extends TwigFilesystemLoader {
       $libs = $infoYml['components'];
       $namespace = $this->findCurrentNamespace($handle, array_keys($libs['namespaces']));
 
-      // check for correct parsing and namespace
+      // Check for correct parsing and namespace.
       if (empty($libs['namespaces'][$namespace])) {
         return $handle;
       }

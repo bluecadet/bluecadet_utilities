@@ -114,9 +114,6 @@ class SimpleFormatWidget extends StringTextfieldWidget {
     $main_widget['value']['#buttons']['toggle'] = $this->getSetting('toggle');
     $main_widget['value']['#type'] = 'simple_format_textfield';
 
-    // $main_widget['format']['#type'] = 'hidden';
-    // $main_widget['format']['#value'] = $this->getSetting('format');
-
     return $main_widget;
   }
 
