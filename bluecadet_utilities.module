@@ -217,7 +217,7 @@ function bluecadet_utilities_update_status_alter(&$projects) {
               }
             }
             catch (Exception $e) {
-              \Drupal::messenger()->addWarning(t('Caught exception while checking release: %error', ['%error' => $e->getMessage()]));
+              // \Drupal::messenger()->addWarning(t('Caught exception while checking release: %error', ['%error' => $e->getMessage()]));
               \Drupal::logger('bluecadet_utilities')->warning('Caught exception while checking release: ' . $e->getMessage());
             }
           }
@@ -234,13 +234,13 @@ function bluecadet_utilities_update_status_alter(&$projects) {
           }
         }
         catch (\Exception $e) {
-          \Drupal::messenger()->addError(t('Caught exception while setting release data: %error', ['%error' => $e->getMessage()]));
+          // \Drupal::messenger()->addError(t('Caught exception while setting release data: %error', ['%error' => $e->getMessage()]));
           \Drupal::logger('bluecadet_utilities')->error('Caught exception while setting release data: ' . $e->getMessage());
         }
       }
     }
     catch (\Exception $e) {
-      \Drupal::messenger()->addError(t('Caught exception while checking release data: %error', ['%error' => $e->getMessage()]));
+      // \Drupal::messenger()->addError(t('Caught exception while checking release data: %error', ['%error' => $e->getMessage()]));
       \Drupal::logger('bluecadet_utilities')->error('Caught exception while checking release data: ' . $e->getMessage());
     }
   }
