@@ -1,0 +1,10 @@
+bluecadet_utilities.settings:
+  type: config_object
+  label: 'Bluecadet Utilities settings'
+  mapping:
+    use_transliteration:
+      type: boolean
+      label: 'Use transliteration'
+    use_textfield_wysiwyg:
+      type: boolean
+      label: 'Use transliteration'
