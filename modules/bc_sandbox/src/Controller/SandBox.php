@@ -13,7 +13,7 @@ class SandBox extends ControllerBase {
   /**
    * Build a render array.
    *
-   * @param Symfony\Component\HttpFoundation\Request $request
+   * @param \Symfony\Component\HttpFoundation\Request $request
    *   The page request.
    *
    * @return array

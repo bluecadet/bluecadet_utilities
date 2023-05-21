@@ -196,7 +196,8 @@ class ImageStyleGenerator extends FormBase {
       '#theme' => 'item_list',
       '#items' => $responses,
     ];
-    $msg = Markup::create("The following Image Styles have been created: " . render($message_render));
+    // phpcs:ignore
+    $msg = Markup::create("The following Image Styles have been created: " . \Drupal::service('renderer')->render($message_render));
 
     $this->messenger()->addMessage($msg);
   }

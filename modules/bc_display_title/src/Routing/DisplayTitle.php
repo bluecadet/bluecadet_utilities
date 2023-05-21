@@ -24,7 +24,7 @@ class DisplayTitle extends RouteSubscriberBase {
   /**
    * Determines display title from the node title or field.
    *
-   * @param Drupal\Core\Entity\FieldableEntityInterface $node
+   * @param \Drupal\Core\Entity\FieldableEntityInterface $node
    *   The Node to find the title of.
    *
    * @return string
