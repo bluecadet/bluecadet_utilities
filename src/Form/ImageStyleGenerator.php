@@ -76,7 +76,7 @@ class ImageStyleGenerator extends FormBase {
     }
 
     $form['preview'] = [
-      '#markup' => render($sizes_preview),
+      '#markup' => \Drupal::service('renderer')->render($sizes_preview),
     ];
 
     $form['msg'] = [
