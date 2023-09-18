@@ -161,7 +161,7 @@ jobs:
         working-directory: ${{ env.DRUPAL_ROOT }}
         run: |
           composer config --no-plugins allow-plugins.oomphinc/composer-installers-extender true
-          composer config repositories.0 path $GITHUB_WORKSPACE
+          composer config repositories.$DRUPAL_MODULE_NAME '{"type": "path", "url": "$GITHUB_WORKSPACE", "options": {"symlink": true}}'
           composer config extra.installer-paths
           composer config --json extra.installer-types '["custom-drupal-module"]'
           composer config --json --merge extra.installer-paths '{"modules/bluecadet/{$name}": ["type:custom-drupal-module"]}'
