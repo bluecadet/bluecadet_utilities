@@ -1,7 +1,7 @@
 text-editor:
   version: 1.x
   js:
-    assets/src/js/text-editor.js: {}
+    assets/dist/js/text-editor.js: {}
   dependencies:
     - core/jquery
     - core/jquery.once
