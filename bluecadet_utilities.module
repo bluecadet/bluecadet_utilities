@@ -5,10 +5,10 @@
  * Module File.
  */
 
+use Bluecadet\DrupalPackageManager\Checker;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\file\FileInterface;
 use Drupal\update\UpdateManagerInterface;
-use Melbahja\Semver\Semver;
 
 const BCU_IMG_GEN_STATE = 'bluecadet_utilities.image_style_gen';
 
@@ -139,125 +139,26 @@ function bluecadet_utilities_field_widget_form_alter(&$element, FormStateInterfa
  * Implements hook_update_status_alter().
  */
 function bluecadet_utilities_update_status_alter(&$projects) {
-  $moduleHandler = \Drupal::service('module_handler');
-  $modules = [
+  $modules['bluecadet'] = [
     'bluecadet_utilities',
     'bluecadet_file_struct',
   ];
 
-  foreach ($modules as $module_name) {
-    try {
-      if ($moduleHandler->moduleExists($module_name)) {
+  $filtered_projects = [];
 
-        // Init vars.
-        $also = [];
-        $releases = [];
-        $lates_version = "";
-        $recomended = "";
-        // $module_name = 'bluecadet_utilities';
-        $package_name = 'bluecadet/' . $module_name;
-        $packagist_base = "https://packagist.org/packages/bluecadet/" . $module_name;
-        $url = "https://repo.packagist.org/p2/bluecadet/$module_name.json";
+  foreach ($modules as $user => $user_data) {
+    $filtered_projects += array_filter($projects, function($v) use ($user_data) {
+        return in_array($v, $user_data);
+    }, ARRAY_FILTER_USE_KEY);
+  }
 
-        // Initiate curl and get info from Packagist.
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-        curl_setopt($ch, CURLOPT_URL, $url);
-        $result = curl_exec($ch);
-        curl_close($ch);
+  $checker = new Checker($modules, $filtered_projects);
 
-        $data = json_decode($result, TRUE);
-
-        try {
-
-          $exisiting_version = Semver::parse($projects[$module_name]['existing_version']);
-          $packages = $data['packages'][$package_name];
-          // Sort pakcages from packagist lowest to highest.
-          uasort($packages, 'bluecadet_utilities__order_packages');
-
-          $projects[$module_name]['status'] = UpdateManagerInterface::CURRENT;
-
-          foreach ($packages as $package_data) {
-            try {
-              $release_version = Semver::parse($package_data['version']);
-              if ($exisiting_version->compare($release_version, "<")) {
-
-                // Create release data.
-                $release_data = [
-                  'name' => $projects[$module_name]['name'],
-                  'version' => $package_data['version'],
-                  'tag' => $package_data['version'],
-                  'status' => "published",
-                  'release_link' => $packagist_base . "#" . $package_data['version'],
-                  'download_link' => $packagist_base . "#" . $package_data['version'],
-                  'date' => strtotime($package_data['time']),
-                  'files' => "",
-                  'terms' => [],
-                  'security' => "",
-                ];
-
-                $releases[$package_data['version']] = $release_data;
-
-                // Is is also?
-                if ($exisiting_version->getMajor() < $release_version->getMajor()) {
-                  $projects[$module_name]['status'] = UpdateManagerInterface::NOT_CURRENT;
-                  $also[$release_version->getMajor() . "." . $release_version->getMinor()] = $package_data['version'];
-                }
-                elseif ($exisiting_version->getMajor() == $release_version->getMajor() && $exisiting_version->getMinor() < $release_version->getMinor()) {
-                  $also[$release_version->getMajor() . "." . $release_version->getMinor()] = $package_data['version'];
-                }
-
-                // Is it latest?
-                // Is it recommended?
-                if ($exisiting_version->getMajor() == $release_version->getMajor()) {
-                  $projects[$module_name]['latest_version'] = $package_data['version'];
-                  $projects[$module_name]['recommended'] = $package_data['version'];
-
-                  if ($exisiting_version != $release_version) {
-                    $projects[$module_name]['status'] = UpdateManagerInterface::NOT_CURRENT;
-                  }
-                }
-              }
-            }
-            catch (Exception $e) {
-              // phpcs:ignore
-              // \Drupal::messenger()->addWarning(t('Caught exception while checking release: %error', ['%error' => $e->getMessage()]));
-              \Drupal::logger('bluecadet_utilities')->warning('Caught exception while checking release: ' . $e->getMessage());
-            }
-          }
-
-          // Update attributes.
-          $projects[$module_name]['link'] = $packagist_base;
-          $projects[$module_name]['title'] = $projects[$module_name]['info']['name'];
-
-          if (!empty($releases)) {
-            $projects[$module_name]['releases'] = $releases;
-          }
-          if (!empty($also)) {
-            $projects[$module_name]['also'] = $also;
-          }
-        }
-        catch (\Exception $e) {
-          // phpcs:ignore
-          // \Drupal::messenger()->addError(t('Caught exception while setting release data: %error', ['%error' => $e->getMessage()]));
-          \Drupal::logger('bluecadet_utilities')->error('Caught exception while setting release data: ' . $e->getMessage());
-        }
+  foreach ($modules as $user => $user_data) {
+    foreach ($user_data as $module_name) {
+      if (in_array($module_name, array_keys($projects))) {
+        $projects[$module_name] = $checker->updateDrupalModulePackage($projects[$module_name], $user, $module_name);
       }
     }
-    catch (\Exception $e) {
-      // phpcs:ignore
-      // \Drupal::messenger()->addError(t('Caught exception while checking release data: %error', ['%error' => $e->getMessage()]));
-      \Drupal::logger('bluecadet_utilities')->error('Caught exception while checking release data: ' . $e->getMessage());
-    }
   }
-}
-
-/**
- * Sort Packages array from Packagist.
- */
-function bluecadet_utilities__order_packages($a, $b) {
-  if (Semver::compare($a['version'], $b['version'])) {
-    return 0;
-  }
-  return Semver::compare($a['version'], $b['version'], '>') ? 1 : -1;
 }
