@@ -1,14 +1,13 @@
 {
   "name": "bluecadet_utilities",
-  "version": "1.0.0",
+  "version": "4.0.2",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\"",
     "build": "npx bldr build",
     "clean": "rm -rfv ./assets/dist/* && rm -rfv ./modules/**/assets/dist/*",
-    "watch": "npx bldr watch",
-    "set-version": "node ./bin/version.js"
+    "watch": "npx bldr watch"
   },
   "repository": {
     "type": "git",
@@ -21,7 +20,8 @@
   },
   "homepage": "https://github.com/bluecadet/bluecadet_utilities#readme",
   "dependencies": {
-    "@bluecadet/bldr": "^0.7.4",
+    "@bluecadet/bldr": "^1.0.6",
+    "@bluecadet/drops": "^1.0.0-alpha.3",
     "@rollup/plugin-babel": "^5.3.1",
     "@rollup/plugin-commonjs": "^22.0.0",
     "@rollup/plugin-eslint": "^8.0.2",
