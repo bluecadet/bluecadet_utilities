@@ -1,6 +1,6 @@
 {
   "name": "bluecadet_utilities",
-  "version": "4.0.2",
+  "version": "4.0.3-alpha1",
   "description": "",
   "main": "index.js",
   "scripts": {
