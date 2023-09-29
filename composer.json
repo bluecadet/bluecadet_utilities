@@ -22,5 +22,7 @@
     "composer/installers": "^1.9||^2.0",
     "drupal/core": "^10",
     "oomphinc/composer-installers-extender": "^2.0"
-  }
+  },
+  "core_compatibility": "^9.5||^10.0",
+  "core_compatibility_message": "Requires Drupal core: 9.5 to 10.1"
 }
