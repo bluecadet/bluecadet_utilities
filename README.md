@@ -16,6 +16,14 @@ Drupal 8.9 and Drupal 9 Compatible.
 - Removed all code related to preview Display modes of nodes. This should now
   all be included in Core Previews.
 
+### 4.0.x Branch
+
+Drupal 9 Compatabile. Due to twig file loading easiest to keep seperate branches for D9 and D10.
+
+### 4.1.x Branch
+
+Drupal 10 Compatabile. Due to twig file loading easiest to keep seperate branches for D9 and D10.
+
 ## Includes
 <!--
 - Node View All Display Modes.
@@ -61,6 +69,9 @@ line as well as the location for the module.
   ...
 ```
 ## Changelog
+
+### 4.0.3
+- Updating dev tools. Drupal module not really effected.
 
 ### 4.0.2
 - Adding in utilities for github/building/composer etc.
