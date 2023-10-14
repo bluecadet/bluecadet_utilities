@@ -8,3 +8,6 @@ services:
   bluecadet_utilities.sanitize_name:
     class: Drupal\bluecadet_utilities\SanitizeName
     arguments: ['@transliteration']
+
+  bluecadet_utilities.display_only:
+    class: Drupal\bluecadet_utilities\DisplayOnlyWidgetService

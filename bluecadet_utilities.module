@@ -6,6 +6,8 @@
  */
 
 use Bluecadet\DrupalPackageManager\Checker;
+use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\Core\Field\WidgetInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\file\FileInterface;
 use Drupal\update\UpdateManagerInterface;
@@ -161,4 +163,28 @@ function bluecadet_utilities_update_status_alter(&$projects) {
       }
     }
   }
+}
+
+/**
+ * Implements hook_field_widget_settings_summary_alter().
+ */
+function bluecadet_utilities_field_widget_settings_summary_alter(array &$summary, array $context) {
+  $dos = \Drupal::service("bluecadet_utilities.display_only");
+  $dos->fieldWidgetSettingsSummaryAlter($summary, $context);
+}
+
+/**
+ * Implements hook_field_widget_third_party_settings_form().
+ */
+function bluecadet_utilities_field_widget_third_party_settings_form(WidgetInterface $plugin, FieldDefinitionInterface $field_definition, $form_mode, array $form, FormStateInterface $form_state) {
+  $dos = \Drupal::service("bluecadet_utilities.display_only");
+  return $dos->fieldWidgetThirdPartySettingsForm($plugin, $field_definition, $form_mode, $form, $form_state);
+}
+
+/**
+ * Implements hook_field_widget_single_element_form_alter().
+ */
+function bluecadet_utilities_field_widget_single_element_form_alter(array &$element, FormStateInterface $form_state, array $context) {
+  $dos = \Drupal::service("bluecadet_utilities.display_only");
+  $dos->fieldWidgetSingleElementFormAlter($element, $form_state, $context);
 }
