@@ -60,6 +60,7 @@ class BluecadetUtilitiesTest extends BrowserTestBase {
 
     $this->adminUser = $this->drupalCreateUser([
       'access administration pages',
+      'administer site configuration',
     ]);
     $this->authenticatedUser = $this->drupalCreateUser([]);
 
@@ -74,6 +75,24 @@ class BluecadetUtilitiesTest extends BrowserTestBase {
     $this->assertTrue(TRUE);
 
     $this->drupalGet('<front>');
+    $this->assertSession()->statusCodeEquals(200);
+  }
+
+  /**
+   * Test Access to TextFieldSearch form.
+   */
+  public function testTextFieldSearch() {
+    $session = $this->assertSession();
+
+    $this->assertTrue(TRUE);
+
+    // Should get a 403 when logged out.
+    $this->drupalGet('/admin/reports/textfield-search');
+    $this->assertSession()->statusCodeEquals(403);
+
+    // Should get a 200 when logged in as an admin.
+    $this->drupalLogin($this->adminUser);
+    $this->drupalGet('/admin/reports/textfield-search');
     $this->assertSession()->statusCodeEquals(200);
   }
 
