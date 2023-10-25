@@ -34,6 +34,7 @@ Drupal 10 Compatabile. Due to twig file loading easiest to keep seperate branche
 - Enable WYSIWYG on textfield fields
 - Fractal Component template loader (copy of https://github.com/wearewondrous/fractal_compound_handles to handle windows dev environments)
 - Image Style generator, based on aspect ratios.
+- text string search for searching html strings in text fields (eg, search for a specific link or class name being used)
 
 
 ### Submodules
@@ -69,6 +70,9 @@ line as well as the location for the module.
   ...
 ```
 ## Changelog
+
+- Adding in basic text search.
+
 ### 4.1.1
 - Updating dev tools. Drupal module not really effected.
 

@@ -21,3 +21,11 @@ bluecadet_utilities.image_style_generator_settings:
     _title: 'Image Style Generator Settings'
   requirements:
     _permission: 'administer site configuration'
+
+bluecadet_utilities.text_field_search:
+  path: '/admin/reports/textfield-search'
+  defaults:
+    _form: '\Drupal\bluecadet_utilities\Form\TextFieldSearch'
+    _title: 'Search full text fields'
+  requirements:
+    _permission: 'administer site configuration'

@@ -15,3 +15,9 @@ bluecadet_utilities.image_style_generator:
   route_name: bluecadet_utilities.image_style_generator
   parent: system.admin_config_media
   description: 'Image Style Generator'
+
+bluecadet_utilities.text_field_search:
+  title: 'Search Text Fields'
+  route_name: bluecadet_utilities.text_field_search
+  parent: system.admin_reports
+  description: 'Search full text fields for string including HTML'
