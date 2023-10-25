@@ -9,7 +9,6 @@ use Drupal\Core\Link;
 use Drupal\Core\Messenger\MessengerTrait;
 use Drupal\Core\Render\Markup;
 use Drupal\Core\Url;
-use Drupal\image\Entity\ImageStyle;
 
 /**
  * Bluecadet Utility Settings Form.
@@ -27,6 +26,13 @@ class TextFieldSearch extends FormBase {
   private $moduleHandler;
 
   /**
+   * Drupal Entity Field Manager.
+   *
+   * @var \Drupal\Core\Entity\EntityFieldManager
+   */
+  private $entityFieldManager;
+
+  /**
    * Get module handler.
    */
   private function moduleHandler() {
@@ -36,13 +42,6 @@ class TextFieldSearch extends FormBase {
 
     return $this->moduleHandler;
   }
-
-  /**
-   * Drupal Entity Field Manager.
-   *
-   * @var \Drupal\Core\Entity\EntityFieldManager
-   */
-  private $entityFieldManager;
 
   /**
    * Get Entity Field Manager.
@@ -66,8 +65,7 @@ class TextFieldSearch extends FormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
 
-    $session_data = $_SESSION['bcu_search_results']?? [];
-    // ksm($session_data);
+    $session_data = $_SESSION['bcu_search_results'] ?? [];
 
     $form['#tree'] = TRUE;
 
@@ -75,7 +73,7 @@ class TextFieldSearch extends FormBase {
       '#type' => 'textfield',
       '#title' => $this->t("Search string"),
       '#description' => $this->t("This is doing a full string search on the raw html of the text field values. You can use '%' as a wildcard."),
-      '#default_value' => $session_data[1]['search_str']?? "",
+      '#default_value' => $session_data[1]['search_str'] ?? "",
       '#placeholder' => "%class=\"material-icons\"% OR %<a name=\"%\"></a>%",
     ];
 
@@ -95,7 +93,7 @@ class TextFieldSearch extends FormBase {
         'results' => [],
       ];
 
-      foreach($session_data[1]['data'] as $entity_type => $data) {
+      foreach ($session_data[1]['data'] as $entity_type => $data) {
         $list = [
           '#theme' => 'item_list',
           '#title' => 'Results for: ' . $entity_type,
@@ -103,7 +101,6 @@ class TextFieldSearch extends FormBase {
         ];
 
         foreach ($data as $id => $result_data) {
-          // ksm($result_data);
 
           $link = Link::fromTextAndUrl($result_data['label'], $result_data['url']);
           $list['#items'][] = [
@@ -126,15 +123,12 @@ class TextFieldSearch extends FormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $values = $form_state->getValues();
 
-    // ksm($values);
-
     $field_map = $this->entityFieldManager()->getFieldMap();
-    // ksm($field_map);
 
     $field_type = [
       "text",
       "text_long",
-      "text_with_summary"
+      "text_with_summary",
     ];
 
     $fields = [];
@@ -146,17 +140,15 @@ class TextFieldSearch extends FormBase {
       }
     }
 
-    // ksm($fields);
-
     $batch = [
       'title' => $this->t('Searching...'),
       'operations' => [
         [
           [$this, 'setUpContext'],
-          [$values['search']]
-        ]
+          [$values['search']],
+        ],
       ],
-      'finished' => [$this, 'finished_callback'],
+      'finished' => [$this, 'finishedCallback'],
     ];
 
     foreach ($fields as $field_type => $field_data) {
@@ -167,27 +159,23 @@ class TextFieldSearch extends FormBase {
             $field_type,
             $entity_type,
             $fields,
-            $values['search']
-          ]
+            $values['search'],
+          ],
         ];
       }
     }
 
     $batch['operations'][] = [
       [$this, 'processResults'],
-      []
+      [],
     ];
 
-    // ksm($batch);
-
     batch_set($batch);
-
-    // $message_render = [];
-    // phpcs:ignore
-    // $msg = Markup::create("You submitted... " . \Drupal::service('renderer')->render($message_render));
-    // $this->messenger()->addMessage($msg);
   }
 
+  /**
+   * Batch process to setup the $context array.
+   */
   public static function setUpContext($search_string, &$context) {
     $context['results']['search_str'] = $search_string;
     $context['results']['raw'] = [];
@@ -195,12 +183,10 @@ class TextFieldSearch extends FormBase {
     $context['results']['errors'] = [];
   }
 
+  /**
+   * Batch Search process for each entity and field type combo.
+   */
   public static function searchTextFields($field_type, $entity_type, $fields, $search_string, &$context) {
-
-
-    // ksm($field_type, $entity_type, $fields, $context);
-
-    // $storage = \Drupal::entityTypeManager()->getStorage($entity_type);
     $query = \Drupal::entityQuery($entity_type)->accessCheck(FALSE);
 
     $group = $query->orConditionGroup();
@@ -217,11 +203,14 @@ class TextFieldSearch extends FormBase {
     }
   }
 
+  /**
+   * Process the results of all the queries.
+   */
   public static function processResults(&$context) {
     if (isset($context['results']['raw']) && !empty($context['results']['raw'])) {
       foreach ($context['results']['raw'] as $entity_type => $field_types) {
         foreach ($field_types as $results) {
-          // ksm($results);
+
           $method_name = "processResults_" . $entity_type;
           if (method_exists(__CLASS__, $method_name)) {
             TextFieldSearch::$method_name($results, $context);
@@ -230,13 +219,11 @@ class TextFieldSearch extends FormBase {
 
             $storage = \Drupal::entityTypeManager()->getStorage($entity_type);
             $entities = $storage->loadMultiple($results);
-            // ksm($entities);
 
             foreach ($entities as $entity) {
               try {
                 if (in_array('canonical', $entity->uriRelationships())) {
-                  // ksm(current($entities)->toUrl(), current($entities)->uriRelationships());
-                  $data = $context['results']['data']['paragraph'][$entity->id()]?? [
+                  $data = $context['results']['data']['paragraph'][$entity->id()] ?? [
                     'url' => $entity->toUrl(),
                     'label' => $entity->label(),
                     'count' => 0,
@@ -246,11 +233,10 @@ class TextFieldSearch extends FormBase {
                   $context['results']['data'][$entity_type][$entity->id()] = $data;
                 }
                 else {
-                  // todo: print error message.
                   $context['results']['errors'][] = "Cannot create link for " . $entity->label();
                 }
               }
-              catch(\Throwable $e) {
+              catch (\Throwable $e) {
                 $context['results']['errors'][] = $e->getMessage();
               }
             }
@@ -260,7 +246,14 @@ class TextFieldSearch extends FormBase {
     }
   }
 
+  // phpcs:disable Drupal.NamingConventions.ValidFunctionName.ScopeNotCamelCaps
 
+  /**
+   * Process query results for paragraph entities.
+   *
+   * We have to seperate this out b/c we need to look for its parent entity to
+   * create a link to it.
+   */
   public static function processResults_paragraph($results, &$context) {
     $storage = \Drupal::entityTypeManager()->getStorage('paragraph');
     $entities = $storage->loadMultiple($results);
@@ -286,7 +279,7 @@ class TextFieldSearch extends FormBase {
           }
         }
 
-        $data = $context['results']['data']['paragraph'][$parent->id()]?? [
+        $data = $context['results']['data']['paragraph'][$parent->id()] ?? [
           'url' => $parent->toUrl(),
           'label' => $parent->label(),
           'count' => 0,
@@ -301,9 +294,19 @@ class TextFieldSearch extends FormBase {
     }
   }
 
-  public static function finished_callback($success, $results, $operations, $elapsed) {
-    // ksm($success, $results, $operations, $elapsed);
-    $_SESSION['bcu_search_results'] = [$success, $results, $operations, $elapsed];
+  // phpcs:enable Drupal.NamingConventions.ValidFunctionName.ScopeNotCamelCaps
+
+  /**
+   * Batch finished callback.
+   */
+  public static function finishedCallback($success, $results, $operations, $elapsed) {
+    // Just add all results to the session var to let the form render results.
+    $_SESSION['bcu_search_results'] = [
+      $success,
+      $results,
+      $operations,
+      $elapsed,
+    ];
   }
 
 }
