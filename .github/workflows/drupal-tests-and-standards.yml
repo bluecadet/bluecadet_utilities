@@ -185,6 +185,7 @@ jobs:
         run: |
           composer config --no-plugins allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
           composer require --dev "drupal/coder"
+          composer require bluecadet/bc_composer_ci_tools:^1.0
 
       # Install Drupal using minimal installation profile and enable the module.
       - name: Install Drupal
@@ -198,14 +199,26 @@ jobs:
         working-directory: ${{ env.DRUPAL_ROOT }}
         continue-on-error: true
         run: |
-          vendor/bin/phpcs -s --standard=Drupal --extensions=php,module,inc,install,test,profile,theme,css,info,txt --ignore=node_modules,bower_components,vendor,dist --exclude=Drupal.InfoFiles.AutoAddedKeys --colors $MODULE_FOLDER
-          vendor/bin/phpcs -s --standard=DrupalPractice --extensions=php,module,inc,install,test,profile,theme,css,info,txt --ignore=node_modules,bower_components,vendor,dist --exclude=Drupal.InfoFiles.AutoAddedKeys --colors $MODULE_FOLDER
+          vendor/bin/phpcs --config-set ignore_warnings_on_exit 1
+          vendor/bin/phpcs --config-set ignore_errors_on_exit 1
+          vendor/bin/phpcs -s --standard=Drupal --extensions=php,module,inc,install,test,profile,theme,css,info,txt --ignore=node_modules,bower_components,vendor,dist --exclude=Drupal.InfoFiles.AutoAddedKeys --report=Bluecadet\\PHPCS\\Report\\Markdown $MODULE_FOLDER
+          vendor/bin/phpcs -s --standard=Drupal --extensions=php,module,inc,install,test,profile,theme,css,info,txt --ignore=node_modules,bower_components,vendor,dist --exclude=Drupal.InfoFiles.AutoAddedKeys --report=Bluecadet\\PHPCS\\Report\\Markdown $MODULE_FOLDER >> styling_report.md
+          vendor/bin/phpcs -s --standard=DrupalPractice --extensions=php,module,inc,install,test,profile,theme,css,info,json --ignore=node_modules,bower_components,vendor,dist --exclude=Drupal.InfoFiles.AutoAddedKeys --report=Bluecadet\\PHPCS\\Report\\Markdown $MODULE_FOLDER >> styling_report.md
 
-      - name: Run Drupal-Check
-        working-directory: ${{ env.DRUPAL_ROOT }}
-        continue-on-error: true
-        run: |
-          php vendor/bin/drupal-check $MODULE_FOLDER --drupal-root ${{ env.DRUPAL_ROOT }}
+          # npm i -g github:10up/phpcs-json-to-md
+          # phpcs-json-to-md --path ./styling_report1.json --output ./styling_report1.md
+          # cat styling_report1.md >> $GITHUB_STEP_SUMMARY
+
+          PHPCS_REPORT=`cat styling_report.md`
+          echo "PHPCS_REPORT=$PHPCS_REPORT" >> $GITHUB_ENV
+          echo $PHPCS_REPORT >> $GITHUB_STEP_SUMMARY
+          # echo "### Hello world! :rocket:" >> $GITHUB_STEP_SUMMARY
+
+      # - name: Run Drupal-Check
+      #   working-directory: ${{ env.DRUPAL_ROOT }}
+      #   continue-on-error: true
+      #   run: |
+      #     php vendor/bin/drupal-check $MODULE_FOLDER --drupal-root ${{ env.DRUPAL_ROOT }}
 
       - name: Start Drush webserver and chromedriver
         working-directory: ${{ env.DRUPAL_ROOT }}
@@ -247,3 +260,40 @@ jobs:
         continue-on-error: true
         run: |
           vendor/bin/phpunit --bootstrap $DRUPAL_ROOT/core/tests/bootstrap.php -c $MODULE_FOLDER/phpunit.xml $MODULE_FOLDER
+
+      # - uses: actions/github-script@v6
+      #   id: get_issue_number
+      #   with:
+      #     script: |
+      #       if (context.issue.number) {
+      #         // Return issue number if present
+      #         return context.issue.number;
+      #       } else {
+      #         // Otherwise return issue number from commit
+      #         return (
+      #           await github.rest.repos.listPullRequestsAssociatedWithCommit({
+      #             commit_sha: context.sha,
+      #             owner: context.repo.owner,
+      #             repo: context.repo.repo,
+      #           })
+      #         ).data[0].number;
+      #       }
+      #     result-encoding: string
+
+      # - uses: actions/github-script@v6
+      #   env:
+      #     prn: ${{ steps.get_issue_number.outputs.result }}
+      #     PHPCS_REPORT: ${{ env.PHPCS_REPORT }}
+      #   with:
+      #     script: |
+      #       console.log(context)
+      #       console.log(process.env)
+
+      #       const { prn, PHPCS_REPORT } = process.env
+
+      #       github.rest.issues.createComment({
+      #         issue_number: 35,
+      #         owner: context.repo.owner,
+      #         repo: context.repo.repo,
+      #         body: 'hello world'
+      #       })
