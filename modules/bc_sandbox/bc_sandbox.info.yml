@@ -10,7 +10,7 @@ dependencies: []
 configure: null
 
 
-# Information added by packaging script on 2023-09-29
-version: 4.0.3-alpha3
+# Information added by packaging script on 2023-10-29
+version: 4.0.3
 project: bluecadet_utilities
-datestamp: 1695994979699
+datestamp: 1698597753458
