@@ -75,6 +75,7 @@ line as well as the location for the module.
 
 ### 4.1.1
 - Updating dev tools. Drupal module not really effected.
+- Update SimpleFormatWidget to handle text fields and the “format” subfield, so it doesn’t store null in DB
 
 ### 4.1.0
 - D10 compatibility

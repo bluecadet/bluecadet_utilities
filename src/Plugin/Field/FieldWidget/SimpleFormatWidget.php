@@ -30,6 +30,7 @@ class SimpleFormatWidget extends StringTextfieldWidget {
       'underline' => TRUE,
       'remove_formatting' => TRUE,
       'toggle' => TRUE,
+      'default_format' => '',
     ] + parent::defaultSettings();
   }
 
@@ -65,6 +66,25 @@ class SimpleFormatWidget extends StringTextfieldWidget {
       '#default_value' => $this->getSetting('toggle'),
     ];
 
+    if ($this->fieldDefinition->getType() == 'text') {
+
+      // Text Format options.
+      $formats = filter_formats();
+      $format_options = ['' => '-- Select --'];
+
+      foreach ($formats as $f_id => $f) {
+        $format_options[$f_id] = $f->label();
+      }
+
+      $element['default_format'] = [
+        '#type' => 'select',
+        '#title' => $this->t('Default format for Text fields'),
+        '#default_value' => $this->getSetting('default_format'),
+        '#options' => $format_options,
+      ];
+    }
+
+
     // Text Format options.
     $formats = filter_formats();
     $format_options = ['' => '-- Select --'];
@@ -97,6 +117,9 @@ class SimpleFormatWidget extends StringTextfieldWidget {
     if ($this->getSetting('toggle')) {
       $summary[] = $this->t('Toggle Source Code button');
     }
+    if ($this->getSetting('default_format')) {
+      $summary[] = $this->t('Defaul Formatter: %sum', ['%sum' => $this->getSetting('default_format')]);
+    }
 
     return $summary;
   }
@@ -106,7 +129,9 @@ class SimpleFormatWidget extends StringTextfieldWidget {
    */
   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
 
+    // We are deailing with the individual form element here.
     $main_widget = parent::formElement($items, $delta, $element, $form, $form_state);
+
     $main_widget['value']['#buttons']['bold'] = $this->getSetting('bold');
     $main_widget['value']['#buttons']['italic'] = $this->getSetting('italic');
     $main_widget['value']['#buttons']['underline'] = $this->getSetting('underline');
@@ -114,6 +139,15 @@ class SimpleFormatWidget extends StringTextfieldWidget {
     $main_widget['value']['#buttons']['toggle'] = $this->getSetting('toggle');
     $main_widget['value']['#type'] = 'simple_format_textfield';
 
+    // Check if we are dealing with a formatted field.
+    if ($this->fieldDefinition->getType() == 'text') {
+      // Always force default formatter.
+      // todo: should we always force this?
+      $main_widget['format'] = [
+        '#type' => 'hidden',
+        '#value' => $this->getSetting('default_format'),
+      ];
+    }
     return $main_widget;
   }
 
