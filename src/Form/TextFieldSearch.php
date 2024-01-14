@@ -84,6 +84,12 @@ class TextFieldSearch extends FormBase {
       '#value' => $this->t('Search'),
     ];
 
+    $striper = [
+      'transparent' => '#eeeeee',
+      '#eeeeee' => 'transparent',
+    ];
+    $current_stripe = "#eeeeee";
+
     if (!empty($session_data)) {
       $form['results'] = [
         '#weight' => -1,
@@ -94,18 +100,31 @@ class TextFieldSearch extends FormBase {
       ];
 
       foreach ($session_data[1]['data'] as $entity_type => $data) {
+
         $list = [
           '#theme' => 'item_list',
           '#title' => 'Results for: ' . $entity_type,
           '#items' => [],
         ];
+        $current_stripe = "#eeeeee";
 
         foreach ($data as $id => $result_data) {
 
           $link = Link::fromTextAndUrl($result_data['label'], $result_data['url']);
           $list['#items'][] = [
-            '#markup' => "Found " . $this->formatPlural($result_data['count'], "1 time", "@count times") . " on " . $link->toString(),
+            '#wrapper_attributes' => [
+              'style' => "padding: 1em;background-color:" . $current_stripe,
+            ],
+            [
+              '#markup' => "<p>Found " . $this->formatPlural($result_data['count'], "1 time", "@count times") . " on " . $link->toString() . "</p>",
+            ],
+            [
+              '#theme' => 'item_list',
+              '#title' => 'Fields:',
+              '#items' => $result_data['fields'],
+            ],
           ];
+          $current_stripe = $striper[$current_stripe];
         }
 
         $form['results']['results'][] = $list;
@@ -152,16 +171,20 @@ class TextFieldSearch extends FormBase {
     ];
 
     foreach ($fields as $field_type => $field_data) {
-      foreach ($field_data as $entity_type => $fields) {
-        $batch['operations'][] = [
-          [$this, 'searchTextFields'],
-          [
-            $field_type,
-            $entity_type,
-            $fields,
-            $values['search'],
-          ],
-        ];
+      foreach ($field_data as $entity_type => $fields2) {
+        foreach ($fields2 as $f => $fdata) {
+          $batch['operations'][] = [
+            [$this, 'searchTextFields'],
+            [
+              $field_type,
+              $entity_type,
+              [
+                $f => $fdata,
+              ],
+              $values['search'],
+            ],
+          ];
+        }
       }
     }
 
@@ -199,7 +222,7 @@ class TextFieldSearch extends FormBase {
     $r = $query->execute();
 
     if (!empty($r)) {
-      $context['results']['raw'][$entity_type][$field_type] = $r;
+      $context['results']['raw'][$entity_type][$field_type][$field_id] = $r;
     }
   }
 
@@ -209,35 +232,41 @@ class TextFieldSearch extends FormBase {
   public static function processResults(&$context) {
     if (isset($context['results']['raw']) && !empty($context['results']['raw'])) {
       foreach ($context['results']['raw'] as $entity_type => $field_types) {
-        foreach ($field_types as $results) {
+        foreach ($field_types as $fields) {
+          foreach ($fields as $field_id => $results) {
+            $method_name = "processResults_" . $entity_type;
+            if (method_exists(__CLASS__, $method_name)) {
+              TextFieldSearch::$method_name($results, $field_id, $context);
+            }
+            else {
 
-          $method_name = "processResults_" . $entity_type;
-          if (method_exists(__CLASS__, $method_name)) {
-            TextFieldSearch::$method_name($results, $context);
-          }
-          else {
+              $storage = \Drupal::entityTypeManager()->getStorage($entity_type);
+              $entities = $storage->loadMultiple($results);
 
-            $storage = \Drupal::entityTypeManager()->getStorage($entity_type);
-            $entities = $storage->loadMultiple($results);
+              foreach ($entities as $entity) {
+                try {
+                  if (in_array('canonical', $entity->uriRelationships())) {
+                    $data = $context['results']['data'][$entity_type][$entity->id()] ?? [
+                      'url' => $entity->toUrl(),
+                      'label' => $entity->label(),
+                      'count' => 0,
+                      'fields' => [],
+                    ];
+                    $data['count']++;
 
-            foreach ($entities as $entity) {
-              try {
-                if (in_array('canonical', $entity->uriRelationships())) {
-                  $data = $context['results']['data']['paragraph'][$entity->id()] ?? [
-                    'url' => $entity->toUrl(),
-                    'label' => $entity->label(),
-                    'count' => 0,
-                  ];
-                  $data['count']++;
+                    if (!in_array($field_id, $data['fields'])) {
+                      $data['fields'][] = $field_id;
+                    }
 
-                  $context['results']['data'][$entity_type][$entity->id()] = $data;
+                    $context['results']['data'][$entity_type][$entity->id()] = $data;
+                  }
+                  else {
+                    $context['results']['errors'][] = "Cannot create link for " . $entity->label();
+                  }
                 }
-                else {
-                  $context['results']['errors'][] = "Cannot create link for " . $entity->label();
+                catch (\Throwable $e) {
+                  $context['results']['errors'][] = $e->getMessage();
                 }
-              }
-              catch (\Throwable $e) {
-                $context['results']['errors'][] = $e->getMessage();
               }
             }
           }
@@ -254,7 +283,7 @@ class TextFieldSearch extends FormBase {
    * We have to seperate this out b/c we need to look for its parent entity to
    * create a link to it.
    */
-  public static function processResults_paragraph($results, &$context) {
+  public static function processResults_paragraph($results, $field_id, &$context) {
     $storage = \Drupal::entityTypeManager()->getStorage('paragraph');
     $entities = $storage->loadMultiple($results);
 
@@ -283,8 +312,12 @@ class TextFieldSearch extends FormBase {
           'url' => $parent->toUrl(),
           'label' => $parent->label(),
           'count' => 0,
+          'fields' => [],
         ];
         $data['count']++;
+        if (!in_array($field_id, $data['fields'])) {
+          $data['fields'][] = $field_id;
+        }
 
         $context['results']['data']['paragraph'][$parent->id()] = $data;
       }
