@@ -97,6 +97,7 @@ class ImageStyleGenerator extends FormBase {
     ];
 
     $options = [
+      'image_scale' => "Scale",
       'image_scale_and_crop' => "Scale & Crop",
     ];
 
@@ -159,34 +160,67 @@ class ImageStyleGenerator extends FormBase {
 
     foreach ($values['image_style_effects_variations'] as $key => $val) {
       if ($val) {
-        foreach ($settings['sizes'] as $size) {
-          $label = $size['label'];
-          $w_size = $size['size'];
+        if ($key == "image_scale") {
+          foreach ($settings['sizes'] as $size) {
+            $label = $size['label'];
+            $w_size = $size['size'];
 
-          $machinename = $values['width'] . "x" . $values['height'] . "__" . $key . "__" . $label;
+            $machinename = $key . "__" . $label;
 
-          if (ImageStyle::load($machinename) == NULL) { // phpcs:ignore
-            $image_style = ImageStyle::create([
-              'status' => TRUE,
-              'name' => $machinename,
-              'label' => $machinename,
-            ]);
+            if (ImageStyle::load($machinename) == NULL) { // phpcs:ignore
+              $image_style = ImageStyle::create([
+                'status' => TRUE,
+                'name' => $machinename,
+                'label' => $machinename,
+              ]);
 
-            $image_style->addImageEffect([
-              'id' => $key,
-              'weight' => 1,
-              'data' => [
-                'width' => $w_size,
-                'height' => ceil($w_size * $values['height'] / $values['width']),
-              ],
-            ]);
+              $image_style->addImageEffect([
+                'id' => $key,
+                'weight' => 1,
+                'data' => [
+                  'width' => $w_size,
+                ],
+              ]);
 
-            $image_style->save();
+              $image_style->save();
 
-            $responses[] = $machinename;
+              $responses[] = $machinename;
+            }
+            else {
+              $this->messenger()->addWarning("Already exists: " . $machinename);
+            }
           }
-          else {
-            $this->messenger()->addWarning("Already exists: " . $machinename);
+        }
+        else {
+          foreach ($settings['sizes'] as $size) {
+            $label = $size['label'];
+            $w_size = $size['size'];
+
+            $machinename = $values['width'] . "x" . $values['height'] . "__" . $key . "__" . $label;
+
+            if (ImageStyle::load($machinename) == NULL) { // phpcs:ignore
+              $image_style = ImageStyle::create([
+                'status' => TRUE,
+                'name' => $machinename,
+                'label' => $machinename,
+              ]);
+
+              $image_style->addImageEffect([
+                'id' => $key,
+                'weight' => 1,
+                'data' => [
+                  'width' => $w_size,
+                  'height' => ceil($w_size * $values['height'] / $values['width']),
+                ],
+              ]);
+
+              $image_style->save();
+
+              $responses[] = $machinename;
+            }
+            else {
+              $this->messenger()->addWarning("Already exists: " . $machinename);
+            }
           }
         }
       }
