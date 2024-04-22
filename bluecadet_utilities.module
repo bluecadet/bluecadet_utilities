@@ -104,7 +104,7 @@ function bluecadet_utilities_transliterate_filenames_transliteration($filename) 
 function bluecadet_utilities_editor_info_alter(array &$editors) {
   $config = \Drupal::config('bluecadet_utilities.settings');
 
-  if ($config->get('use_textfield_wysiwyg')) {
+  if ($config->get('use_textfield_wysiwyg') && isset($editors['ckeditor'])) {
     $editors['ckeditor']['supported_element_types'][] = 'textfield';
   }
 }
