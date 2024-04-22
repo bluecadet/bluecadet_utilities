@@ -21,7 +21,7 @@
   "homepage": "https://github.com/bluecadet/bluecadet_utilities#readme",
   "dependencies": {
     "@bluecadet/bldr": "^1.0.6",
-    "@bluecadet/drops": "^1.0.0-alpha.3",
+    "@bluecadet/drops": "^1.0.0",
     "postcss-advanced-variables": "^3.0.1",
     "postcss-assets": "^6.0.0",
     "postcss-custom-media": "^10.0.1",
