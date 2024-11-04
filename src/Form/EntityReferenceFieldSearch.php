@@ -5,10 +5,13 @@ namespace Drupal\bluecadet_utilities\Form;
 use Drupal\bluecadet_utilities\DrupalStateTrait;
 use Drupal\Core\Entity\EntityFieldManager;
 use Drupal\Core\Entity\EntityTypeManager;
-use Drupal\Core\Form\FormBase;
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Form\FormBase;
 use Drupal\Core\Link;
 use Drupal\Core\Messenger\MessengerTrait;
+use Drupal\Core\Url;
+use Drupal\file\Entity\File;
 
 /**
  * Bluecadet Utility Settings Form.
@@ -38,6 +41,13 @@ class EntityReferenceFieldSearch extends FormBase {
    * @var \Drupal\Core\Entity\EntityTypeManager
    */
   private $entityTypeManager;
+
+  /**
+   * File system Interface for reading and writing files.
+   *
+   * @var \Drupal\Core\File\FileSystemInterface
+   */
+  protected $fileSystem;
 
   /**
    * Get module handler.
@@ -71,6 +81,16 @@ class EntityReferenceFieldSearch extends FormBase {
   }
 
   /**
+   * Get Entity Type Manager.
+   */
+  private function fileSystem(): FileSystemInterface {
+    if (!$this->fileSystem) {
+      $this->fileSystem = \Drupal::service('file_system'); // phpcs:ignore
+    }
+    return $this->fileSystem;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function getFormId() {
@@ -93,8 +113,7 @@ class EntityReferenceFieldSearch extends FormBase {
 
     $form['entity_type'] = [
       '#type' => 'select',
-      '#title' => $this->t("Entity Types"),
-      '#description' => $this->t("Choose the Entity type you want to search for"),
+      '#title' => $this->t("Entities"),
       '#options' => $entity_opts,
       '#default_value' => $session_data[1]['entity_type'] ?? "",
     ];
@@ -104,8 +123,22 @@ class EntityReferenceFieldSearch extends FormBase {
       '#type' => 'textfield',
       '#title' => $this->t("Entity Id"),
       '#step' => 1,
-      '#description' => $this->t("This is doing a full string search on the raw html of the text field values. You can use '%' as a wildcard. As most ids are ints, be careful."),
+      // '#description' => $this->t("This is doing a full string search on the raw html of the text field values. You can use '%' as a wildcard."),
       '#default_value' => $session_data[1]['search_str'] ?? "",
+      // '#placeholder' => "%class=\"material-icons\"% OR %<a name=\"%\"></a>%",
+    ];
+
+    $form['sep1'] = [
+      '#markup' => "<hr>",
+    ];
+
+    // Include JSON output file.
+    $form['json'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t("JOSN output"),
+      '#step' => 1,
+      '#description' => $this->t("Should the form create an output file of the raw data?"),
+      '#default_value' => FALSE,
     ];
 
     // Actions.
@@ -115,6 +148,7 @@ class EntityReferenceFieldSearch extends FormBase {
       '#value' => $this->t('Search'),
     ];
 
+    // Build outpur results from previous run.
     $striper = [
       'transparent' => '#eeeeee',
       '#eeeeee' => 'transparent',
@@ -125,10 +159,20 @@ class EntityReferenceFieldSearch extends FormBase {
       $form['results'] = [
         '#weight' => -1,
         'timing' => [
+          '#prefix' => "<p>",
           '#markup' => "Results took " . $session_data[3],
+          '#suffix' => "</p>",
         ],
+        'download' => [],
         'results' => [],
       ];
+
+      // Add in file download link if available.
+      if (!empty($session_data[1]['file_link'])) {
+        $form['results']['download']['#prefix'] = "<p>";
+        $form['results']['download']['#suffix'] = "</p>";
+        $form['results']['download']['download_data'] = $session_data[1]['file_link']->toRenderable();
+      }
 
       foreach ($session_data[1]['data'] as $entity_type => $data) {
 
@@ -231,6 +275,13 @@ class EntityReferenceFieldSearch extends FormBase {
       [$this, 'processResults'],
       [],
     ];
+
+    if ($values['json'] == TRUE) {
+      $batch['operations'][] = [
+        [$this, 'createJsonOutput'],
+        [],
+      ];
+    }
 
     batch_set($batch);
   }
@@ -369,6 +420,54 @@ class EntityReferenceFieldSearch extends FormBase {
   }
 
   // phpcs:enable Drupal.NamingConventions.ValidFunctionName.ScopeNotCamelCaps
+
+  /**
+   * Out put raw data to a JSON file.
+   *
+   * @todo need a cron job to clean up old files.
+   */
+  public static function createJsonOutput(&$context) {
+
+    if ($context['results']['raw']) {
+      $file_system = \Drupal::service('file_system');
+      // @todo add to a settings config page.
+      $destination = "public://data_search_exports/";
+      // Set json data from the raw results.
+      $data = json_encode($context['results']['raw']);
+
+      $search_str_sanatized = mb_ereg_replace("([^\w\s\d\-_~,;\[\]\(\).])", '', $context['results']['search_str']);
+      $search_str_sanatized = mb_ereg_replace("([^\w\s\d\-_~,;\[\]\(\).])", '', $search_str_sanatized);
+
+      $filename = date("YmdHis") . "--" . $search_str_sanatized . "--" . "ent_ref_search.json";
+
+      if (!$file_system->prepareDirectory($destination, FileSystemInterface::CREATE_DIRECTORY)) {
+        // @todo Log an error.
+        return FALSE;
+      }
+
+      $finale_file = $file_system->saveData($data, $destination . $filename, FileSystemInterface::EXISTS_REPLACE);
+
+      if ($finale_file) {
+        // Create temporary File entity.
+        // We do this so Drupal will clean up the file eventually.
+        $new_file = File::create(['uri' => $finale_file]);
+        $new_file->setOwnerId(1);
+        $new_file->setTemporary();
+        $new_file->save();
+
+        $new_file_url = URL::fromUserInput($new_file->createFileUrl(), [
+          'attributes' => [
+            'download' => TRUE,
+          ],
+        ]);
+
+        $link = Link::fromTextAndUrl("Download JSON Data", $new_file_url);
+
+        $context['results']['file_file'] = $new_file;
+        $context['results']['file_link'] = $link;
+      }
+    }
+  }
 
   /**
    * Batch finished callback.
