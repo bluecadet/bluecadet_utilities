@@ -176,7 +176,7 @@ jobs:
       # Drush is installed.
       - name: Install drush
         working-directory: ${{ env.DRUPAL_ROOT }}
-        run: composer require "drush/drush ^11.0"
+        run: composer require "drush/drush ^11 || ^12"
 
       - name: Install PHPCS
         working-directory: ${{ env.DRUPAL_ROOT }}
