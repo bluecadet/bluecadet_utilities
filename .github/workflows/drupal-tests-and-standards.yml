@@ -25,13 +25,13 @@ jobs:
   #           php-versions: '8.0'
   #   steps:
   #     - name: Checkout Drupal core
-  #       uses: actions/checkout@v3
+  #       uses: actions/checkout@v4
   #       with:
   #         repository: drupal/drupal
   #         ref: ${{ matrix.drupal-core }}
 
   #     - name: Checkout module
-  #       uses: actions/checkout@v3
+  #       uses: actions/checkout@v4
   #       with:
   #         path: modules/bluecadet_public_files
 
@@ -82,19 +82,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        drupal-core: ['10.0.x', '10.1.x']
-        php-version: ['8.1', '8.2']
+        drupal-core: ['10.1.x', '10.2.x', '10.3.x', '11.0.x']
+        php-version: ['8.1', '8.2', '8.3']
         mariadb-version: ['10.4', '10.6']
         exclude:
           -
-            drupal-core: '10.0.x'
-            php-version: '8.0'
-            mariadb-version: '10.4'
-          -
-            drupal-core: '10.0.x'
-            php-version: '8.0'
-            mariadb-version: '10.6'
-          -
             drupal-core: '10.1.x'
             php-version: '8.0'
             mariadb-version: '10.4'
@@ -102,6 +94,12 @@ jobs:
             drupal-core: '10.1.x'
             php-version: '8.0'
             mariadb-version: '10.6'
+          -
+            drupal-core: '11.0.x'
+            php-version: '8.1'
+          -
+            drupal-core: '11.0.x'
+            php-version: '8.2'
 
     container:
       # See https://github.com/tuutti/docker-images/tree/main/drupal/ci
@@ -119,7 +117,7 @@ jobs:
           - 3306:3306
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 1
 
