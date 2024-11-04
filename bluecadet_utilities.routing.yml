@@ -29,3 +29,11 @@ bluecadet_utilities.text_field_search:
     _title: 'Search full text fields'
   requirements:
     _permission: 'administer site configuration'
+
+bluecadet_utilities.entity_refernce_field_search:
+  path: '/admin/reports/entreffield-search'
+  defaults:
+    _form: '\Drupal\bluecadet_utilities\Form\EntityReferenceFieldSearch'
+    _title: 'Search Entity Reference fields'
+  requirements:
+    _permission: 'administer site configuration'
