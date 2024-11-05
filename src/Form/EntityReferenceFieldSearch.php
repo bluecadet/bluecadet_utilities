@@ -373,7 +373,7 @@ class EntityReferenceFieldSearch extends FormBase {
   /**
    * Process query results for paragraph entities.
    *
-   * We have to seperate this out b/c we need to look for its parent entity to
+   * We have to separate this out b/c we need to look for its parent entity to
    * create a link to it.
    */
   public static function processResults_paragraph($results, $field_id, &$context) {
