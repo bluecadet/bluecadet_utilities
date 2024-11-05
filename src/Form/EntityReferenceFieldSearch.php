@@ -247,7 +247,7 @@ class EntityReferenceFieldSearch extends FormBase {
       'operations' => [
         [
           [$this, 'setUpContext'],
-          [$values['search'], $values['entity_type']],
+          [$values['search'], $values['entity_type'], $form_state],
         ],
       ],
       'finished' => [$this, 'finishedCallback'],
@@ -289,12 +289,13 @@ class EntityReferenceFieldSearch extends FormBase {
   /**
    * Batch process to setup the $context array.
    */
-  public static function setUpContext($search_string, $entity_type, &$context) {
+  public static function setUpContext($search_string, $entity_type, $form_state, &$context) {
     $context['results']['search_str'] = $search_string;
     $context['results']['entity_type'] = $entity_type;
     $context['results']['raw'] = [];
     $context['results']['data'] = [];
     $context['results']['errors'] = [];
+    $context['results']['form_state'] = $form_state;
   }
 
   /**
@@ -473,7 +474,13 @@ class EntityReferenceFieldSearch extends FormBase {
    * Batch finished callback.
    */
   public static function finishedCallback($success, $results, $operations, $elapsed) {
+
+    $results['form_state']->setStorage([
+      'raw' => $results['raw'],
+    ]);
+
     // Just add all results to the session var to let the form render results.
+    // todo change this over to use form_state storage.
     $_SESSION['bcu_ent_ref_search_results'] = [
       $success,
       $results,
