@@ -217,31 +217,6 @@ class EntityReferenceFieldSearch extends FormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $values = $form_state->getValues();
 
-    $field_map = $this->entityFieldManager()->getFieldMap();
-
-    $field_type = [
-      "entity_reference",
-      "entity_reference_revisions",
-      "entity_reference_entity_modify",
-    ];
-
-    $fields = [];
-    foreach ($field_map as $entity => $entity_field_data) {
-      foreach ($entity_field_data as $field_id => $field_data) {
-        if (in_array($field_data['type'], $field_type)) {
-
-          $field_storage_defs = $this->entityFieldManager()->getFieldStorageDefinitions($entity);
-
-          if (isset($field_storage_defs[$field_id])) {
-            $field_storage_settings = $field_storage_defs[$field_id]->getSettings();
-            if ($field_storage_settings['target_type'] == $values['entity_type']) {
-              $fields[$field_data['type']][$entity][$field_id] = $field_data;
-            }
-          }
-        }
-      }
-    }
-
     $batch = [
       'title' => $this->t('Searching...'),
       'operations' => [
@@ -252,6 +227,8 @@ class EntityReferenceFieldSearch extends FormBase {
       ],
       'finished' => [$this, 'finishedCallback'],
     ];
+
+    $fields = EntityReferenceFieldSearch::findFields($form_state);
 
     foreach ($fields as $field_type => $field_data) {
       foreach ($field_data as $entity_type => $fields2) {
@@ -284,6 +261,45 @@ class EntityReferenceFieldSearch extends FormBase {
     }
 
     batch_set($batch);
+  }
+
+  /**
+   * Run the process, to look for viable fields to search.
+   *
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   Drupal's forms tate obj.
+   *
+   * @return array
+   */
+  public static function findFields(FormStateInterface $form_state): array {
+
+    $entity_field_manager = \Drupal::service('entity_field.manager');  // phpcs:ignore
+    $field_map = $entity_field_manager->getFieldMap();
+
+    $field_type = [
+      "entity_reference",
+      "entity_reference_revisions",
+      "entity_reference_entity_modify",
+    ];
+
+    $fields = [];
+    foreach ($field_map as $entity => $entity_field_data) {
+      foreach ($entity_field_data as $field_id => $field_data) {
+        if (in_array($field_data['type'], $field_type)) {
+
+          $field_storage_defs = $entity_field_manager->getFieldStorageDefinitions($entity);
+
+          if (isset($field_storage_defs[$field_id])) {
+            $field_storage_settings = $field_storage_defs[$field_id]->getSettings();
+            if ($field_storage_settings['target_type'] == $values['entity_type']) {
+              $fields[$field_data['type']][$entity][$field_id] = $field_data;
+            }
+          }
+        }
+      }
+    }
+
+    return $fields;
   }
 
   /**
