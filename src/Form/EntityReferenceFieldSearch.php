@@ -272,6 +272,7 @@ class EntityReferenceFieldSearch extends FormBase {
    * @return array
    */
   public static function findFields(FormStateInterface $form_state): array {
+    $values = $form_state->getValues();
 
     $entity_field_manager = \Drupal::service('entity_field.manager');  // phpcs:ignore
     $field_map = $entity_field_manager->getFieldMap();
