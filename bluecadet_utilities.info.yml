@@ -1,7 +1,7 @@
 name: Bluecadet Utilities
 type: module
 description: 'Adds utilities to aide in development of custom sites.'
-core_version_requirement: ^10
+core_version_requirement: ^10 || ^11
 
 package: Bluecadet
 

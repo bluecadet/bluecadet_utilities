@@ -1,3 +1,5 @@
+# Bluecadet Utilities
+
 ## Versions
 
 ### 1.x Branch
@@ -18,11 +20,11 @@ Drupal 8.9 and Drupal 9 Compatible.
 
 ### 4.0.x Branch
 
-Drupal 9 Compatabile. Due to twig file loading easiest to keep seperate branches for D9 and D10.
+Drupal 9 Compatible. Due to twig file loading easiest to keep separate branches for D9 and D10.
 
 ### 4.1.x Branch
 
-Drupal 10 Compatabile. Due to twig file loading easiest to keep seperate branches for D9 and D10.
+Drupal 10 Compatible. Due to twig file loading easiest to keep separate branches for D9 and D10.
 
 ## Includes
 <!--
@@ -36,7 +38,6 @@ Drupal 10 Compatabile. Due to twig file loading easiest to keep seperate branche
 - Image Style generator, based on aspect ratios.
 - text string search for searching html strings in text fields (eg, search for a specific link or class name being used)
 
-
 ### Submodules
 
 - bc_display_title: Provide functionality around the use of the display title field we normally use
@@ -46,12 +47,14 @@ Drupal 10 Compatabile. Due to twig file loading easiest to keep seperate branche
 <hr>
 
 ## Not using Composer
+
 If you are not using composer, you can delete all unneeded files.
 
 - composer.json
 
 
 ## Using Composer
+
 If you are using composer to manage Drupal modules, make sure you add custom
 location for this module to be downloaded to. You must add the installer types
 line as well as the location for the module.
@@ -69,25 +72,35 @@ line as well as the location for the module.
   },
   ...
 ```
+
 ## Changelog
 
 - Adding in basic text search.
 
+### 4.2.x
+
+- Enforcing Drupal 11 compatibility.
+
 ### 4.1.1
+
 - Updating dev tools. Drupal module not really effected.
 - Update SimpleFormatWidget to handle text fields and the “format” subfield, so it doesn’t store null in DB
 
 ### 4.1.0
+
 - D10 compatibility
 - Updated twig handler for D10
 
 ### 4.0.3
+
 - Updating dev tools. Drupal module not really effected.
 
 ### 4.0.2
+
 - Adding in utilities for github/building/composer etc.
 
 ### 4.0.1
+
 - Added in Image Style generator.
 - Added Simple Format Formatter so we can have min html in a text field.
 - Updated simple Format formatter styles for buttons in Claro
