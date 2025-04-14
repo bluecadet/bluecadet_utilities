@@ -11,6 +11,6 @@ configure: null
 
 
 # Information added by packaging script on 2025-04-14
-version: 4.2.0-rc.1
+version: 4.2.0-rc.2
 project: bluecadet_utilities
-datestamp: 1744647961821
+datestamp: 1744648765232
