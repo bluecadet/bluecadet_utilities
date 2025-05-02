@@ -1,1 +1,53 @@
-!function(){const e={NODE_ENV:"production"};try{if(process)return process.env=Object.assign({},process.env),void Object.assign(process.env,e)}catch(e){}globalThis.process={env:e}}(),function(e){Drupal.behaviors.bcSimpleFormatter={attach:function(t,n){e(".form-item .content-editable:not(.ec-bound)",t).each((function(t,n){let i=e(n).parents(".simple-formatter-field-container").find("input");e(n).on("blur keyup paste input",(function(){e(this).parents(".simple-formatter-field-container").find("input").val(this.innerHTML)})),i.on("keyup change",(function(){e(this).parents(".simple-formatter-field-container").find(".content-editable")[0].innerHTML=e(this).val()})).trigger("change").on("invalid",(function(){e(this).parents(".simple-formatter-field-container").addClass("raw-mode")})),e(n).parent().find("button.simple-editor-button").on("click",(function(t){t.preventDefault(),e(this).hasClass("simple-editor-button--bold")&&document.execCommand("bold",!1,null),e(this).hasClass("simple-editor-button--italic")&&document.execCommand("italic",!1,null),e(this).hasClass("simple-editor-button--underline")&&document.execCommand("underline",!1,null),e(this).hasClass("simple-editor-button--remove_formatting")&&document.execCommand("removeFormat",!1,null),e(this).hasClass("simple-editor-button--toggle-source")&&e(this).parents(".simple-formatter-field-container").toggleClass("raw-mode")})),e(n).addClass("ec-bound")}))}}}(jQuery);
+(function ($) {
+
+  Drupal.behaviors.bcSimpleFormatter = {
+    attach: function (context, settings) {
+
+      $(".form-item .content-editable:not(.ec-bound)", context).each(function (i, el) {
+        let $attached_input = $(el).parents('.simple-formatter-field-container').find("input");
+
+        $(el).on("blur keyup paste input", function () {
+          $(this).parents('.simple-formatter-field-container').find("input").val(this.innerHTML).trigger("change");
+        });
+
+        $attached_input.on("keyup change", function () {
+          let current_value = $(this).val();
+          let editable_value = $(this).parents('.simple-formatter-field-container').find(".content-editable")[0].innerHTML;
+          if (current_value !== editable_value) {
+            $(this).parents('.simple-formatter-field-container').find(".content-editable")[0].innerHTML = current_value;
+          }
+        }).trigger("change").on('invalid', function () {
+          // Flip to real form item so browser validation works ok.
+          $(this).parents('.simple-formatter-field-container').addClass('raw-mode');
+        });
+
+        // Attach once.
+        $(el).parent().find("button.simple-editor-button").on('click', function (e) {
+          e.preventDefault();
+
+          if ($(this).hasClass('simple-editor-button--bold')) {
+            document.execCommand('bold', false, null);
+          }
+          if ($(this).hasClass('simple-editor-button--italic')) {
+            document.execCommand('italic', false, null);
+          }
+          if ($(this).hasClass('simple-editor-button--underline')) {
+            document.execCommand('underline', false, null);
+          }
+
+          if ($(this).hasClass('simple-editor-button--remove_formatting')) {
+            document.execCommand('removeFormat', false, null);
+          }
+
+          if ($(this).hasClass('simple-editor-button--toggle-source')) {
+            $(this).parents('.simple-formatter-field-container').toggleClass('raw-mode');
+          }
+
+        });
+
+        $(el).addClass('ec-bound');
+      });
+    }
+  }
+
+})(jQuery);

@@ -7,11 +7,15 @@
         let $attached_input = $(el).parents('.simple-formatter-field-container').find("input");
 
         $(el).on("blur keyup paste input", function () {
-          $(this).parents('.simple-formatter-field-container').find("input").val( this.innerHTML );
+          $(this).parents('.simple-formatter-field-container').find("input").val(this.innerHTML).trigger("change");
         });
 
         $attached_input.on("keyup change", function () {
-          $(this).parents('.simple-formatter-field-container').find(".content-editable")[0].innerHTML = $(this).val();
+          let current_value = $(this).val();
+          let editable_value = $(this).parents('.simple-formatter-field-container').find(".content-editable")[0].innerHTML;
+          if (current_value !== editable_value) {
+            $(this).parents('.simple-formatter-field-container').find(".content-editable")[0].innerHTML = current_value;
+          }
         }).trigger("change").on('invalid', function () {
           // Flip to real form item so browser validation works ok.
           $(this).parents('.simple-formatter-field-container').addClass('raw-mode');
