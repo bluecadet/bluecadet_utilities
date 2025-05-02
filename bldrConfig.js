@@ -36,7 +36,7 @@ drupal_modules.forEach((val, i) => {
 
 module.exports = {
   css: css_config,
-  sass: sass_config,
+  // sass: sass_config,
   js: js_config,
   images: [], //images_config
   // --------------------- END BASIC CONFIG --------------------- //
