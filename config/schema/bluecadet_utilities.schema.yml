@@ -8,3 +8,40 @@ bluecadet_utilities.settings:
     use_textfield_wysiwyg:
       type: boolean
       label: 'Use transliteration'
+
+field.widget.settings.text_simple_formatter:
+  type: mapping
+  label: 'Simple Format Widget settings'
+  mapping:
+    size:
+      type: string
+      label: 'Text size'
+    placeholder:
+      type: string
+      label: 'Placeholder text'
+    bold:
+      type: boolean
+      label: 'Bold button'
+    italic:
+      type: boolean
+      label: 'Italic button'
+    underline:
+      type: boolean
+      label: 'Underline button'
+    remove_formatting:
+      type: boolean
+      label: 'Remove Formatting button'
+    toggle:
+      type: boolean
+      label: 'Toggle Source Code button'
+    default_format:
+      type: string
+      label: 'Default format for Text fields'
+
+field.formatter.settings.text_simple_format_formatter:
+  type: mapping
+  label: 'Simple Format Formatter settings'
+  mapping:
+    format:
+      type: string
+      label: 'Text format'
