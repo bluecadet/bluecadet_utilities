@@ -144,9 +144,15 @@ function bluecadet_utilities_field_widget_third_party_settings_form($plugin, $fi
   if ($field_definition->getName() === 'title') {
     $elements['title_label'] = [
       '#type' => 'textfield',
-      '#title' => t('Label'),
-      '#placeholder' => t('Administrative Title'),
+      '#title' => t('Field Label'),
+      '#description' => t('Override the label on the field, e.g. <em>Administrative Title</em>'),
       '#default_value' => $plugin->getThirdPartySetting('bluecadet_utilities', 'title_label'),
+    ];
+    $elements['title_description'] = [
+      '#type' => 'textfield',
+      '#title' => t('Field Description'),
+      '#description' => t('Add help text below the field, e.g. <em>For use in the CMS only.</em>'),
+      '#default_value' => $plugin->getThirdPartySetting('bluecadet_utilities', 'title_description'),
     ];
   }
 
@@ -159,8 +165,13 @@ function bluecadet_utilities_field_widget_third_party_settings_form($plugin, $fi
 function bluecadet_utilities_field_widget_settings_summary_alter(&$summary, $context) {
   if ($context['field_definition']->getName() === 'title') {
     $label = $context['widget']->getThirdPartySetting('bluecadet_utilities', 'title_label');
+    $description = $context['widget']->getThirdPartySetting('bluecadet_utilities', 'title_description');
+
     if (!empty($label)) {
       $summary[] = t('Label: @label', ['@label' => $label]);
+    }
+    if (!empty($description)) {
+      $summary[] = t('Description: @description', ['@description' => $description]);
     }
   }
 }
@@ -171,10 +182,18 @@ function bluecadet_utilities_field_widget_settings_summary_alter(&$summary, $con
 function bluecadet_utilities_field_widget_single_element_form_alter(&$element, FormStateInterface $form_state, $context) {
   if ($context['items']->getFieldDefinition()->getName() === 'title') {
     $label = $context['widget']->getThirdPartySetting('bluecadet_utilities', 'title_label');
+    $description = $context['widget']->getThirdPartySetting('bluecadet_utilities', 'title_description');
+
     if (!empty($label)) {
       $element['#title'] = $label;
       if (isset($element['value'])) {
         $element['value']['#title'] = $label;
+      }
+    }
+    if (!empty($description)) {
+      $element['#title'] = $description;
+      if (isset($element['value'])) {
+        $element['value']['#description'] = $description;
       }
     }
   }
