@@ -46,7 +46,7 @@ field.widget.third_party.bluecadet_utilities:
       type: label
       label: 'Field Label'
     title_description:
-      type: label
+      type: text
       label: 'Field Description'
 
 field.formatter.settings.text_simple_format_formatter:
