@@ -6,6 +6,7 @@
  */
 
 use Bluecadet\DrupalPackageManager\Checker;
+use Drupal\Core\Entity\EntityFormInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\file\FileInterface;
 use Drupal\update\UpdateManagerInterface;
@@ -139,8 +140,12 @@ function bluecadet_utilities_field_widget_form_alter(&$element, FormStateInterfa
  * Implements hook_form_node_type_form_alter().
  */
 function bluecadet_utilities_form_node_type_form_alter(&$form, FormStateInterface $form_state) {
+  $form_object = $form_state->getFormObject();
+  if (!$form_object instanceof EntityFormInterface) {
+    return;
+  }
   /** @var \Drupal\node\NodeTypeInterface $type */
-  $type = $form_state->getFormObject()->getEntity();
+  $type = $form_object->getEntity();
   $fields = \Drupal::service('entity_field.manager')->getFieldDefinitions('node', $type->id() ?: 'page');
 
   // Set the weight of the title label field to -10 to ensure it appears above other fields.
@@ -165,7 +170,11 @@ function bluecadet_utilities_form_node_type_form_alter(&$form, FormStateInterfac
  * Submit handler for the node type form to save the title field description.
  */
 function bluecadet_utilities_node_type_form_submit(array $form, FormStateInterface $form_state) {
-  $type = $form_state->getFormObject()->getEntity();
+  $form_object = $form_state->getFormObject();
+  if (!$form_object instanceof EntityFormInterface) {
+    return;
+  }
+  $type = $form_object->getEntity();
   $fields = \Drupal::service('entity_field.manager')->getFieldDefinitions('node', $type->id());
 
   if (isset($fields['title'])) {
