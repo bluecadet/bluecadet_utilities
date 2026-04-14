@@ -136,65 +136,42 @@ function bluecadet_utilities_field_widget_form_alter(&$element, FormStateInterfa
 }
 
 /**
- * Implements hook_field_widget_third_party_settings_form().
+ * Implements hook_form_node_type_form_alter().
  */
-function bluecadet_utilities_field_widget_third_party_settings_form($plugin, $field_definition, $form_mode, $form, FormStateInterface $form_state) {
-  $elements = [];
+function bluecadet_utilities_form_node_type_form_alter(&$form, FormStateInterface $form_state) {
+  /** @var \Drupal\node\NodeTypeInterface $type */
+  $type = $form_state->getFormObject()->getEntity();
+  $fields = \Drupal::service('entity_field.manager')->getFieldDefinitions('node', $type->id() ?: 'page');
 
-  if ($field_definition->getName() === 'title') {
-    $elements['title_label'] = [
-      '#type' => 'textfield',
-      '#title' => t('Field Label'),
-      '#description' => t('Override the label on the field, e.g. <em>Administrative Title</em>'),
-      '#default_value' => $plugin->getThirdPartySetting('bluecadet_utilities', 'title_label'),
-    ];
-    $elements['title_description'] = [
-      '#type' => 'textfield',
-      '#title' => t('Field Description'),
-      '#description' => t('Add help text below the field, e.g. <em>For use in the CMS only.</em>'),
-      '#default_value' => $plugin->getThirdPartySetting('bluecadet_utilities', 'title_description'),
-    ];
+  // Set the weight of the title label field to -10 to ensure it appears above other fields.
+  if (isset($form['submission']['title_label'])) {
+    $form['submission']['title_label']['#weight'] = -10;
   }
 
-  return $elements;
+  // Add a text field to the node type form to allow customizing the
+  // title field's description (the help text below the field).
+  $form['submission']['title_description'] = [
+    '#type' => 'textfield',
+    '#title' => t('Title field description'),
+    '#description' => t('Help text displayed below the title field on the content edit form.'),
+    '#default_value' => isset($fields['title']) ? $fields['title']->getDescription() : '',
+    '#weight' => -5,
+  ];
+
+  $form['actions']['submit']['#submit'][] = 'bluecadet_utilities_node_type_form_submit';
 }
 
 /**
- * Implements hook_field_widget_settings_summary_alter().
+ * Submit handler for the node type form to save the title field description.
  */
-function bluecadet_utilities_field_widget_settings_summary_alter(&$summary, $context) {
-  if ($context['field_definition']->getName() === 'title') {
-    $label = $context['widget']->getThirdPartySetting('bluecadet_utilities', 'title_label');
-    $description = $context['widget']->getThirdPartySetting('bluecadet_utilities', 'title_description');
+function bluecadet_utilities_node_type_form_submit(array $form, FormStateInterface $form_state) {
+  $type = $form_state->getFormObject()->getEntity();
+  $fields = \Drupal::service('entity_field.manager')->getFieldDefinitions('node', $type->id());
 
-    if (!empty($label)) {
-      $summary[] = t('Label: @label', ['@label' => $label]);
-    }
-    if (!empty($description)) {
-      $summary[] = t('Description: @description', ['@description' => $description]);
-    }
-  }
-}
-
-/**
- * Implements hook_field_widget_single_element_form_alter().
- */
-function bluecadet_utilities_field_widget_single_element_form_alter(&$element, FormStateInterface $form_state, $context) {
-  if ($context['items']->getFieldDefinition()->getName() === 'title') {
-    $label = $context['widget']->getThirdPartySetting('bluecadet_utilities', 'title_label');
-    $description = $context['widget']->getThirdPartySetting('bluecadet_utilities', 'title_description');
-
-    if (!empty($label)) {
-      $element['#title'] = $label;
-      if (isset($element['value'])) {
-        $element['value']['#title'] = $label;
-      }
-    }
-    if (!empty($description)) {
-      $element['#title'] = $description;
-      if (isset($element['value'])) {
-        $element['value']['#description'] = $description;
-      }
+  if (isset($fields['title'])) {
+    $description = $form_state->getValue('title_description');
+    if ($fields['title']->getDescription() !== $description) {
+      $fields['title']->getConfig($type->id())->setDescription($description)->save();
     }
   }
 }
