@@ -8,7 +8,7 @@ Completely old and outdated... do not use.
 
 ### 2.x Branch
 
-< Drupal 8.9 compatable
+< Drupal 8.9 compatible
 
 ### 3.x Branch
 
@@ -25,6 +25,11 @@ Drupal 9 Compatible. Due to twig file loading easiest to keep separate branches 
 ### 4.1.x Branch
 
 Drupal 10 Compatible. Due to twig file loading easiest to keep separate branches for D9 and D10.
+
+### 4.2.x Branch
+
+Drupal 10 & 11 Compatible.
+
 
 ## Includes
 <!--
@@ -80,6 +85,9 @@ line as well as the location for the module.
 ### 4.2.x
 
 - Enforcing Drupal 11 compatibility.
+- Bug fixes for `simple-formatter.js`
+- Update bldr to 1.1.0
+- Add in schema definitions for widget and formatter settings
 
 ### 4.1.1
 
