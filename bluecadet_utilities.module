@@ -6,6 +6,7 @@
  */
 
 use Bluecadet\DrupalPackageManager\Checker;
+use Drupal\Core\Entity\EntityFormInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\file\FileInterface;
 use Drupal\update\UpdateManagerInterface;
@@ -131,6 +132,55 @@ function bluecadet_utilities_field_widget_form_alter(&$element, FormStateInterfa
     if (isset($element['#type']) && $element['#type'] == 'text_format' && $element['#base_type'] == 'textfield') {
       $element['#attached']['library'][] = 'bluecadet_utilities/text-editor';
       $element['#attributes']['class'][] = 'text-format-editor';
+    }
+  }
+}
+
+/**
+ * Implements hook_form_node_type_form_alter().
+ */
+function bluecadet_utilities_form_node_type_form_alter(&$form, FormStateInterface $form_state) {
+  $form_object = $form_state->getFormObject();
+  if (!$form_object instanceof EntityFormInterface) {
+    return;
+  }
+  /** @var \Drupal\node\NodeTypeInterface $type */
+  $type = $form_object->getEntity();
+  $fields = \Drupal::service('entity_field.manager')->getFieldDefinitions('node', $type->id() ?: 'page');
+
+  // Set the weight of the title label field to -10 to ensure it appears above other fields.
+  if (isset($form['submission']['title_label'])) {
+    $form['submission']['title_label']['#weight'] = -10;
+  }
+
+  // Add a text field to the node type form to allow customizing the
+  // title field's description (the help text below the field).
+  $form['submission']['title_description'] = [
+    '#type' => 'textfield',
+    '#title' => t('Title field description'),
+    '#description' => t('Help text displayed below the title field on the content edit form.'),
+    '#default_value' => isset($fields['title']) ? $fields['title']->getDescription() : '',
+    '#weight' => -5,
+  ];
+
+  $form['actions']['submit']['#submit'][] = 'bluecadet_utilities_node_type_form_submit';
+}
+
+/**
+ * Submit handler for the node type form to save the title field description.
+ */
+function bluecadet_utilities_node_type_form_submit(array $form, FormStateInterface $form_state) {
+  $form_object = $form_state->getFormObject();
+  if (!$form_object instanceof EntityFormInterface) {
+    return;
+  }
+  $type = $form_object->getEntity();
+  $fields = \Drupal::service('entity_field.manager')->getFieldDefinitions('node', $type->id());
+
+  if (isset($fields['title'])) {
+    $description = $form_state->getValue('title_description');
+    if ($fields['title']->getDescription() !== $description) {
+      $fields['title']->getConfig($type->id())->setDescription($description)->save();
     }
   }
 }
