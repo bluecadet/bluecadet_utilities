@@ -186,6 +186,84 @@ function bluecadet_utilities_node_type_form_submit(array $form, FormStateInterfa
 }
 
 /**
+ * Implements hook_field_widget_third_party_settings_form().
+ *
+ * Adds "Field Label" and "Description" settings to the Title field widget
+ * on the Form Display configuration page, allowing admins to customize
+ * the label and description shown on node edit forms.
+ */
+function bluecadet_utilities_field_widget_third_party_settings_form($plugin, $field_definition, $form_mode, $form, $form_state) {
+  $elements = [];
+
+  if ($field_definition->getName() === 'title') {
+    $elements['title_label'] = [
+      '#type' => 'textfield',
+      '#title' => t('Field Label'),
+      '#description' => t('Override the label shown for the Title field on the content edit form. Leave blank to use the default label.'),
+      '#default_value' => $plugin->getThirdPartySetting('bluecadet_utilities', 'title_label', ''),
+    ];
+
+    $elements['title_description'] = [
+      '#type' => 'textfield',
+      '#title' => t('Description'),
+      '#description' => t('Override the description (help text) shown for the Title field on the content edit form. Leave blank to use the default description.'),
+      '#default_value' => $plugin->getThirdPartySetting('bluecadet_utilities', 'title_description', ''),
+    ];
+  }
+
+  return $elements;
+}
+
+/**
+ * Implements hook_field_widget_settings_summary_alter().
+ *
+ * Appends the custom title label and description to the widget summary on the
+ * Form Display page.
+ */
+function bluecadet_utilities_field_widget_settings_summary_alter(&$summary, $context) {
+  $field_definition = $context['field_definition'];
+  $widget = $context['widget'];
+
+  if ($field_definition->getName() === 'title') {
+    $title_label = $widget->getThirdPartySetting('bluecadet_utilities', 'title_label', '');
+    if (!empty($title_label)) {
+      $summary[] = t('Field Label: @label', ['@label' => $title_label]);
+    }
+
+    $title_description = $widget->getThirdPartySetting('bluecadet_utilities', 'title_description', '');
+    if (!empty($title_description)) {
+      $summary[] = t('Description: @description', ['@description' => $title_description]);
+    }
+  }
+}
+
+/**
+ * Implements hook_field_widget_complete_form_alter().
+ *
+ * Applies the custom title field label and description to the node edit form
+ * when third-party widget settings have been configured.
+ */
+function bluecadet_utilities_field_widget_complete_form_alter(&$field_widget_complete_form, FormStateInterface $form_state, $context) {
+  $field_definition = $context['items']->getFieldDefinition();
+
+  if ($field_definition->getName() !== 'title') {
+    return;
+  }
+
+  $widget = $context['widget'];
+  $title_label = $widget->getThirdPartySetting('bluecadet_utilities', 'title_label', '');
+  $title_description = $widget->getThirdPartySetting('bluecadet_utilities', 'title_description', '');
+
+  if (!empty($title_label) && isset($field_widget_complete_form['widget'][0]['value'])) {
+    $field_widget_complete_form['widget'][0]['value']['#title'] = $title_label;
+  }
+
+  if (!empty($title_description) && isset($field_widget_complete_form['widget'][0]['value'])) {
+    $field_widget_complete_form['widget'][0]['value']['#description'] = $title_description;
+  }
+}
+
+/**
  * Implements hook_update_status_alter().
  */
 function bluecadet_utilities_update_status_alter(&$projects) {

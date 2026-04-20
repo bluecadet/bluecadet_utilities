@@ -38,6 +38,17 @@ field.widget.settings.text_simple_formatter:
       type: string
       label: 'Default format for Text fields'
 
+field.widget.third_party.bluecadet_utilities:
+  type: mapping
+  label: 'Bluecadet Utilities title field widget third-party settings'
+  mapping:
+    title_label:
+      type: string
+      label: 'Field Label'
+    title_description:
+      type: string
+      label: 'Description'
+
 field.formatter.settings.text_simple_format_formatter:
   type: mapping
   label: 'Simple Format Formatter settings'
