@@ -39,7 +39,6 @@ Drupal 10 & 11 Compatible.
 - Theme for formatting svg files
 - Transliteration for file uploads ([Transliteration Module as Source](https://www.drupal.org/project/transliteration))
 - Enable WYSIWYG on textfield fields
-- Fractal Component template loader (copy of https://github.com/wearewondrous/fractal_compound_handles to handle windows dev environments)
 - Image Style generator, based on aspect ratios.
 - text string search for searching html strings in text fields (eg, search for a specific link or class name being used)
 
@@ -81,6 +80,10 @@ line as well as the location for the module.
 ## Changelog
 
 - Adding in basic text search.
+
+### 5.0.0
+
+- **Breaking:** Removed `FractalCompoundHandlesLoader` and the `bluecadet_utilities.loader.fractal_compound_handles` Twig loader service. Sites relying on Fractal-style `#handle` or `@namespace/component` syntax in Twig templates must migrate to an alternative (e.g. Drupal core SDC or the `components` contrib module).
 
 ### 4.2.x
 
