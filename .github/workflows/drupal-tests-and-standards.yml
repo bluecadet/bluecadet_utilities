@@ -1,104 +1,68 @@
 name: Tests
 on:
   push:
+    branches: ['4.0']
   pull_request:
-    branches: [ 4.0 ]
+    branches: ['4.0']
 env:
   SIMPLETEST_DB: "mysql://drupal:drupal@mariadb:3306/drupal"
   SIMPLETEST_BASE_URL: "http://127.0.0.1:8080"
   DRUPAL_MODULE_NAME: "bluecadet_utilities"
 jobs:
-  # testing:
-  #   name: Drupal ${{ matrix.drupal-core }} - PHP ${{ matrix.php-versions }}
-  #   runs-on: ubuntu-latest
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       drupal-core: ['9.4.x', '10.0.x']
-  #       php-versions: ['7.4', '8.0', '8.1', '8.2']
-  #       exclude:
-  #         -
-  #           drupal-core: '10.0.x'
-  #           php-versions: '7.4'
-  #         -
-  #           drupal-core: '10.0.x'
-  #           php-versions: '8.0'
-  #   steps:
-  #     - name: Checkout Drupal core
-  #       uses: actions/checkout@v4
-  #       with:
-  #         repository: drupal/drupal
-  #         ref: ${{ matrix.drupal-core }}
+  code-standards:
+    name: Code Standards
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-  #     - name: Checkout module
-  #       uses: actions/checkout@v4
-  #       with:
-  #         path: modules/bluecadet_public_files
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
 
-  #     - name: Setup PHP, with composer and extensions
-  #       uses: shivammathur/setup-php@v2
-  #       with:
-  #         php-version: ${{ matrix.php-versions }}
-  #         coverage: none
+      - name: Get composer cache directory
+        id: composercache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
-  #     - name: Get composer cache directory
-  #       id: composercache
-  #       # run: echo "::set-output name=dir::$(composer config cache-files-dir)"
-  #       run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+      - name: Cache composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composercache.outputs.dir }}
+          key: ${{ runner.os }}-composer-standards-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-standards-
 
-  #     - name: Cache composer dependencies
-  #       uses: actions/cache@v3
-  #       with:
-  #         path: ${{ steps.composercache.outputs.dir }}
-  #         key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-  #         restore-keys: ${{ runner.os }}-composer-
+      - name: Install PHPCS
+        run: |
+          composer config --no-plugins allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
+          composer require --dev "drupal/coder"
 
-  #     - name: Install Drupal core dependencies
-  #       run: |
-  #         composer --no-interaction --no-progress --prefer-dist --optimize-autoloader install
-
-  #     # - name: Install module dependencies
-  #     #   run: |
-  #     #     composer --no-interaction --no-progress require \
-  #     #       drupal/commerce
-
-  #     - name: Install Coder module
-  #       run: |
-  #         composer --dev --no-interaction --no-progress require \
-  #           drupal/coder:^8
-
-  #     - name: Check coding standards
-  #       run: |
-  #         ./vendor/bin/phpcs --config-set ignore_warnings_on_exit 1
-  #         ./vendor/bin/phpcs --config-set ignore_errors_on_exit 1
-  #         ./vendor/bin/phpcs -s --standard=Drupal --extensions=php,module,inc,install,test,profile,theme,css,info,txt --ignore=node_modules,bower_components,vendor,dist --exclude=Drupal.InfoFiles.AutoAddedKeys --colors ./modules/bluecadet_public_files
-  #         ./vendor/bin/phpcs -s --standard=DrupalPractice --extensions=php,module,inc,install,test,profile,theme,css,info,txt --ignore=node_modules,bower_components,vendor,dist --exclude=Drupal.InfoFiles.AutoAddedKeys --colors ./modules/bluecadet_public_files
-
-
-
+      - name: Run PHPCS
+        run: |
+          vendor/bin/phpcs -s --standard=Drupal \
+            --extensions=php,module,inc,install,test,profile,theme,css,info,txt \
+            --ignore=node_modules,bower_components,vendor,dist \
+            --exclude=Drupal.InfoFiles.AutoAddedKeys \
+            --colors .
+          vendor/bin/phpcs -s --standard=DrupalPractice \
+            --extensions=php,module,inc,install,test,profile,theme,css,info,txt \
+            --ignore=node_modules,bower_components,vendor,dist \
+            --exclude=Drupal.InfoFiles.AutoAddedKeys \
+            --colors .
 
   test:
+    name: Drupal ${{ matrix.drupal-core }} / PHP ${{ matrix.php-version }}
+    needs: code-standards
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         drupal-core: ['10.1.x', '10.2.x', '10.3.x', '11.0.x']
         php-version: ['8.1', '8.2', '8.3']
-        mariadb-version: ['10.4', '10.6']
         exclude:
-          -
-            drupal-core: '10.1.x'
-            php-version: '8.0'
-            mariadb-version: '10.4'
-          -
-            drupal-core: '10.1.x'
-            php-version: '8.0'
-            mariadb-version: '10.6'
-          -
-            drupal-core: '11.0.x'
+          - drupal-core: '11.0.x'
             php-version: '8.1'
-          -
-            drupal-core: '11.0.x'
+          - drupal-core: '11.0.x'
             php-version: '8.2'
 
     container:
@@ -107,7 +71,7 @@ jobs:
       image: ghcr.io/tuutti/drupal-php-docker:${{ matrix.php-version }}
     services:
       mariadb:
-        image: mariadb:${{ matrix.mariadb-version }}
+        image: mariadb:10.6
         env:
           MYSQL_USER: drupal
           MYSQL_PASSWORD: drupal
@@ -121,11 +85,11 @@ jobs:
         with:
           fetch-depth: 1
 
-      # The next two steps exposes $DRUPAL_ROOT and $MODULE_FOLDER environment
+      # The next two steps expose $DRUPAL_ROOT and $MODULE_FOLDER environment
       # variables.
       #
       # They have to be set in separate steps because $DRUPAL_ROOT variable
-      # won't be accessible in currently active step.
+      # won't be accessible in the currently active step.
       # You can access them either with $DRUPAL_ROOT and $MODULE_FOLDER or
       # ${{ env.DRUPAL_ROOT }} and ${{ env.MODULE_FOLDER }}.
       - name: Define DRUPAL_ROOT env variable
@@ -139,7 +103,6 @@ jobs:
             >> $GITHUB_ENV
 
       # Clone Drupal core into $DRUPAL_ROOT folder.
-      # Core version can be set by changing $DRUPAL_CORE_VERSION.
       - name: Clone drupal
         run: |
           git clone --depth 1 --branch "${{ matrix.drupal-core }}" \
@@ -152,6 +115,18 @@ jobs:
       - name: Override the platform.php version
         working-directory: ${{ env.DRUPAL_ROOT }}
         run: composer config platform.php ${{ matrix.php-version }}
+
+      - name: Get composer cache directory
+        id: composercache
+        working-directory: ${{ env.DRUPAL_ROOT }}
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composercache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ matrix.drupal-core }}-${{ matrix.php-version }}
+          restore-keys: ${{ runner.os }}-composer-${{ matrix.drupal-core }}-${{ matrix.php-version }}-
 
       # Set the module folder as a composer repository, so the latest code
       # is symlinked from $GITHUB_WORKSPACE to modules/ folder.
@@ -166,25 +141,18 @@ jobs:
           composer require mglaman/drupal-check --dev
           composer require bluecadet/$DRUPAL_MODULE_NAME
 
-      # PHP 8+ requires newer phpunit, use core's composer script
-      # to upgrade it.
+      # PHP 8+ requires newer phpunit; use core's composer script to upgrade it.
       - name: Upgrade phpunit
         working-directory: ${{ env.DRUPAL_ROOT }}
         run: composer run-script drupal-phpunit-upgrade
 
-      # We use drush's build-in webserver to run tests. Make sure
-      # Drush is installed.
+      # We use drush's built-in webserver to run tests. Make sure Drush is installed.
       - name: Install drush
         working-directory: ${{ env.DRUPAL_ROOT }}
         run: composer require "drush/drush ^11 || ^12"
 
-      - name: Install PHPCS
-        working-directory: ${{ env.DRUPAL_ROOT }}
-        run: |
-          composer config --no-plugins allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
-          composer require --dev "drupal/coder"
-
       # Install Drupal using minimal installation profile and enable the module.
+      # This acts as a smoke-test that the module installs cleanly.
       - name: Install Drupal
         working-directory: ${{ env.DRUPAL_ROOT }}
         run: |
@@ -192,24 +160,15 @@ jobs:
             site-install minimal --db-url="$SIMPLETEST_DB"
           vendor/bin/drush en $DRUPAL_MODULE_NAME -y
 
-      - name: Run PHPCS
-        working-directory: ${{ env.DRUPAL_ROOT }}
-        continue-on-error: true
-        run: |
-          vendor/bin/phpcs -s --standard=Drupal --extensions=php,module,inc,install,test,profile,theme,css,info,txt --ignore=node_modules,bower_components,vendor,dist --exclude=Drupal.InfoFiles.AutoAddedKeys --colors $MODULE_FOLDER
-          vendor/bin/phpcs -s --standard=DrupalPractice --extensions=php,module,inc,install,test,profile,theme,css,info,txt --ignore=node_modules,bower_components,vendor,dist --exclude=Drupal.InfoFiles.AutoAddedKeys --colors $MODULE_FOLDER
-
       - name: Run Drupal-Check
         working-directory: ${{ env.DRUPAL_ROOT }}
-        continue-on-error: true
         run: |
           php vendor/bin/drupal-check $MODULE_FOLDER --drupal-root ${{ env.DRUPAL_ROOT }}
 
-      - name: Start Drush webserver and chromedriver
+      - name: Start Drush webserver
         working-directory: ${{ env.DRUPAL_ROOT }}
         run: |
           vendor/bin/drush runserver $SIMPLETEST_BASE_URL > /dev/null 2>&1 &
-          chromedriver --port=4444 > /dev/null 2>&1 &
           # Wait for drush server to start.
           for i in {1..5}; do \
             RESPONSE_CODE=$(curl -s -o /dev/null \
@@ -217,31 +176,10 @@ jobs:
             if [ "$RESPONSE_CODE" -gt "301" ] || [ "$RESPONSE_CODE" -lt "200" ]; \
             then sleep 2; fi; done
 
-      # Chromium browser is required to run functional javascript tests.
-      # You can remove or uncomment this step if you don't have any functional
-      # js tests.
-      - name: Start chromium-browser
-        working-directory: ${{ env.DRUPAL_ROOT }}
-        run: |
-          chromium-browser --headless --disable-gpu \
-            --no-sandbox \
-            --remote-debugging-port=9222 &
-
-      # Run tests using core's run-tests.sh script. See the example below
-      # to run tests using phpunit.
-      # - name: Run tests
-      #   working-directory: ${{ env.DRUPAL_ROOT }}
-      #   run: |
-      #     php ./core/scripts/run-tests.sh --dburl $SIMPLETEST_DB \
-      #       --php /usr/local/bin/php --color --verbose \
-      #       --sqlite /tmp/test.sqlite \
-      #       --url $SIMPLETEST_BASE_URL $DRUPAL_MODULE_NAME
-
-      # Uncomment this step to run tests using phpunit. Your module is expected
-      # to ship with 'phpunit.xml' file. See the repository for an example
-      # phpunit.xml file.
       - name: Run tests
         working-directory: ${{ env.DRUPAL_ROOT }}
-        continue-on-error: true
         run: |
-          vendor/bin/phpunit --bootstrap $DRUPAL_ROOT/core/tests/bootstrap.php -c $MODULE_FOLDER/phpunit.xml $MODULE_FOLDER
+          vendor/bin/phpunit \
+            --bootstrap $DRUPAL_ROOT/core/tests/bootstrap.php \
+            -c $MODULE_FOLDER/phpunit.xml \
+            $MODULE_FOLDER
