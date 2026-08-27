@@ -1,61 +1,51 @@
 # Bluecadet Utilities
 
+Adds utilities to aid in development of custom sites.
+
+## Requirements
+
+- Drupal 10 or Drupal 11
+- PHP 7.4 or higher
+
 ## Versions
 
-### 1.x Branch
+### 5.x Branch
 
-Completely old and outdated... do not use.
+- **5.0.x**: Drupal 10 & 11 compatible (PHP 7.4+). **Breaking:** Removed `FractalCompoundHandlesLoader` and the `bluecadet_utilities.loader.fractal_compound_handles` Twig loader service. Sites relying on Fractal-style `#handle` or `@namespace/component` syntax in Twig templates must migrate to an alternative (e.g. Drupal core SDC or the `components` contrib module).
 
-### 2.x Branch
+### 4.x Branch
 
-< Drupal 8.9 compatible
+- **4.2.x**: Drupal 10 & 11 compatible.
+- **4.1.x**: Drupal 10 compatible. Due to twig file loading, easiest to keep separate branches for D9 and D10.
+- **4.0.x**: Drupal 9 compatible. Due to twig file loading, easiest to keep separate branches for D9 and D10.
 
-### 3.x Branch
+### 3.x Branch — Drupal 8.9 and Drupal 9 compatible.
 
-Drupal 8.9 and Drupal 9 Compatible.
+- Removed all code related to Paragraphs preview.
+- Removed all code related to preview Display modes of nodes. This should now all be included in Core Previews.
 
-- Removed all code related to Paragraphs preview
-- Removed all code related to preview Display modes of nodes. This should now
-  all be included in Core Previews.
+### 2.x Branch — < Drupal 8.9 compatible.
 
-### 4.0.x Branch
-
-Drupal 9 Compatible. Due to twig file loading easiest to keep separate branches for D9 and D10.
-
-### 4.1.x Branch
-
-Drupal 10 Compatible. Due to twig file loading easiest to keep separate branches for D9 and D10.
-
-### 4.2.x Branch
-
-Drupal 10 & 11 Compatible.
-
+### 1.x Branch — completely outdated, do not use.
 
 ## Includes
-<!--
-- Node View All Display Modes.
-- Paragraph Examples.
--->
+
 - Theme for formatting svg files
 - Transliteration for file uploads ([Transliteration Module as Source](https://www.drupal.org/project/transliteration))
 - Enable WYSIWYG on textfield fields
-- Image Style generator, based on aspect ratios.
-- text string search for searching html strings in text fields (eg, search for a specific link or class name being used)
+- Image Style generator, based on aspect ratios
+- Text string search for searching html strings in text fields (eg, search for a specific link or class name being used)
 
 ### Submodules
 
 - bc_display_title: Provide functionality around the use of the display title field we normally use
 - bc_sandbox: provide an easy page to play with
 
-
-<hr>
-
 ## Not using Composer
 
 If you are not using composer, you can delete all unneeded files.
 
 - composer.json
-
 
 ## Using Composer
 
@@ -77,12 +67,30 @@ line as well as the location for the module.
   ...
 ```
 
-## Changelog
+## Testing
 
-- Adding in basic text search.
+This module includes automated tests that run via GitHub Actions against Drupal 10.1.x-10.3.x and 11.0.x (see `.github/workflows/drupal-tests-and-standards.yml` for the exact PHP/MariaDB matrix).
+
+### Test Plan
+
+#### Automated Tests (GitHub Actions)
+
+The CI pipeline runs the following for each Drupal version:
+
+1. **PHPCS** - Drupal coding standards validation (`Drupal` and `DrupalPractice` standards)
+2. **Drupal-Check** - static analysis for deprecated API usage
+3. **PHPUnit** - automated tests
+
+#### Current coverage
+
+- Unit test for `SanitizeName::sanitizeFilename()` (filename sanitization)
+- Functional test (`BluecadetUtilitiesTest`) exercising the module against a content type
+
+## Changelog
 
 ### 5.0.0
 
+- Adding in basic text search.
 - **Breaking:** Removed `FractalCompoundHandlesLoader` and the `bluecadet_utilities.loader.fractal_compound_handles` Twig loader service. Sites relying on Fractal-style `#handle` or `@namespace/component` syntax in Twig templates must migrate to an alternative (e.g. Drupal core SDC or the `components` contrib module).
 
 ### 4.2.x
@@ -95,7 +103,7 @@ line as well as the location for the module.
 ### 4.1.1
 
 - Updating dev tools. Drupal module not really effected.
-- Update SimpleFormatWidget to handle text fields and the “format” subfield, so it doesn’t store null in DB
+- Update SimpleFormatWidget to handle text fields and the "format" subfield, so it doesn't store null in DB
 
 ### 4.1.0
 
@@ -129,3 +137,13 @@ line as well as the location for the module.
 ### 8.x-3.0.1
 
 - Added in styles for Claro Admin theme.
+
+<br>
+<br>
+<br>
+
+## Proudly developed @ Bluecadet
+
+<p style="background-color: white; padding: 20px">
+  <a href="https://www.bluecadet.com/"><img style="max-width: 50%; min-width: 300px; background: white; padding: 20px;" src="https://www.bluecadet.com/wp-content/themes/bluecadet-2018/images/logo/logo-bluecadet-black.svg" alt="Bluecadet"></a>
+</p>
