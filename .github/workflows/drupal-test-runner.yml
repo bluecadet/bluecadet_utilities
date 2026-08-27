@@ -1,0 +1,253 @@
+name: Drupal Test Runner
+on:
+  workflow_call:
+    inputs:
+      drupal_core:
+        description: Drupal core branch to test
+        required: true
+        type: string
+      php_version:
+        description: PHP version for the test container
+        required: true
+        type: string
+      mariadb_version:
+        description: MariaDB version for service container
+        required: true
+        type: string
+      phpunit_target:
+        description: PHPUnit target path under module root
+        required: false
+        default: 'tests/src'
+        type: string
+env:
+  SIMPLETEST_DB: "mysql://drupal:drupal@mariadb:3306/drupal"
+  SIMPLETEST_BASE_URL: "http://127.0.0.1:8080"
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    container:
+      # See https://github.com/tuutti/docker-images/tree/main/drupal/ci
+      # to see how this image is built.
+      image: ghcr.io/tuutti/drupal-php-docker:${{ inputs.php_version }}
+    services:
+      mariadb:
+        image: mariadb:${{ inputs.mariadb_version }}
+        env:
+          MYSQL_USER: drupal
+          MYSQL_PASSWORD: drupal
+          MYSQL_DATABASE: drupal
+          MYSQL_ROOT_PASSWORD: drupal
+        ports:
+          - 3306:3306
+      selenium:
+        image: selenium/standalone-chrome:3.141.59
+        options: --shm-size=2g
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      # The next three steps expose $DRUPAL_ROOT, $DRUPAL_MODULE_NAME,
+      # and $MODULE_FOLDER environment variables.
+      - name: Define DRUPAL_ROOT env variable
+        run: echo "DRUPAL_ROOT=$HOME/drupal" >> $GITHUB_ENV
+
+      - name: Define DRUPAL_MODULE_NAME env variable
+        run: echo "DRUPAL_MODULE_NAME=${GITHUB_REPOSITORY#*/}" >> $GITHUB_ENV
+
+      # Selenium runs in a separate service container, so tests must target
+      # the job container's network IP instead of 127.0.0.1.
+      - name: Define browser-accessible base URL
+        run: |
+          JOB_CONTAINER_IP=$(hostname -i | awk '{print $1}')
+          echo "JOB_CONTAINER_IP=$JOB_CONTAINER_IP" >> $GITHUB_ENV
+          echo "SIMPLETEST_BASE_URL=http://$JOB_CONTAINER_IP:8080" >> $GITHUB_ENV
+          echo "DRUSH_RUNSERVER_URL=http://0.0.0.0:8080" >> $GITHUB_ENV
+          echo "DRUSH_PROBE_URL=http://127.0.0.1:8080" >> $GITHUB_ENV
+
+      # Change the module folder according to your needs, it's probably either
+      # modules/contrib/$DRUPAL_MODULE_NAME or modules/custom/$DRUPAL_MODULE_NAME.
+      - name: Set module folder
+        run: |
+          echo "MODULE_FOLDER=$DRUPAL_ROOT/modules/bluecadet/$DRUPAL_MODULE_NAME" \
+            >> $GITHUB_ENV
+
+      # Clone Drupal core into $DRUPAL_ROOT folder.
+      - name: Clone drupal
+        run: |
+          git clone --depth 1 --branch "${{ inputs.drupal_core }}" \
+            https://git.drupalcode.org/project/drupal.git/ $DRUPAL_ROOT
+
+      # Override the platform.php config with currently active PHP version.
+      - name: Override the platform.php version
+        working-directory: ${{ env.DRUPAL_ROOT }}
+        run: composer config platform.php ${{ inputs.php_version }}
+
+      # Set the module folder as a composer repository so the latest code
+      # is symlinked from $GITHUB_WORKSPACE to modules/ folder.
+      - name: Install the module
+        working-directory: ${{ env.DRUPAL_ROOT }}
+        run: |
+          composer config --no-plugins allow-plugins.oomphinc/composer-installers-extender true
+          composer config repositories.$DRUPAL_MODULE_NAME '{"type": "path", "url": "$GITHUB_WORKSPACE", "options": {"symlink": true}}'
+          composer config extra.installer-paths
+          composer config --json extra.installer-types '["custom-drupal-module"]'
+          composer config --json --merge extra.installer-paths '{"modules/bluecadet/{$name}": ["type:custom-drupal-module"]}'
+          composer require bluecadet/$DRUPAL_MODULE_NAME -W
+
+      # mglaman/phpstan-drupal and phpstan/phpstan-deprecation-rules are each
+      # released for both PHPStan 1.x and 2.x, so composer resolves the right
+      # major version per Drupal core branch without any manual branching.
+      - name: Install PHPStan (Drupal)
+        working-directory: ${{ env.DRUPAL_ROOT }}
+        run: composer require --dev mglaman/phpstan-drupal phpstan/phpstan-deprecation-rules -W --no-interaction --no-progress
+
+      # PHP 8+ requires newer phpunit, use core's composer script to upgrade it.
+      - name: Upgrade phpunit
+        working-directory: ${{ env.DRUPAL_ROOT }}
+        run: composer run-script drupal-phpunit-upgrade
+
+      # We use drush's built-in webserver to run tests.
+      - name: Install drush
+        working-directory: ${{ env.DRUPAL_ROOT }}
+        run: |
+          if [[ "${{ inputs.drupal_core }}" == 11.* ]]; then
+            composer require "drush/drush:^13" -W
+          else
+            composer require "drush/drush:^12.4.3" -W
+          fi
+
+      - name: Install PHPCS
+        working-directory: ${{ env.DRUPAL_ROOT }}
+        run: |
+          composer config --no-plugins allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
+          composer require --dev "drupal/coder" "bluecadet/bc_composer_ci_tools:1.x-dev"
+
+      # Install Drupal using minimal installation profile and enable the module.
+      - name: Install Drupal
+        working-directory: ${{ env.DRUPAL_ROOT }}
+        run: |
+          php -d sendmail_path=$(which true); vendor/bin/drush --yes -v \
+            site-install minimal --db-url="$SIMPLETEST_DB"
+          vendor/bin/drush en $DRUPAL_MODULE_NAME -y
+
+      # - name: Set PHPCS config vars
+      #   working-directory: ${{ env.DRUPAL_ROOT }}
+      #   continue-on-error: true
+      #   run: |
+      #     ./vendor/bin/phpcs --config-set ignore_warnings_on_exit 1
+      #     ./vendor/bin/phpcs --config-set ignore_errors_on_exit 1
+
+      - name: Run PHPCS
+        id: phpcs
+        working-directory: ${{ env.DRUPAL_ROOT }}
+        continue-on-error: true
+        run: |
+          vendor/bin/phpcs --report=Bluecadet\\PHPCS\\Report\\MarkdownGithub -s --standard=Drupal --extensions=php,module,inc,install,test,profile,theme,css,info,txt --ignore=node_modules,bower_components,vendor,dist --exclude=Drupal.InfoFiles.AutoAddedKeys --colors $MODULE_FOLDER >> $GITHUB_STEP_SUMMARY
+          vendor/bin/phpcs --report=Bluecadet\\PHPCS\\Report\\MarkdownGithub -s --standard=DrupalPractice --extensions=php,module,inc,install,test,profile,theme,css,info,txt --ignore=node_modules,bower_components,vendor,dist --exclude=Drupal.InfoFiles.AutoAddedKeys --colors $MODULE_FOLDER >> $GITHUB_STEP_SUMMARY
+
+      - name: Run PHPStan (Drupal deprecation checks)
+        id: phpstan
+        working-directory: ${{ env.DRUPAL_ROOT }}
+        continue-on-error: true
+        run: |
+          vendor/bin/phpstan analyse --configuration "$MODULE_FOLDER/phpstan.neon.dist" --no-progress "$MODULE_FOLDER"
+
+      - name: Start Drush webserver and wait for Selenium
+        working-directory: ${{ env.DRUPAL_ROOT }}
+        run: |
+          vendor/bin/drush runserver $DRUSH_RUNSERVER_URL > /tmp/drush-runserver.log 2>&1 &
+
+          # Wait for drush server to start.
+          for i in {1..15}; do \
+            RESPONSE_CODE=$(curl -s -o /dev/null \
+              -w "%{http_code}" "$DRUSH_PROBE_URL" || true); \
+            if [ "$RESPONSE_CODE" -gt "301" ] || [ "$RESPONSE_CODE" -lt "200" ]; then
+              if [ "$i" -eq 15 ]; then
+                echo "Drush webserver failed to become ready at $DRUSH_PROBE_URL"
+                cat /tmp/drush-runserver.log || true
+                exit 1
+              fi
+              sleep 2
+            fi
+          done
+
+          # Wait for Selenium service to become ready before PHPUnit starts.
+          for i in {1..15}; do
+            if curl -sS "http://selenium:4444/wd/hub/status" > /tmp/selenium-status.json; then
+              break
+            fi
+            if [ "$i" -eq 15 ]; then
+              echo "Selenium failed to become ready at selenium:4444"
+              curl -sS "http://selenium:4444/wd/hub/status" || true
+              exit 1
+            fi
+            sleep 1
+          done
+
+      # PHPUnit is blocking by design.
+      - name: Run tests
+        id: phpunit
+        working-directory: ${{ env.DRUPAL_ROOT }}
+        continue-on-error: true
+        env:
+          MINK_DRIVER_ARGS_WEBDRIVER: '["chrome", {"browserName":"chrome","chromeOptions":{"w3c": false, "args":["--disable-gpu","--headless", "--no-sandbox"]}}, "http://selenium:4444/wd/hub"]'
+          XDEBUG_MODE: coverage
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE/coverage"
+          if php -m | grep -qiE 'xdebug|pcov'; then
+            vendor/bin/phpunit \
+              --bootstrap $DRUPAL_ROOT/core/tests/bootstrap.php \
+              --coverage-filter "$MODULE_FOLDER" \
+              --coverage-filter "$MODULE_FOLDER"/*.module \
+              --coverage-clover "$GITHUB_WORKSPACE/coverage/clover.xml" \
+              "$MODULE_FOLDER/${{ inputs.phpunit_target }}"
+          else
+            echo "No code coverage driver (xdebug/pcov) available; running tests without coverage output."
+            vendor/bin/phpunit \
+              --bootstrap $DRUPAL_ROOT/core/tests/bootstrap.php \
+              "$MODULE_FOLDER/${{ inputs.phpunit_target }}"
+          fi
+
+      - name: Upload PHPUnit coverage artifact
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: phpunit-coverage-${{ inputs.drupal_core }}-php${{ inputs.php_version }}
+          path: ${{ github.workspace }}/coverage/clover.xml
+          if-no-files-found: ignore
+
+      - name: Code Coverage Summary
+        if: ${{ hashFiles(format('{0}/coverage/clover.xml', github.workspace)) != '' }}
+        uses: saschanowak/CloverCodeCoverageSummary@1.1.1
+        with:
+          filename: ${{ github.workspace }}/coverage/clover.xml
+
+      - name: Add Coverage Summary to Job Summary
+        if: ${{ hashFiles(format('{0}/coverage/clover.xml', github.workspace)) != '' }}
+        run: |
+          echo "## Coverage: D${{ inputs.drupal_core }} | PHP${{ inputs.php_version }}" >> $GITHUB_STEP_SUMMARY
+          cat code-coverage-summary.md >> $GITHUB_STEP_SUMMARY
+
+      - name: Add Coverage Summary as PR Comment
+        if: ${{ github.event_name == 'pull_request' && hashFiles(format('{0}/coverage/clover.xml', github.workspace)) != '' }}
+        uses: marocchino/sticky-pull-request-comment@v3
+        with:
+          header: coverage-${{ inputs.drupal_core }}-php${{ inputs.php_version }}
+          path: code-coverage-summary.md
+
+      - name: Add check results to job summary
+        if: ${{ always() }}
+        run: |
+          echo "## Check Results" >> $GITHUB_STEP_SUMMARY
+          echo "- PHPCS: ${{ steps.phpcs.outcome }}" >> $GITHUB_STEP_SUMMARY
+          echo "- PHPStan: ${{ steps.phpstan.outcome }}" >> $GITHUB_STEP_SUMMARY
+          echo "- PHPUnit: ${{ steps.phpunit.outcome }}" >> $GITHUB_STEP_SUMMARY
+
+      - name: Fail job if any checks found issues
+        if: ${{ always() && (steps.phpcs.outcome == 'failure' || steps.phpstan.outcome == 'failure' || steps.phpunit.outcome == 'failure') }}
+        run: exit 1
