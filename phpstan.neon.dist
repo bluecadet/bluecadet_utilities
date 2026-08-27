@@ -1,0 +1,10 @@
+parameters:
+  level: 2
+  tipsOfTheDay: false
+  reportUnmatchedIgnoredErrors: false
+  drupal:
+    drupal_root: '%currentWorkingDirectory%'
+  excludePaths:
+    - '*/tests/fixtures/*.php'
+  ignoreErrors:
+    - '#Unsafe usage of new static\(\)#'
