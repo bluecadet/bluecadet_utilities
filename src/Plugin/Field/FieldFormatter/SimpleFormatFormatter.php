@@ -81,14 +81,14 @@ class SimpleFormatFormatter extends FormatterBase {
       if ($format && !is_null($format)) {
         $elements[$delta] = [
           '#type' => 'processed_text',
-          '#text' => $item->value,
+          '#text' => $item->getValue()['value'],
           '#format' => $format,
           '#langcode' => $item->getLangcode(),
         ];
       }
       else {
         $elements[$delta] = [
-          '#markup' => strip_tags($item->value, [
+          '#markup' => strip_tags($item->getValue()['value'], [
             '<b>',
             '<i>',
             '<u>',

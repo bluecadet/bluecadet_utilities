@@ -29,10 +29,11 @@ class DisplayTitleFormatter extends FormatterBase {
     // The ProcessedText element already handles cache context & tag bubbling.
     // @see \Drupal\filter\Element\ProcessedText::preRenderText()
     foreach ($items as $delta => $item) {
-      if ($item->format == 'plain_text_formatter' || $item->format == 'plain_text') {
+      $item_value = $item->getValue();
+      if ($item_value['format'] == 'plain_text_formatter' || $item_value['format'] == 'plain_text') {
         $elements[$delta] = [
           // Strip p tags.
-          '#markup' => preg_replace("/<\\/?p(.|\\s)*?>/", "", $item->value),
+          '#markup' => preg_replace("/<\\/?p(.|\\s)*?>/", "", $item_value['value']),
         ];
         return $elements;
       }
@@ -40,8 +41,8 @@ class DisplayTitleFormatter extends FormatterBase {
       $elements[$delta] = [
         '#type' => 'processed_text',
         // Strip p tags.
-        '#text' => preg_replace("/<\\/?p(.|\\s)*?>/", "", $item->value),
-        '#format' => $item->format,
+        '#text' => preg_replace("/<\\/?p(.|\\s)*?>/", "", $item_value['value']),
+        '#format' => $item_value['format'],
         '#langcode' => $item->getLangcode(),
       ];
     }

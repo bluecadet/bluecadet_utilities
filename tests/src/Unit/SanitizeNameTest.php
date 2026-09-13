@@ -44,7 +44,7 @@ class SanitizeNameTest extends UnitTestCase {
   /**
    * Provides data for self::testSanitizeName().
    */
-  public function providerSanitizeName() {
+  public static function providerSanitizeName() {
     return [
       // Transliterate Non-US-ASCII.
       ['ąęółżźćśń.pdf', 'aeolzzcsn.pdf'],
