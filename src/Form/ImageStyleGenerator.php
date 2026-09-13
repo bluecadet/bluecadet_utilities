@@ -3,13 +3,16 @@
 namespace Drupal\bluecadet_utilities\Form;
 
 use Drupal\bluecadet_utilities\DrupalStateTrait;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Link;
 use Drupal\Core\Messenger\MessengerTrait;
 use Drupal\Core\Render\Markup;
+use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Url;
 use Drupal\image\Entity\ImageStyle;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Bluecadet Utility Settings Form.
@@ -22,19 +25,38 @@ class ImageStyleGenerator extends FormBase {
   /**
    * Drupal Module Handler.
    *
-   * @var \Drupal\Core\Extension\ModuleHandler
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
    */
-  private $moduleHandler;
+  protected $moduleHandler;
 
   /**
-   * Get module handler.
+   * The renderer.
+   *
+   * @var \Drupal\Core\Render\RendererInterface
    */
-  private function moduleHandler() {
-    if (!$this->moduleHandler) {
-      $this->moduleHandler = \Drupal::service('module_handler'); // phpcs:ignore
-    }
+  protected $renderer;
 
-    return $this->moduleHandler;
+  /**
+   * Constructs an ImageStyleGenerator form.
+   *
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
+   *   The module handler.
+   * @param \Drupal\Core\Render\RendererInterface $renderer
+   *   The renderer.
+   */
+  public function __construct(ModuleHandlerInterface $module_handler, RendererInterface $renderer) {
+    $this->moduleHandler = $module_handler;
+    $this->renderer = $renderer;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('module_handler'),
+      $container->get('renderer')
+    );
   }
 
   /**
@@ -49,9 +71,9 @@ class ImageStyleGenerator extends FormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     // phpcs:ignore
-    // $this->drupalState()->delete(BCU_IMG_GEN_STATE);
+    // $this->drupalState()->delete(ImageStyleGenSettings::STATE_KEY);
 
-    $settings = $this->drupalState()->get(BCU_IMG_GEN_STATE, NULL);
+    $settings = $this->drupalState()->get(ImageStyleGenSettings::STATE_KEY, NULL);
 
     if (is_null($settings)) {
 
@@ -76,7 +98,7 @@ class ImageStyleGenerator extends FormBase {
     }
 
     $form['preview'] = [
-      '#markup' => \Drupal::service('renderer')->render($sizes_preview),
+      '#markup' => $this->renderer->render($sizes_preview),
     ];
 
     $form['msg'] = [
@@ -102,13 +124,13 @@ class ImageStyleGenerator extends FormBase {
     ];
 
     // Check for Focal Point module.
-    if ($this->moduleHandler()->moduleExists('focal_point')) {
+    if ($this->moduleHandler->moduleExists('focal_point')) {
       $options["focal_point_scale_and_crop"] = "Focal Point";
     }
 
     // phpcs:disable
     // Check for image_widget_crop module.
-    // if ($this->moduleHandler()->moduleExists('image_widget_crop')) {
+    // if ($this->moduleHandler->moduleExists('image_widget_crop')) {
     //   $options["crop_crop"] = "Image Widget Crop";
     // }
     // phpcs:enable
@@ -121,7 +143,7 @@ class ImageStyleGenerator extends FormBase {
     ];
 
     // phpcs:disable
-    // if ($this->moduleHandler()->moduleExists('image_widget_crop')) {
+    // if ($this->moduleHandler->moduleExists('image_widget_crop')) {
 
     //   $cropTypeStorage = \Drupal::service('entity_type.manager')->getStorage('crop_type');
 
@@ -154,7 +176,7 @@ class ImageStyleGenerator extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $values = $form_state->getValues();
-    $settings = $this->drupalState()->get(BCU_IMG_GEN_STATE, NULL);
+    $settings = $this->drupalState()->get(ImageStyleGenSettings::STATE_KEY, NULL);
 
     $responses = [];
 
@@ -230,8 +252,7 @@ class ImageStyleGenerator extends FormBase {
       '#theme' => 'item_list',
       '#items' => $responses,
     ];
-    // phpcs:ignore
-    $msg = Markup::create("The following Image Styles have been created: " . \Drupal::service('renderer')->render($message_render));
+    $msg = Markup::create("The following Image Styles have been created: " . $this->renderer->render($message_render));
 
     $this->messenger()->addMessage($msg);
   }

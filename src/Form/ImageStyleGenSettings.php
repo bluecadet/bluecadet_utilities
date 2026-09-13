@@ -14,6 +14,11 @@ class ImageStyleGenSettings extends FormBase {
   use DrupalStateTrait;
 
   /**
+   * State key the generated image style settings are stored under.
+   */
+  const STATE_KEY = 'bluecadet_utilities.image_style_gen';
+
+  /**
    * {@inheritdoc}
    */
   public function getFormId() {
@@ -24,7 +29,7 @@ class ImageStyleGenSettings extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $settings = $this->drupalState()->get(BCU_IMG_GEN_STATE, []);
+    $settings = $this->drupalState()->get(self::STATE_KEY, []);
 
     if (is_null($form_state->get('num_of_sizes'))) {
       $v = isset($settings['sizes']) ? count($settings['sizes']) + 1 : 1;
@@ -110,7 +115,7 @@ class ImageStyleGenSettings extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $settings = $this->drupalState()->get(BCU_IMG_GEN_STATE, []);
+    $settings = $this->drupalState()->get(self::STATE_KEY, []);
     $values = $form_state->getValues();
 
     $size_values_to_save = [];
@@ -121,7 +126,7 @@ class ImageStyleGenSettings extends FormBase {
     }
 
     $settings['sizes'] = $size_values_to_save;
-    $this->drupalState()->set(BCU_IMG_GEN_STATE, $settings);
+    $this->drupalState()->set(self::STATE_KEY, $settings);
 
     $this->messenger()->addMessage('You have saved your settings.');
   }

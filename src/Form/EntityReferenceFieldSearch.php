@@ -3,8 +3,8 @@
 namespace Drupal\bluecadet_utilities\Form;
 
 use Drupal\bluecadet_utilities\DrupalStateTrait;
-use Drupal\Core\Entity\EntityFieldManager;
-use Drupal\Core\Entity\EntityTypeManager;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\File\FileExists;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\FormBase;
@@ -12,6 +12,7 @@ use Drupal\Core\Link;
 use Drupal\Core\Messenger\MessengerTrait;
 use Drupal\Core\Url;
 use Drupal\file\Entity\File;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Bluecadet Utility Settings Form.
@@ -22,72 +23,27 @@ class EntityReferenceFieldSearch extends FormBase {
   use MessengerTrait;
 
   /**
-   * Drupal Module Handler.
-   *
-   * @var \Drupal\Core\Extension\ModuleHandler
-   */
-  private $moduleHandler;
-
-  /**
-   * Drupal Entity Field Manager.
-   *
-   * @var \Drupal\Core\Entity\EntityFieldManager
-   */
-  private $entityFieldManager;
-
-  /**
    * Drupal Entity Type Manager.
    *
-   * @var \Drupal\Core\Entity\EntityTypeManager
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
-  private $entityTypeManager;
+  protected $entityTypeManager;
 
   /**
-   * File system Interface for reading and writing files.
+   * Constructs an EntityReferenceFieldSearch form.
    *
-   * @var \Drupal\Core\File\FileSystemInterface
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
    */
-  protected $fileSystem;
-
-  /**
-   * Get module handler.
-   */
-  private function moduleHandler() {
-    if (!$this->moduleHandler) {
-      $this->moduleHandler = \Drupal::service('module_handler'); // phpcs:ignore
-    }
-
-    return $this->moduleHandler;
+  public function __construct(EntityTypeManagerInterface $entity_type_manager) {
+    $this->entityTypeManager = $entity_type_manager;
   }
 
   /**
-   * Get Entity Field Manager.
+   * {@inheritdoc}
    */
-  private function entityFieldManager(): EntityFieldManager {
-    if (!$this->entityFieldManager) {
-      $this->entityFieldManager = \Drupal::service('entity_field.manager'); // phpcs:ignore
-    }
-    return $this->entityFieldManager;
-  }
-
-  /**
-   * Get Entity Type Manager.
-   */
-  private function entityTypeManager(): EntityTypeManager {
-    if (!$this->entityTypeManager) {
-      $this->entityTypeManager = \Drupal::entityTypeManager(); // phpcs:ignore
-    }
-    return $this->entityTypeManager;
-  }
-
-  /**
-   * Get Entity Type Manager.
-   */
-  private function fileSystem(): FileSystemInterface {
-    if (!$this->fileSystem) {
-      $this->fileSystem = \Drupal::service('file_system'); // phpcs:ignore
-    }
-    return $this->fileSystem;
+  public static function create(ContainerInterface $container) {
+    return new static($container->get('entity_type.manager'));
   }
 
   /**
@@ -107,7 +63,7 @@ class EntityReferenceFieldSearch extends FormBase {
 
     // Build Entities Select Field.
     $entity_opts = [];
-    foreach ($this->entityTypeManager()->getDefinitions() as $id => $ent_def) {
+    foreach ($this->entityTypeManager->getDefinitions() as $id => $ent_def) {
       $entity_opts[$id] = $ent_def->getLabel();
     }
 
@@ -123,7 +79,9 @@ class EntityReferenceFieldSearch extends FormBase {
       '#type' => 'textfield',
       '#title' => $this->t("Entity Id"),
       '#step' => 1,
-      // '#description' => $this->t("This is doing a full string search on the raw html of the text field values. You can use '%' as a wildcard."),
+      // '#description' => $this->t("This is doing a full string search on
+      // the raw html of the text field values. You can use '%' as a
+      // wildcard."),
       '#default_value' => $session_data[1]['search_str'] ?? "",
       // '#placeholder' => "%class=\"material-icons\"% OR %<a name=\"%\"></a>%",
     ];
@@ -270,6 +228,8 @@ class EntityReferenceFieldSearch extends FormBase {
    *   Drupal's forms tate obj.
    *
    * @return array
+   *   Matching field data keyed by field type, then entity type, then field
+   *   name.
    */
   public static function findFields(FormStateInterface $form_state): array {
     $values = $form_state->getValues();
@@ -323,6 +283,7 @@ class EntityReferenceFieldSearch extends FormBase {
 
     $group = $query->orConditionGroup();
 
+    $field_id = NULL;
     foreach ($fields as $field_id => $data) {
       $group->condition($field_id, $search_string, 'LIKE');
     }
@@ -456,14 +417,14 @@ class EntityReferenceFieldSearch extends FormBase {
       $search_str_sanatized = mb_ereg_replace("([^\w\s\d\-_~,;\[\]\(\).])", '', $context['results']['search_str']);
       $search_str_sanatized = mb_ereg_replace("([^\w\s\d\-_~,;\[\]\(\).])", '', $search_str_sanatized);
 
-      $filename = date("YmdHis") . "--" . $search_str_sanatized . "--" . "ent_ref_search.json";
+      $filename = date("YmdHis") . "--" . $search_str_sanatized . "--ent_ref_search.json";
 
       if (!$file_system->prepareDirectory($destination, FileSystemInterface::CREATE_DIRECTORY)) {
         // @todo Log an error.
         return FALSE;
       }
 
-      $finale_file = $file_system->saveData($data, $destination . $filename, FileSystemInterface::EXISTS_REPLACE);
+      $finale_file = $file_system->saveData($data, $destination . $filename, FileExists::Replace);
 
       if ($finale_file) {
         // Create temporary File entity.
@@ -497,7 +458,7 @@ class EntityReferenceFieldSearch extends FormBase {
     ]);
 
     // Just add all results to the session var to let the form render results.
-    // todo change this over to use form_state storage.
+    // @todo change this over to use form_state storage.
     $_SESSION['bcu_ent_ref_search_results'] = [
       $success,
       $results,
