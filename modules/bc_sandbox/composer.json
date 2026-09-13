@@ -1,0 +1,6 @@
+{
+  "name": "bluecadet/bc_sandbox",
+  "description": "Setup a sandbox page to play in.",
+  "type": "custom-drupal-module",
+  "license": "GPL-2.0+"
+}
