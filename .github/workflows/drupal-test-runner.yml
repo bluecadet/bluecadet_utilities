@@ -200,7 +200,14 @@ jobs:
         run: |
           mkdir -p "$GITHUB_WORKSPACE/coverage"
           if php -m | grep -qiE 'xdebug|pcov'; then
-            vendor/bin/phpunit \
+            # $MODULE_FOLDER is a symlink (Composer path repo) into
+            # $GITHUB_WORKSPACE. PCOV scopes instrumentation by directory
+            # prefix against each file's *resolved* real path, so pointing
+            # pcov.directory at $DRUPAL_ROOT (an ancestor of the symlink,
+            # not of its target) silently instruments nothing -- every file
+            # under the module resolves to a real path under
+            # $GITHUB_WORKSPACE instead. Point it there directly.
+            php -d pcov.directory="$GITHUB_WORKSPACE" vendor/bin/phpunit \
               --bootstrap $DRUPAL_ROOT/core/tests/bootstrap.php \
               --coverage-filter "$MODULE_FOLDER" \
               --coverage-filter "$MODULE_FOLDER"/*.module \
