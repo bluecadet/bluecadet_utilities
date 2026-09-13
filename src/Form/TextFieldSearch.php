@@ -3,10 +3,12 @@
 namespace Drupal\bluecadet_utilities\Form;
 
 use Drupal\bluecadet_utilities\DrupalStateTrait;
+use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Messenger\MessengerTrait;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Bluecadet Utility Settings Form.
@@ -17,38 +19,27 @@ class TextFieldSearch extends FormBase {
   use MessengerTrait;
 
   /**
-   * Drupal Module Handler.
-   *
-   * @var \Drupal\Core\Extension\ModuleHandler
-   */
-  private $moduleHandler;
-
-  /**
    * Drupal Entity Field Manager.
    *
-   * @var \Drupal\Core\Entity\EntityFieldManager
+   * @var \Drupal\Core\Entity\EntityFieldManagerInterface
    */
-  private $entityFieldManager;
+  protected $entityFieldManager;
 
   /**
-   * Get module handler.
+   * Constructs a TextFieldSearch form.
+   *
+   * @param \Drupal\Core\Entity\EntityFieldManagerInterface $entity_field_manager
+   *   The entity field manager.
    */
-  private function moduleHandler() {
-    if (!$this->moduleHandler) {
-      $this->moduleHandler = \Drupal::service('module_handler'); // phpcs:ignore
-    }
-
-    return $this->moduleHandler;
+  public function __construct(EntityFieldManagerInterface $entity_field_manager) {
+    $this->entityFieldManager = $entity_field_manager;
   }
 
   /**
-   * Get Entity Field Manager.
+   * {@inheritdoc}
    */
-  private function entityFieldManager() {
-    if (!$this->entityFieldManager) {
-      $this->entityFieldManager = \Drupal::service('entity_field.manager'); // phpcs:ignore
-    }
-    return $this->entityFieldManager;
+  public static function create(ContainerInterface $container) {
+    return new static($container->get('entity_field.manager'));
   }
 
   /**
@@ -106,7 +97,7 @@ class TextFieldSearch extends FormBase {
         ];
         $current_stripe = "#eeeeee";
 
-        foreach ($data as $id => $result_data) {
+        foreach ($data as $result_data) {
 
           $link = Link::fromTextAndUrl($result_data['label'], $result_data['url']);
           $list['#items'][] = [
@@ -140,7 +131,7 @@ class TextFieldSearch extends FormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $values = $form_state->getValues();
 
-    $field_map = $this->entityFieldManager()->getFieldMap();
+    $field_map = $this->entityFieldManager->getFieldMap();
 
     $field_type = [
       "text",
@@ -212,6 +203,7 @@ class TextFieldSearch extends FormBase {
 
     $group = $query->orConditionGroup();
 
+    $field_id = NULL;
     foreach ($fields as $field_id => $data) {
       $group->condition($field_id, $search_string, 'LIKE');
     }

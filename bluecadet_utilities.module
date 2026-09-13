@@ -9,9 +9,6 @@ use Bluecadet\DrupalPackageManager\Checker;
 use Drupal\Core\Entity\EntityFormInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\file\FileInterface;
-use Drupal\update\UpdateManagerInterface;
-
-const BCU_IMG_GEN_STATE = 'bluecadet_utilities.image_style_gen';
 
 /**
  * Implements hook_theme().
@@ -148,7 +145,8 @@ function bluecadet_utilities_form_node_type_form_alter(&$form, FormStateInterfac
   $type = $form_object->getEntity();
   $fields = \Drupal::service('entity_field.manager')->getFieldDefinitions('node', $type->id() ?: 'page');
 
-  // Set the weight of the title label field to -10 to ensure it appears above other fields.
+  // Set the weight of the title label field to -10 to ensure it appears
+  // above other fields.
   if (isset($form['submission']['title_label'])) {
     $form['submission']['title_label']['#weight'] = -10;
   }
@@ -197,7 +195,7 @@ function bluecadet_utilities_update_status_alter(&$projects) {
   $filtered_projects = [];
 
   foreach ($modules as $user => $user_data) {
-    $filtered_projects += array_filter($projects, function($v) use ($user_data) {
+    $filtered_projects += array_filter($projects, function ($v) use ($user_data) {
         return in_array($v, $user_data);
     }, ARRAY_FILTER_USE_KEY);
   }

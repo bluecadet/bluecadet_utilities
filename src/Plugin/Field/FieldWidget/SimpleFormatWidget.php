@@ -84,7 +84,6 @@ class SimpleFormatWidget extends StringTextfieldWidget {
       ];
     }
 
-
     // Text Format options.
     $formats = filter_formats();
     $format_options = ['' => '-- Select --'];
@@ -142,7 +141,7 @@ class SimpleFormatWidget extends StringTextfieldWidget {
     // Check if we are dealing with a formatted field.
     if ($this->fieldDefinition->getType() == 'text') {
       // Always force default formatter.
-      // todo: should we always force this?
+      // @todo should we always force this?
       $main_widget['format'] = [
         '#type' => 'hidden',
         '#value' => $this->getSetting('default_format'),

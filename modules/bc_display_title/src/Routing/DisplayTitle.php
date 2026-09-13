@@ -34,7 +34,7 @@ class DisplayTitle extends RouteSubscriberBase {
     if ($node->hasField('field_display_title')) {
       // Title.
       $title = $node->label();
-      $display_title = $node->field_display_title->getValue();
+      $display_title = $node->get('field_display_title')->getValue();
 
       if (!empty($display_title)) {
         $display_title = current($display_title);

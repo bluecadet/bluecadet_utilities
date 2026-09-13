@@ -79,7 +79,7 @@ class BluecadetUtilitiesTest extends BrowserTestBase {
     $this->assertTrue(TRUE);
 
     $this->drupalGet('<front>');
-    $this->assertSession()->statusCodeEquals(200);
+    $session->statusCodeEquals(200);
   }
 
   /**
@@ -92,12 +92,12 @@ class BluecadetUtilitiesTest extends BrowserTestBase {
 
     // Should get a 403 when logged out.
     $this->drupalGet('/admin/reports/textfield-search');
-    $this->assertSession()->statusCodeEquals(403);
+    $session->statusCodeEquals(403);
 
     // Should get a 200 when logged in as an admin.
     $this->drupalLogin($this->adminUser);
     $this->drupalGet('/admin/reports/textfield-search');
-    $this->assertSession()->statusCodeEquals(200);
+    $session->statusCodeEquals(200);
   }
 
   /**
