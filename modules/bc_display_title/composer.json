@@ -1,0 +1,6 @@
+{
+  "name": "bluecadet/bc_display_title",
+  "description": "Adds functionality around display title fields on nodes.",
+  "type": "custom-drupal-module",
+  "license": "GPL-2.0+"
+}
