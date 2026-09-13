@@ -69,7 +69,7 @@ function bluecadet_utilities_file_validate(FileInterface $file) {
 
   if ($config->get('use_transliteration') && isset($file->destination)) {
     $file_system = \Drupal::service("file_system");
-    $basename = $file_system->basename($file->destination);
+    $basename = basename($file->destination);
     $basename = bluecadet_utilities_transliterate_filenames_transliteration($basename);
     $dirname = $file_system->dirname($file->destination);
     $file->destination = $file_system->createFilename($basename, $dirname);
