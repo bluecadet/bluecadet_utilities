@@ -199,6 +199,17 @@ jobs:
           XDEBUG_MODE: coverage
         run: |
           mkdir -p "$GITHUB_WORKSPACE/coverage"
+
+          # Submodules (e.g. bc_display_title, bc_sandbox) keep their own
+          # tests/src directory, which sits outside $MODULE_FOLDER/tests/src,
+          # so it's never picked up by the default phpunit_target on its own.
+          # Discover any submodule test directories and run them alongside
+          # the main target.
+          TEST_PATHS="$MODULE_FOLDER/${{ inputs.phpunit_target }}"
+          for dir in "$MODULE_FOLDER"/modules/*/tests/src; do
+            [ -d "$dir" ] && TEST_PATHS="$TEST_PATHS $dir"
+          done
+
           if php -m | grep -qiE 'xdebug|pcov'; then
             # $MODULE_FOLDER is a symlink (Composer path repo) into
             # $GITHUB_WORKSPACE. PCOV scopes instrumentation by directory
@@ -207,17 +218,26 @@ jobs:
             # not of its target) silently instruments nothing -- every file
             # under the module resolves to a real path under
             # $GITHUB_WORKSPACE instead. Point it there directly.
+            #
+            # Coverage filters are scoped to src/*.module directories rather
+            # than the whole $MODULE_FOLDER, which would otherwise also pull
+            # in vendored JS-package PHP files under node_modules and inflate
+            # the coverage denominator with code that can never be tested.
+            COVERAGE_ARGS="--coverage-filter $MODULE_FOLDER/src --coverage-filter $MODULE_FOLDER/*.module"
+            for dir in "$MODULE_FOLDER"/modules/*/src; do
+              [ -d "$dir" ] && COVERAGE_ARGS="$COVERAGE_ARGS --coverage-filter $dir"
+            done
+
             php -d pcov.directory="$GITHUB_WORKSPACE" vendor/bin/phpunit \
               --bootstrap $DRUPAL_ROOT/core/tests/bootstrap.php \
-              --coverage-filter "$MODULE_FOLDER" \
-              --coverage-filter "$MODULE_FOLDER"/*.module \
+              $COVERAGE_ARGS \
               --coverage-clover "$GITHUB_WORKSPACE/coverage/clover.xml" \
-              "$MODULE_FOLDER/${{ inputs.phpunit_target }}"
+              $TEST_PATHS
           else
             echo "No code coverage driver (xdebug/pcov) available; running tests without coverage output."
             vendor/bin/phpunit \
               --bootstrap $DRUPAL_ROOT/core/tests/bootstrap.php \
-              "$MODULE_FOLDER/${{ inputs.phpunit_target }}"
+              $TEST_PATHS
           fi
 
       - name: Upload PHPUnit coverage artifact

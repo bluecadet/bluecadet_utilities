@@ -23,9 +23,12 @@
 <testsuites>
   <testsuite name="unit">
     <directory>./tests/src/Unit</directory>
+    <directory>./modules/bc_display_title/tests/src/Unit</directory>
+    <directory>./modules/bc_sandbox/tests/src/Unit</directory>
   </testsuite>
   <testsuite name="kernel">
     <directory>./tests/src/Kernel</directory>
+    <directory>./modules/bc_display_title/tests/src/Kernel</directory>
   </testsuite>
   <testsuite name="functional">
     <directory>./tests/src/Functional</directory>
@@ -41,6 +44,8 @@
 <coverage cacheDirectory=".phpunit.cache/code-coverage" processUncoveredFiles="true">
   <include>
     <directory suffix=".php">./src</directory>
+    <directory suffix=".php">./modules/bc_display_title/src</directory>
+    <directory suffix=".php">./modules/bc_sandbox/src</directory>
     <file>./*.module</file>
   </include>
 </coverage>
