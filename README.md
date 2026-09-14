@@ -92,6 +92,11 @@ The CI pipeline runs the following for each Drupal version:
 
 ## Changelog
 
+### 5.0.1-alpha.2
+
+- Bumped `@bluecadet/drops` to `^1.2.0` and `postcss-advanced-variables` to `^5.0.0` (CVE fix; verified byte-identical `assets/dist` output before/after), removed the unused `concurrently` devDependency
+- Moved CI to a shared, config-driven orchestrator in `bluecadet/web-gh-actions` -- the test matrix now lives in `.github/drupal-ci.yml` instead of being hand-copied in this repo's own workflow file
+
 ### 5.0.1-alpha.1
 
 - Modernized CI to a reusable-workflow architecture, matrix-tested against Drupal 10.5.x-10.6.x and 11.2.x-11.3.x across PHP 8.2-8.4
