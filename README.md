@@ -11,6 +11,7 @@ Adds utilities to aid in development of custom sites.
 
 ### 5.x Branch
 
+- **5.1.x**: Drupal 10 & 11 compatible (PHP 7.4+). No breaking changes -- CI modernization, PHPCS/PHPStan cleanup, and test coverage work only.
 - **5.0.x**: Drupal 10 & 11 compatible (PHP 7.4+). **Breaking:** Removed `FractalCompoundHandlesLoader` and the `bluecadet_utilities.loader.fractal_compound_handles` Twig loader service. Sites relying on Fractal-style `#handle` or `@namespace/component` syntax in Twig templates must migrate to an alternative (e.g. Drupal core SDC or the `components` contrib module).
 
 ### 4.x Branch
@@ -69,7 +70,7 @@ line as well as the location for the module.
 
 ## Testing
 
-This module includes automated tests that run via GitHub Actions against Drupal 10.1.x-10.3.x and 11.0.x (see `.github/workflows/drupal-tests-and-standards.yml` for the exact PHP/MariaDB matrix).
+This module includes automated tests that run via GitHub Actions against Drupal 10.5.x-10.6.x and 11.2.x-11.3.x (see `.github/workflows/drupal-tests-and-standards.yml` for the exact PHP/MariaDB matrix).
 
 ### Test Plan
 
@@ -78,15 +79,26 @@ This module includes automated tests that run via GitHub Actions against Drupal 
 The CI pipeline runs the following for each Drupal version:
 
 1. **PHPCS** - Drupal coding standards validation (`Drupal` and `DrupalPractice` standards)
-2. **Drupal-Check** - static analysis for deprecated API usage
-3. **PHPUnit** - automated tests
+2. **PHPStan** - static analysis for deprecated API usage (via `mglaman/phpstan-drupal`)
+3. **PHPUnit** - Unit, Kernel, and Functional tests, with code coverage reporting
 
 #### Current coverage
 
-- Unit test for `SanitizeName::sanitizeFilename()` (filename sanitization)
-- Functional test (`BluecadetUtilitiesTest`) exercising the module against a content type
+~91% line coverage across `src/` and both submodules.
+
+- Unit tests for pure logic: `SanitizeName`, `SimpleFormatTextfield`, `DrupalStateTrait`
+- Kernel tests for Drupal-integrated behavior: field formatters/widgets, settings forms, the image style generator, and the entity-reference/text-field search tools (including their batch pipelines)
+- Functional test (`BluecadetUtilitiesTest`) exercising the module against a real content type and admin routes
 
 ## Changelog
+
+### 5.1.0-alpha.1
+
+- Modernized CI to a reusable-workflow architecture, matrix-tested against Drupal 10.5.x-10.6.x and 11.2.x-11.3.x across PHP 8.2-8.4
+- Fixed all PHPCS/PHPStan violations, including converting `EntityReferenceFieldSearch`, `TextFieldSearch`, and `ImageStyleGenerator` to real constructor-based dependency injection and removing dead/duplicate code
+- Fixed a PCOV bug that was silently reporting 0% test coverage in CI, and raised automated test coverage from ~5% to ~91% (Unit and Kernel tests across forms, field formatters/widgets, and both submodules)
+- Bumped `@bluecadet/bldr` to `2.0.0-alpha.12`, `@bluecadet/drops` to `^1.1.0`, and `bluecadet/bc_drupal_package_manager` to `^1.1`; disabled bldr's new v2 ESLint/Stylelint providers since this repo has no config for either
+- Excluded the submodules' `composer.json` stubs (added purely to break out per-submodule CI coverage reporting) from the release tarball via `.gitattributes`
 
 ### 5.0.0
 
