@@ -44,5 +44,14 @@ module.exports = {
     outputOptions: {
       format: 'iife'
     }
+  },
+  // No ESLint/Stylelint config exists in this repo and none is planned;
+  // explicitly disabled so bldr 2.x's build/lint/dev commands skip them
+  // cleanly instead of erroring on a missing config file.
+  eslint: {
+    useEslint: false
+  },
+  stylelint: {
+    useStyleLint: false
   }
 }
