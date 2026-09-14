@@ -33,84 +33,14 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 jobs:
-  test-target:
-    if: ${{ github.event_name == 'workflow_dispatch' }}
+  ci:
     permissions:
       contents: read
       pull-requests: write
-    name: Targeted | D${{ inputs.drupal_core }} | PHP${{ inputs.php_version }} | MariaDB${{ inputs.mariadb_version }}
-    uses: ./.github/workflows/drupal-test-runner.yml
+    uses: bluecadet/web-gh-actions/.github/workflows/drupal-tests-and-standards.yml@v1.1.0
     with:
-      drupal_core: ${{ inputs.drupal_core }}
-      php_version: ${{ inputs.php_version }}
-      mariadb_version: ${{ inputs.mariadb_version }}
-      phpunit_target: ${{ inputs.phpunit_target }}
-
-  test-pr:
-    if: ${{ github.event_name == 'pull_request' }}
-    permissions:
-      contents: read
-      pull-requests: write
-    name: PR matrix | D${{ matrix.drupal_core }} | PHP${{ matrix.php_version }} | MariaDB${{ matrix.mariadb_version }}
-    strategy:
-      fail-fast: false
-      matrix:
-        drupal_core:
-          - '10.6.x'
-          - '11.3.x'
-        php_version:
-          - '8.2'
-          - '8.3'
-          - '8.4'
-        mariadb_version:
-          - '10.6'
-        exclude:
-          - drupal_core: '10.6.x'
-            php_version: '8.4'
-          - drupal_core: '11.3.x'
-            php_version: '8.2'
-    uses: ./.github/workflows/drupal-test-runner.yml
-    with:
-      drupal_core: ${{ matrix.drupal_core }}
-      php_version: ${{ matrix.php_version }}
-      mariadb_version: ${{ matrix.mariadb_version }}
-
-  test-full:
-    if: ${{ github.event_name == 'push' || github.event_name == 'schedule' }}
-    permissions:
-      contents: read
-      pull-requests: write
-    name: Full matrix | D${{ matrix.drupal_core }} | PHP${{ matrix.php_version }} | MariaDB${{ matrix.mariadb_version }}
-    strategy:
-      fail-fast: false
-      matrix:
-        drupal_core:
-          - '10.5.x'
-          - '10.6.x'
-          - '11.2.x'
-          - '11.3.x'
-        php_version:
-          - '8.2'
-          - '8.3'
-          - '8.4'
-        mariadb_version:
-          - '10.4'
-          - '10.6'
-        exclude:
-          - drupal_core: '10.5.x'
-            php_version: '8.4'
-          - drupal_core: '10.6.x'
-            php_version: '8.4'
-          - drupal_core: '11.2.x'
-            php_version: '8.2'
-          - drupal_core: '11.2.x'
-            mariadb_version: '10.4'
-          - drupal_core: '11.3.x'
-            php_version: '8.2'
-          - drupal_core: '11.3.x'
-            mariadb_version: '10.4'
-    uses: ./.github/workflows/drupal-test-runner.yml
-    with:
-      drupal_core: ${{ matrix.drupal_core }}
-      php_version: ${{ matrix.php_version }}
-      mariadb_version: ${{ matrix.mariadb_version }}
+      event_name: ${{ github.event_name }}
+      dispatch_drupal_core: ${{ inputs.drupal_core }}
+      dispatch_php_version: ${{ inputs.php_version }}
+      dispatch_mariadb_version: ${{ inputs.mariadb_version }}
+      dispatch_phpunit_target: ${{ inputs.phpunit_target }}
