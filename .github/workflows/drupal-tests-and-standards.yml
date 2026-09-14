@@ -37,7 +37,7 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
-    uses: bluecadet/web-gh-actions/.github/workflows/drupal-tests-and-standards.yml@feature/drupal-ci-orchestrator
+    uses: bluecadet/web-gh-actions/.github/workflows/drupal-tests-and-standards.yml@v1.1.0
     with:
       event_name: ${{ github.event_name }}
       dispatch_drupal_core: ${{ inputs.drupal_core }}
