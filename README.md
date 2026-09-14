@@ -5,13 +5,13 @@ Adds utilities to aid in development of custom sites.
 ## Requirements
 
 - Drupal 10 or Drupal 11
-- PHP 7.4 or higher
+- PHP 8.2 or higher
 
 ## Versions
 
 ### 5.x Branch
 
-- **5.0.x**: Drupal 10 & 11 compatible (PHP 7.4+). **Breaking:** Removed `FractalCompoundHandlesLoader` and the `bluecadet_utilities.loader.fractal_compound_handles` Twig loader service. Sites relying on Fractal-style `#handle` or `@namespace/component` syntax in Twig templates must migrate to an alternative (e.g. Drupal core SDC or the `components` contrib module).
+- **5.0.x**: Drupal 10 & 11 compatible (PHP 8.2+). **Breaking:** Removed `FractalCompoundHandlesLoader` and the `bluecadet_utilities.loader.fractal_compound_handles` Twig loader service. Sites relying on Fractal-style `#handle` or `@namespace/component` syntax in Twig templates must migrate to an alternative (e.g. Drupal core SDC or the `components` contrib module).
   - **5.0.1**: No breaking changes -- CI modernization, PHPCS/PHPStan cleanup, and test coverage work only.
 
 ### 4.x Branch
