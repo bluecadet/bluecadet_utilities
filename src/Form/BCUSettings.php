@@ -69,6 +69,7 @@ class BCUSettings extends ConfigFormBase {
     $form['use_transliteration'] = [
       '#type' => 'checkbox',
       '#title' => $this->t("Enable File name transliteration"),
+      '#description' => $this->t('Deprecated in 5.1.0 and removed in 6.0.0. This only ran through the legacy hook_file_validate(), which Drupal 11 removed. Use Drupal core\'s file name sanitization instead.'),
       '#default_value' => $config->get('use_transliteration'),
     ];
 

@@ -6,6 +6,10 @@ use Drupal\Component\Transliteration\TransliterationInterface;
 
 /**
  * Class SanitizeName will sanatize a given filename.
+ *
+ * @deprecated in bluecadet_utilities:5.1.0 and is removed from
+ *   bluecadet_utilities:6.0.0. Only used by the deprecated file name
+ *   transliteration hook.
  */
 class SanitizeName {
 
