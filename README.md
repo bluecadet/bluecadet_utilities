@@ -35,10 +35,16 @@ On Drupal 10.5.x or 11.2.x, pin `twig/twig` to `<3.30` (`composer require "twig/
 
 ### 1.x Branch — completely outdated, do not use.
 
+## Deprecated
+
+Deprecated in 5.1.0, removed in 6.0.0:
+
+- File name transliteration: `bluecadet_utilities_file_validate()`, `bluecadet_utilities_transliterate_filenames_transliteration()`, the `bluecadet_utilities.sanitize_name` service (`SanitizeName`), and the "Enable File name transliteration" setting (`use_transliteration`). It only ran through `hook_file_validate()`, which Drupal 11 removed, and relied on a `$file->destination` property core no longer sets, so it does nothing on Drupal 11. Use Drupal core's file name sanitization instead.
+
 ## Includes
 
 - Theme for formatting svg files
-- Transliteration for file uploads ([Transliteration Module as Source](https://www.drupal.org/project/transliteration))
+- Transliteration for file uploads ([Transliteration Module as Source](https://www.drupal.org/project/transliteration)) -- **deprecated**, see below
 - Enable WYSIWYG on textfield fields
 - Image Style generator, based on aspect ratios
 - Text string search for searching html strings in text fields (eg, search for a specific link or class name being used)
