@@ -83,7 +83,7 @@ line as well as the location for the module.
 
 ## Testing
 
-This module includes automated tests that run via GitHub Actions against Drupal 10.5.x-10.6.x and 11.2.x-11.3.x (see `.github/workflows/drupal-tests-and-standards.yml` for the exact PHP/MariaDB matrix).
+This module includes automated tests that run via GitHub Actions against Drupal 10.6.x and 11.3.x-11.5.x, plus 12.0.x as an early signal (see `.github/drupal-ci.yml` for the exact PHP/MariaDB matrix).
 
 ### Test Plan
 
