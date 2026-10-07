@@ -5,6 +5,7 @@ namespace Drupal\bluecadet_utilities\Plugin\Field\FieldFormatter;
 use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\bluecadet_utilities\TextFormatsTrait;
 
 /**
  * Plugin implementation of the 'text_simple_format_formatter' formatter.
@@ -19,6 +20,8 @@ use Drupal\Core\Form\FormStateInterface;
  * )
  */
 class SimpleFormatFormatter extends FormatterBase {
+
+  use TextFormatsTrait;
 
   /**
    * {@inheritdoc}
@@ -36,7 +39,7 @@ class SimpleFormatFormatter extends FormatterBase {
     $element = parent::settingsForm($form, $form_state);
 
     // Text Format options.
-    $formats = filter_formats();
+    $formats = $this->getTextFormats();
     $format_options = ['' => '-- Select --'];
 
     foreach ($formats as $f_id => $f) {
