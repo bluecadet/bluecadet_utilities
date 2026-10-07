@@ -4,6 +4,7 @@ namespace Drupal\bluecadet_utilities\Plugin\Field\FieldWidget;
 
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\bluecadet_utilities\TextFormatsTrait;
 use Drupal\Core\Field\Plugin\Field\FieldWidget\StringTextfieldWidget;
 
 /**
@@ -19,6 +20,8 @@ use Drupal\Core\Field\Plugin\Field\FieldWidget\StringTextfieldWidget;
  * )
  */
 class SimpleFormatWidget extends StringTextfieldWidget {
+
+  use TextFormatsTrait;
 
   /**
    * {@inheritdoc}
@@ -69,7 +72,7 @@ class SimpleFormatWidget extends StringTextfieldWidget {
     if ($this->fieldDefinition->getType() == 'text') {
 
       // Text Format options.
-      $formats = filter_formats();
+      $formats = $this->getTextFormats();
       $format_options = ['' => '-- Select --'];
 
       foreach ($formats as $f_id => $f) {
@@ -85,7 +88,7 @@ class SimpleFormatWidget extends StringTextfieldWidget {
     }
 
     // Text Format options.
-    $formats = filter_formats();
+    $formats = $this->getTextFormats();
     $format_options = ['' => '-- Select --'];
 
     foreach ($formats as $f_id => $f) {
