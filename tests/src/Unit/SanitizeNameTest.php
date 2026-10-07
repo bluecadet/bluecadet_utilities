@@ -13,6 +13,8 @@ use Drupal\bluecadet_utilities\SanitizeName;
  *
  * @deprecated in bluecadet_utilities:5.1.0 and is removed from
  *   bluecadet_utilities:6.0.0. Tests the deprecated SanitizeName class.
+ *
+ * @see https://www.drupal.org/node/3363700
  */
 class SanitizeNameTest extends UnitTestCase {
 

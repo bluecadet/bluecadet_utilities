@@ -69,6 +69,8 @@ function template_preprocess_input__simple_format_textfield(&$vars) {
  *   validation and upload sanitize events instead), and core no longer sets the
  *   legacy $file->destination property this relies on, so it does nothing on
  *   Drupal 11. Use Drupal core's file name sanitization.
+ *
+ * @see https://www.drupal.org/node/3363700
  */
 function bluecadet_utilities_file_validate(FileInterface $file) {
   $config = \Drupal::config('bluecadet_utilities.settings');
@@ -88,6 +90,8 @@ function bluecadet_utilities_file_validate(FileInterface $file) {
  * @deprecated in bluecadet_utilities:5.1.0 and is removed from
  *   bluecadet_utilities:6.0.0. Only used by the deprecated
  *   bluecadet_utilities_file_validate().
+ *
+ * @see https://www.drupal.org/node/3363700
  */
 function bluecadet_utilities_transliterate_filenames_transliteration($filename) {
   $filename = \Drupal::service('bluecadet_utilities.sanitize_name')->sanitizeFilename($filename);

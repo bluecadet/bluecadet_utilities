@@ -10,6 +10,8 @@ use Drupal\Component\Transliteration\TransliterationInterface;
  * @deprecated in bluecadet_utilities:5.1.0 and is removed from
  *   bluecadet_utilities:6.0.0. Only used by the deprecated file name
  *   transliteration hook.
+ *
+ * @see https://www.drupal.org/node/3363700
  */
 class SanitizeName {
 
