@@ -10,6 +10,9 @@ use Drupal\bluecadet_utilities\SanitizeName;
 /**
  * @coversDefaultClass \Drupal\bluecadet_utilities\SanitizeName
  * @group bluecadet_utilities
+ *
+ * @deprecated in bluecadet_utilities:5.1.0 and is removed from
+ *   bluecadet_utilities:6.0.0. Tests the deprecated SanitizeName class.
  */
 class SanitizeNameTest extends UnitTestCase {
 
