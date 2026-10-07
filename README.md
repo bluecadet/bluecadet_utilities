@@ -98,6 +98,13 @@ The CI pipeline runs the following for each Drupal version:
 
 ## Changelog
 
+### 5.0.1
+
+- Refreshed the CI matrix: dropped end-of-life Drupal 10.5.x and 11.2.x, now testing 10.6.x, 11.3.x, 11.4.x and 11.5.x, with 12.0.x as an early (expected to fail) signal
+- Documented the Twig 3.30 incompatibility on Drupal 10.5.x/11.2.x (pin `twig/twig` to `<3.30`) and corrected the PHP requirement wording (7.4+ declared, 8.2+ tested)
+- Removed the undocumented global `BCU_IMG_GEN_STATE` constant (use `ImageStyleGenSettings::STATE_KEY`)
+- Known issue: `filter_formats()` is deprecated in Drupal 11.4; replacement planned for 5.1.0
+
 ### 5.0.1-alpha.2
 
 - Bumped `@bluecadet/drops` to `^1.2.0` and `postcss-advanced-variables` to `^5.0.0` (CVE fix; verified byte-identical `assets/dist` output before/after), removed the unused `concurrently` devDependency
