@@ -5,14 +5,20 @@ Adds utilities to aid in development of custom sites.
 ## Requirements
 
 - Drupal 10 or Drupal 11
-- PHP 7.4 or higher
+- PHP 7.4 or higher (declared). CI only tests PHP 8.2 and up; 5.1.0 will make PHP 8.2 the minimum.
+
+### Tested Drupal versions
+
+CI tests against Drupal 10.6, 11.3, 11.4 and 11.5 (plus 12.0 as an early signal, expected to fail until Drupal 12 support lands). Drupal 10.5 and 11.2 are past end of life and no longer tested.
+
+On Drupal 10.5.x or 11.2.x, pin `twig/twig` to `<3.30` (`composer require "twig/twig:<3.30" -W`). Those cores register their escape filter under a different name than Twig 3.30's auto-escaping expects, which fatals on any render that uses it (for example `item-list`). Drupal 10.6+ and 11.3+ are unaffected.
 
 ## Versions
 
 ### 5.x Branch
 
-- **5.0.x**: Drupal 10 & 11 compatible (PHP 7.4+). **Breaking:** Removed `FractalCompoundHandlesLoader` and the `bluecadet_utilities.loader.fractal_compound_handles` Twig loader service. Sites relying on Fractal-style `#handle` or `@namespace/component` syntax in Twig templates must migrate to an alternative (e.g. Drupal core SDC or the `components` contrib module).
-  - **5.0.1**: No breaking changes -- CI modernization, PHPCS/PHPStan cleanup, and test coverage work only.
+- **5.0.x**: Drupal 10 & 11 compatible (PHP 7.4+ declared, 8.2+ tested). **Breaking:** Removed `FractalCompoundHandlesLoader` and the `bluecadet_utilities.loader.fractal_compound_handles` Twig loader service. Sites relying on Fractal-style `#handle` or `@namespace/component` syntax in Twig templates must migrate to an alternative (e.g. Drupal core SDC or the `components` contrib module).
+  - **5.0.1**: CI modernization, PHPCS/PHPStan cleanup, and test coverage work. Removed the undocumented global `BCU_IMG_GEN_STATE` constant (use `ImageStyleGenSettings::STATE_KEY` instead); nothing in this module still references it.
 
 ### 4.x Branch
 
